@@ -112,7 +112,7 @@
 *::after {
   box-sizing: border-box;
   /* margin: 0; */
-  padding: 0;
+  /* padding: 0; */
 }
 
 html {
@@ -194,6 +194,10 @@ pre {
   }
 }
 
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* =========================================================
    CUSTOM UTILITIES
 ========================================================= */
@@ -219,6 +223,8 @@ pre {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+
 
 .hero-grid {
   background-image:

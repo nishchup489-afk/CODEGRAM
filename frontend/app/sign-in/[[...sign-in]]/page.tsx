@@ -338,7 +338,7 @@ export default function Page() {
               routing="path"
               path="/sign-in"
               signUpUrl="/sign-up"
-              fallbackRedirectUrl="/"
+              forceRedirectUrl="/sync"
               appearance={{
                 variables: {
                   colorPrimary: '#E8560A',
