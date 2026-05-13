@@ -41,6 +41,8 @@ async def sync_user(
     # USER ALREADY EXISTS
     if existing_user:
         return existing_user
+    
+    generated_username = f"user_{uuid.uuid4().hex[:8]}"
 
     # CREATE MINIMAL USER
     new_user = User(
@@ -53,9 +55,9 @@ async def sync_user(
 
         avatar_url=data.avatar_url,
 
-        username=f"user_{uuid.uuid4().hex[:8]}",
+        username=generated_username,
 
-        username_lower=f"user_{uuid.uuid4().hex[:8]}",
+        username_lower=generated_username.lower(),
     )
 
     db.add(new_user)
@@ -82,10 +84,6 @@ async def complete_onboarding(
         )
     )
 
-    if not existing_user:
-        return {
-            "message": "User not found"
-        }
 
     username_exists = await db.scalar(
         select(User).where(

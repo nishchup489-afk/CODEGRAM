@@ -94,7 +94,7 @@ export default function DashboardLayout({
 
         {
             name: 'Profile',
-            href: '/dashboard/profile',
+            href: `/dashboard/u/${currentUser.username}`,
             icon: User,
         },
 

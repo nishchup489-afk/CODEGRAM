@@ -11,6 +11,7 @@ import Image from "next/image"
 import no_cover from "@/public/no_cover.png"
 
 import { uploadToCloudinary } from "@/app/lib/cloudinary"
+import { use } from "react"
 
 import {
     User,
@@ -23,9 +24,14 @@ import {
 
 
 
-export default function EditProfile() {
+export default function EditProfile({
+    params,
+}: {
+    params: Promise<{username : string}>
+}) {
 
     const { user, isLoaded } = useUser()
+    const { username } = use(params)
 
 
 
@@ -86,11 +92,11 @@ export default function EditProfile() {
 
 
                 const result = await api.get(
-                    `/dashboard/profile?clerk_user_id=${user.id}`
+                    `/profile/${username}`
                 )
 
 
-
+ 
                 setProfileData({
 
                     username:
@@ -183,7 +189,7 @@ export default function EditProfile() {
 
 
             await api.patch(
-                `/dashboard/profile?clerk_user_id=${user.id}`,
+                `/profile/me?clerk_user_id=${user.id}`,
                 profileData
             )
 

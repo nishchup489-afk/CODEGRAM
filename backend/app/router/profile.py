@@ -5,18 +5,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db 
 
 
-router = APIRouter(prefix="/dashboard/profile" , tags=["Profile"])
+router = APIRouter(prefix="/profile" , tags=["Profile"])
 
-@router.get("/" , response_model=profile_schema)
-async def get_user_profile(db : AsyncSession = Depends(get_db) , 
-                           clerk_user_id : str = Query(...)):
+@router.get("/{username}" , response_model=profile_schema)
+async def get_user_profile(
+    username: str,
+    db: AsyncSession = Depends(get_db),
+):
     return await get_user_profile_data(
         db=db , 
-        clerk_user_id=clerk_user_id,
+        username=username,
     )
 
-@router.patch("/" , response_model=update_profile_data)
-async def update_profile_data(data : update_profile_data , db: AsyncSession = Depends(get_db) , clerk_user_id : str = Query(...) ):
+@router.patch("/me" , response_model=update_profile_data)
+async def update_profile_data(data : update_profile_data , 
+                              db: AsyncSession = Depends(get_db) , 
+                              clerk_user_id : str = Query(...) ):
     return await update_user_profile_data(
         db=db , 
         clerk_user_id=clerk_user_id , 

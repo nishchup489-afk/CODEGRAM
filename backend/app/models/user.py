@@ -49,6 +49,11 @@ class User(Base):
     linkedin_url = Column(Text, nullable=True)
 
     portfolio_url = Column(Text, nullable=True)
+    instagram_url = Column(Text, nullable=True)
+
+    location = Column(String(120), nullable=True)
+
+    current_build = Column(String(160), nullable=True)
 
     reputation_score = Column(Integer, default=0, nullable=False)
 

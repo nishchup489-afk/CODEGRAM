@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from app.models.user import User 
 from app.schema.profile import get_profile_data , update_profile_data 
 from sqlalchemy.ext.asyncio import AsyncSession 
@@ -6,15 +8,21 @@ from sqlalchemy import select
 
 async def get_user_profile_data(
     db: AsyncSession,
-    clerk_user_id : str,
+    username : str,
 ) -> get_profile_data:
 
     
     user = await db.scalar(
         select(User).where(
-            User.clerk_user_id == clerk_user_id
+            User.username == username
         )
     )
+
+    if not user:
+            raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
     return {
 
@@ -47,6 +55,17 @@ async def get_user_profile_data(
         "posts_count": user.posts_count,
 
         "project_count": user.project_count,
+        "instagram_url": user.instagram_url,
+
+        "location": user.location,
+
+        "current_build": user.current_build,
+
+        "joined_date": (
+                user.created_at.strftime("Joined %b %Y")
+                if user.created_at
+                else "Joined recently"
+            ),
 
     }
 
@@ -64,7 +83,11 @@ async def update_user_profile_data(
     )
 
     if not user:
-        return None
+
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
 
     user.username = data.username

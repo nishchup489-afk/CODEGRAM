@@ -18,6 +18,13 @@ class get_profile_data(BaseModel):
     following_count: int
     posts_count: int
     project_count: int
+    instagram_url: str | None = None
+
+    location: str | None = None
+
+    current_build: str | None = None
+
+    joined_date: str | None = None
     class Config:
         from_attributes = True
 
