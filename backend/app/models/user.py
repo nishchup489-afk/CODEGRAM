@@ -6,10 +6,11 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Text,
+    UniqueConstraint,
     func,
 )
 
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
 
 from sqlalchemy.orm import relationship
 
@@ -26,60 +27,165 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
 
-    clerk_user_id = Column(String, unique=True, nullable=False, index=True)
+    clerk_user_id = Column(
+        String,
+        unique=True,
+        nullable=False,
+        index=True,
+    )
 
-    username = Column(String(32), unique=True, nullable=False, index=True)
+    username = Column(
+        String(32),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
 
-    username_lower = Column(String(32), unique=True, nullable=False, index=True)
+    username_lower = Column(
+        String(32),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
 
-    display_name = Column(String(100), nullable=True)
+    display_name = Column(
+        String(100),
+        nullable=True,
+    )
 
-    email = Column(String, unique=True, nullable=False, index=True)
+    email = Column(
+        String,
+        unique=True,
+        nullable=False,
+        index=True,
+    )
 
-    bio = Column(String(280), nullable=True)
+    bio = Column(
+        String(280),
+        nullable=True,
+    )
 
-    avatar_url = Column(Text, nullable=True)
+    avatar_url = Column(
+        Text,
+        nullable=True,
+    )
 
-    banner_url = Column(Text, nullable=True)
+    banner_url = Column(
+        Text,
+        nullable=True,
+    )
 
-    github_url = Column(Text, nullable=True)
+    github_url = Column(
+        Text,
+        nullable=True,
+    )
 
-    linkedin_url = Column(Text, nullable=True)
+    linkedin_url = Column(
+        Text,
+        nullable=True,
+    )
 
-    portfolio_url = Column(Text, nullable=True)
-    instagram_url = Column(Text, nullable=True)
+    portfolio_url = Column(
+        Text,
+        nullable=True,
+    )
 
-    location = Column(String(120), nullable=True)
+    instagram_url = Column(
+        Text,
+        nullable=True,
+    )
 
-    current_build = Column(String(160), nullable=True)
+    location = Column(
+        String(120),
+        nullable=True,
+    )
 
-    reputation_score = Column(Integer, default=0, nullable=False)
+    current_build = Column(
+        String(160),
+        nullable=True,
+    )
 
-    followers_count = Column(Integer, default=0, nullable=False)
+    reputation_score = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
-    following_count = Column(Integer, default=0, nullable=False)
+    followers_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
-    posts_count = Column(Integer, default=0, nullable=False)
+    following_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
-    project_count = Column(Integer, default=0, nullable=False)
+    posts_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
-    reports_count = Column(Integer, default=0, nullable=False)
+    project_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
-    onboarding_completed = Column(Boolean, default=False, nullable=False)
+    reports_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
-    is_verified = Column(Boolean, default=False, nullable=False)
+    onboarding_completed = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
 
-    is_active = Column(Boolean, default=True, nullable=False)
+    is_verified = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
 
-    is_private = Column(Boolean, default=False, nullable=False)
+    is_active = Column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
 
-    is_banned = Column(Boolean, default=False, nullable=False)
+    is_private = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
 
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    is_banned = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
 
-    last_seen_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    last_seen_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
 
     created_at = Column(
         DateTime(timezone=True),
@@ -94,9 +200,51 @@ class User(Base):
         nullable=False,
     )
 
-    posts = relationship("Post", back_populates="user")
+    # =====================================================
+    # RELATIONSHIPS
+    # =====================================================
 
-    projects = relationship("Project", back_populates="user")
+    posts = relationship(
+        "Post",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    projects = relationship(
+        "Project",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    project_stars = relationship(
+        "ProjectStar",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    project_comments = relationship(
+        "ProjectComment",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    project_comment_votes = relationship(
+        "ProjectCommentVote",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    stack_stats = relationship(
+        "UserStackStat",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    project_bookmarks = relationship(
+        "ProjectBookmark",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
 
 # =========================================================
@@ -105,9 +253,16 @@ class User(Base):
 
 class Follow(Base):
 
+
+    
+
     __tablename__ = "follows"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
 
     follower_id = Column(
         UUID(as_uuid=True),
@@ -130,12 +285,49 @@ class Follow(Base):
 
 
 
+class UserStackStat(Base):
 
+    __tablename__ = "user_stack_stats"
 
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
 
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,
+    )
 
+    stack_name = Column(
+        String,
+        nullable=False,
+    )
 
+    projects_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
 
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
 
+    __table_args__ = (
 
+        UniqueConstraint(
+            "user_id",
+            "stack_name",
+            name="unique_user_stack",
+        ),
 
+    )
+
+    user = relationship(
+        "User",
+        back_populates="stack_stats",
+    )

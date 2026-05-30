@@ -58,7 +58,7 @@ export default function LeftPanel() {
                     rounded-full
                     border
                     border-white/10
-                    bg-white/[0.04]
+                    bg-white/4
                     px-4
                     py-2
                     text-sm
@@ -88,7 +88,7 @@ export default function LeftPanel() {
                     <span
                         className="
                             block
-                            bg-gradient-to-r
+                            bg-linear-to-r
                             from-red-500
                             via-orange-400
                             to-red-600
@@ -130,7 +130,7 @@ export default function LeftPanel() {
                     rounded-[34px]
                     border
                     border-white/10
-                    bg-white/[0.03]
+                    bg-white/3
                     p-8
                     backdrop-blur-2xl
                     shadow-[0_0_120px_rgba(0,0,0,0.8)]
@@ -143,7 +143,7 @@ export default function LeftPanel() {
                     className="
                         absolute
                         inset-0
-                        bg-gradient-to-br
+                        bg-linear-to-br
                         from-red-500/10
                         via-orange-500/5
                         to-transparent
@@ -230,7 +230,7 @@ export default function LeftPanel() {
                         rounded-3xl
                         border
                         border-white/10
-                        bg-white/[0.03]
+                        bg-white/3
                         p-5
                         backdrop-blur-xl
                     "
@@ -239,7 +239,7 @@ export default function LeftPanel() {
                         className="
                             text-3xl
                             font-black
-                            tracking-[-0.05em]
+                            tracking-tighter
                         "
                     >
                         12k+
@@ -262,7 +262,7 @@ export default function LeftPanel() {
                         rounded-3xl
                         border
                         border-white/10
-                        bg-white/[0.03]
+                        bg-white/3
                         p-5
                         backdrop-blur-xl
                     "
@@ -271,7 +271,7 @@ export default function LeftPanel() {
                         className="
                             text-3xl
                             font-black
-                            tracking-[-0.05em]
+                            tracking-tighter
                         "
                     >
                         84k+
@@ -294,7 +294,7 @@ export default function LeftPanel() {
                         rounded-3xl
                         border
                         border-white/10
-                        bg-white/[0.03]
+                        bg-white/3
                         p-5
                         backdrop-blur-xl
                     "
@@ -303,7 +303,7 @@ export default function LeftPanel() {
                         className="
                             text-3xl
                             font-black
-                            tracking-[-0.05em]
+                            tracking-tighter
                         "
                     >
                         4.9★

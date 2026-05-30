@@ -180,7 +180,7 @@ export default function OnBoardingPage() {
 
             
 
-            router.push('/dashboard')
+            router.push('/feed')
 
         } catch (err: any) {
 

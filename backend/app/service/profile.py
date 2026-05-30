@@ -8,10 +8,9 @@ from sqlalchemy import select
 
 async def get_user_profile_data(
     db: AsyncSession,
-    username : str,
+    username: str,
 ) -> get_profile_data:
 
-    
     user = await db.scalar(
         select(User).where(
             User.username == username
@@ -19,12 +18,15 @@ async def get_user_profile_data(
     )
 
     if not user:
-            raise HTTPException(
+
+        raise HTTPException(
             status_code=404,
             detail="User not found"
         )
 
     return {
+
+        "id": user.id,
 
         "clerk_user_id": user.clerk_user_id,
 
@@ -46,6 +48,8 @@ async def get_user_profile_data(
 
         "portfolio_url": user.portfolio_url,
 
+        "instagram_url": user.instagram_url,
+
         "reputation_score": user.reputation_score,
 
         "followers_count": user.followers_count,
@@ -55,21 +59,19 @@ async def get_user_profile_data(
         "posts_count": user.posts_count,
 
         "project_count": user.project_count,
-        "instagram_url": user.instagram_url,
 
         "location": user.location,
 
         "current_build": user.current_build,
 
         "joined_date": (
-                user.created_at.strftime("Joined %b %Y")
-                if user.created_at
-                else "Joined recently"
-            ),
-
+            user.created_at.strftime(
+                "Joined %b %Y"
+            )
+            if user.created_at
+            else "Joined recently"
+        ),
     }
-
-
 async def update_user_profile_data(
     db: AsyncSession,
     clerk_user_id: str,
@@ -115,3 +117,23 @@ async def update_user_profile_data(
     return user
 
 
+async def get_my_profile_data(
+    db: AsyncSession,
+    clerk_user_id: str,
+) -> get_profile_data:
+
+    result = await db.execute(
+        select(User).where(
+            User.clerk_user_id == clerk_user_id
+        )
+    )
+
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return user

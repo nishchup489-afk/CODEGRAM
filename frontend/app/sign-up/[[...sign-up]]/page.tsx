@@ -3,6 +3,7 @@
 import { SignUp } from '@clerk/nextjs'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import Link from 'next/link'
 
 export default function Page() {
 
@@ -551,6 +552,35 @@ export default function Page() {
                 },
               }}
             />
+            
+
+     <div className="mt-6">
+      <div className="h-px w-full bg-linear-to-r from-transparent via-zinc-800 to-transparent" />
+      <p className="mt-4 text-balance text-center text-[0.8rem] leading-6 text-zinc-500">
+        By continuing, you agree to Codegram&rsquo;s{" "}
+        <Link
+          href="/footer/terms"
+          className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"
+        >
+          Terms
+        </Link>{" "}
+        and acknowledge our{" "}
+        <Link
+          href="/footer/privacy"
+          className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"
+        >
+          Privacy Policy
+        </Link>{" "}
+        and follow our{" "}
+        <Link 
+        href="/footer/guidelines"
+        className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"
+>
+         Community Guidelines
+        </Link>
+        .
+      </p>
+    </div>
           </div>
         </div>
       </div>

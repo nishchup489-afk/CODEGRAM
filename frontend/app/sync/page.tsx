@@ -112,8 +112,10 @@ export default function SyncUserPage() {
 
                 if (!backendUser.onboarding_completed) {
                     router.push("/onboarding")
+                } else if (backendUser.username){
+                    router.push(`/u/${backendUser.username}`)
                 } else {
-                    router.push("/dashboard")
+                    router.push("/onboarding")
                 }
 
             } catch (err) {

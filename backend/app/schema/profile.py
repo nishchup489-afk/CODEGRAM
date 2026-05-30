@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import uuid 
 
 class get_profile_data(BaseModel):
+    id : uuid.UUID
 
     clerk_user_id: str
     username: str
