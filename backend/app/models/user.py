@@ -270,6 +270,12 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    feed_events = relationship(
+        "FeedEvent",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 
 # =========================================================
 # FOLLOWS

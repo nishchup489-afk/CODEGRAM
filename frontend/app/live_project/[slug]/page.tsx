@@ -4,12 +4,15 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 
+import { ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
 import api from "@/app/lib/api"
 
 import LiveProjectHero from "./components/hero/LiveProjectHero"
 import LiveProjectSetupPanel from "./components/setup/LiveProjectSetupPanel"
 import LatestCommitCard from "./components/commit/LatestCommitCard"
 import JournalSection from "./components/journal/JournalSection"
+import useCurrentUser from "@/app/lib/currentUser"
 
 import {
     GetLiveProject,
@@ -54,6 +57,8 @@ const emptyProject: GetLiveProject = {
 export default function GetLiveProjectPage() {
     const params = useParams()
     const slug = params.slug as string
+    const { currentUser } = useCurrentUser();
+    const router = useRouter()
 
     const { user, isLoaded } = useUser()
 
@@ -166,12 +171,48 @@ export default function GetLiveProjectPage() {
     return (
         <main className="min-h-screen bg-black px-4 py-6">
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+                <button
+                    onClick={() => router.push(`/u/${currentUser?.username}/live_projects`)}
+                    className="
+                        group
+                        mb-2
+                        flex
+                        w-fit
+                        items-center
+                        gap-2
+                        rounded-2xl
+                        border
+                        border-zinc-800
+                        bg-[#0f0f13]
+                        px-4
+                        py-3
+                        text-sm
+                        font-medium
+                        text-zinc-400
+                        transition-all
+                        hover:border-orange-500/20
+                        hover:bg-orange-500/3
+                        hover:text-orange-300
+                    "
+                >
+
+    <ArrowLeft
+        size={16}
+        className="
+            transition-transform
+            group-hover:-translate-x-1
+        "
+    />
+
+    Back
+
+</button>
                 <LiveProjectHero project={project} />
 
                 <LiveProjectSetupPanel
                     project={project}
                     setProject={setProject}
-                    isOwner={true}
+                    isOwner={currentUser?.id === project.user_id}
                     openEditModal={() => {}}
                 />
 

@@ -227,6 +227,12 @@ class LiveProject(Base):
         passive_deletes=True,
     )
 
+    feed_events = relationship(
+        "FeedEvent",
+        back_populates="live_project",
+        cascade="all, delete-orphan",
+    )
+
 
 # =========================================================
 # LIVE PROJECT JOURNALS
@@ -578,3 +584,142 @@ class LiveProjectJournalComment(Base):
     @property
     def is_reply(self):
         return self.parent_id is not None
+    
+
+
+class FeedEvent(Base):
+
+    __tablename__ = "feed_events"
+
+    __table_args__ = (
+
+        Index(
+            "ix_feed_events_created_at",
+            "created_at",
+        ),
+
+        Index(
+            "ix_feed_events_user_created_at",
+            "user_id",
+            "created_at",
+        ),
+
+        Index(
+            "ix_feed_events_project_created_at",
+            "live_project_id",
+            "created_at",
+        ),
+
+    )
+
+
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+
+
+
+    # WHO DID THE ACTION
+
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+
+
+    # RELATED LIVE PROJECT
+
+    live_project_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey(
+            "live_projects.id",
+            ondelete="CASCADE",
+        ),
+        nullable=True,
+        index=True,
+    )
+
+
+
+    # EVENT TYPE
+
+    event_type = Column(
+        String(50),
+        nullable=False,
+    )
+
+
+
+    # MAIN CONTENT
+
+    content = Column(
+        Text,
+        nullable=True,
+    )
+
+
+
+    # FLEXIBLE PAYLOAD
+
+    metadata = Column(
+        JSONB,
+        nullable=False,
+        default=dict,
+        server_default=text("'{}'::jsonb"),
+    )
+
+
+
+    # ENGAGEMENT
+
+    likes_count = Column(
+        Integer,
+        default=0,
+        server_default="0",
+        nullable=False,
+    )
+
+    comments_count = Column(
+        Integer,
+        default=0,
+        server_default="0",
+        nullable=False,
+    )
+
+
+
+    # VISIBILITY
+
+    is_public = Column(
+        Boolean,
+        default=True,
+        server_default="true",
+        nullable=False,
+    )
+
+
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+
+
+    # RELATIONSHIPS
+
+    user = relationship(
+        "User",
+        back_populates="feed_events",
+    )
+
+    live_project = relationship(
+        "LiveProject",
+    )
