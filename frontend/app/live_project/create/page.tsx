@@ -200,7 +200,7 @@ export default function CreateLiveProjectPage() {
                         {
                             step === 1 && (
 
-                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+                                <div className="rounded-4xl border border-zinc-800 bg-[#0d0d11] p-7">
 
                                     <div className="mb-8">
 
@@ -255,7 +255,7 @@ export default function CreateLiveProjectPage() {
                         {
                             step === 2 && (
 
-                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+                                <div className="rounded-4xl border border-zinc-800 bg-[#0d0d11] p-7">
 
                                     <div className="mb-8">
 
@@ -327,7 +327,7 @@ export default function CreateLiveProjectPage() {
                         {
                             step === 3 && (
 
-                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+                                <div className="rounded-4xl border border-zinc-800 bg-[#0d0d11] p-7">
 
                                     <div className="mb-8">
 
@@ -413,7 +413,7 @@ export default function CreateLiveProjectPage() {
                         {
                             step === 4 && (
 
-                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+                                <div className="rounded-4xl border border-zinc-800 bg-[#0d0d11] p-7">
 
                                     <div className="mb-8">
 

@@ -21,12 +21,11 @@ import type {
 
 interface LiveProjectSetupPanelProps {
 
+
     project: GetLiveProject
 
     setProject: React.Dispatch<
-        React.SetStateAction<
-            GetLiveProject | null
-        >
+        React.SetStateAction<GetLiveProject>
     >
 
     isOwner: boolean
@@ -106,26 +105,13 @@ export default function LiveProjectSetupPanel({
 
             setSaving(true)
 
-            setProject(
+            setProject((prev) => ({
 
-                (
-                    prev:
-                        GetLiveProject | null
-                ) => {
+                    ...prev,
 
-                    if (!prev) return prev
+                    status: statusValue,
 
-                    return {
-
-                        ...prev,
-
-                        status: statusValue,
-
-                    }
-
-                }
-
-            )
+                }))
 
         }
 

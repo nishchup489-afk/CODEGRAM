@@ -1,424 +1,222 @@
 "use client"
 
 import {
-    Clock,
-    Heart,
-    MessageCircle,
-    Flame,
+    AlertTriangle,
+    CheckCircle2,
+    Code2,
+    TrendingUp,
 } from "lucide-react"
 
-import RevealWrapper
-from "../animations/RevealWrapper"
-
-import CodeSnippetBlock
-from "./CodeSnippetBlock"
-
-import EntryReactionBar
-from "./EntryReactionBar"
-
-import type {
-    GetLiveProjectJournal
-} from "../../types/liveProject"
-
-
+import {
+    GetLiveProjectJournal,
+} from "@/app/lib/type/liveproject"
 
 interface JournalEntryCardProps {
 
-    entry: GetLiveProjectJournal
+    journal: GetLiveProjectJournal
 
 }
-
-
-
-const ENTRY_STYLES = {
-
-    progress: {
-        color:
-            "text-orange-300",
-        bg:
-            "bg-orange-500/10",
-        border:
-            "border-orange-500/20",
-    },
-
-    milestone: {
-        color:
-            "text-yellow-300",
-        bg:
-            "bg-yellow-500/10",
-        border:
-            "border-yellow-500/20",
-    },
-
-    bugfix: {
-        color:
-            "text-blue-300",
-        bg:
-            "bg-blue-500/10",
-        border:
-            "border-blue-500/20",
-    },
-
-    deployment: {
-        color:
-            "text-emerald-300",
-        bg:
-            "bg-emerald-500/10",
-        border:
-            "border-emerald-500/20",
-    },
-
-    architecture: {
-        color:
-            "text-purple-300",
-        bg:
-            "bg-purple-500/10",
-        border:
-            "border-purple-500/20",
-    },
-
-    announcement: {
-        color:
-            "text-pink-300",
-        bg:
-            "bg-pink-500/10",
-        border:
-            "border-pink-500/20",
-    },
-
-    failure: {
-        color:
-            "text-red-300",
-        bg:
-            "bg-red-500/10",
-        border:
-            "border-red-500/20",
-    },
-
-}
-
-
 
 export default function JournalEntryCard({
 
-    entry,
+    journal,
 
 }: JournalEntryCardProps) {
 
-
-
-    const style =
-        ENTRY_STYLES[
-            entry.entry_type as keyof typeof ENTRY_STYLES
-        ] || ENTRY_STYLES.progress
-
-
-
     return (
 
-        <RevealWrapper>
+        <article
+            className="
+                overflow-hidden
+                rounded-4xl
+                border
+                border-white/10
+                bg-[#0f0f13]
+            "
+        >
 
-            <article
-                className="
-                    group
-                    relative
-                    overflow-hidden
-                    rounded-[34px]
-                    border
-                    border-white/10
-                    bg-[#0b0b0b]
-                    p-6
-                    md:p-8
-                "
-            >
+            <div className="p-6">
 
-                {/* GLOW */}
-
-                <div
-                    className={`
-                        absolute
-                        -right-25
-                        -top-25
-                        h-65
-                        w-65
-                        rounded-full
-                        blur-3xl
-                        opacity-60
-                        ${style.bg}
-                    `}
-                />
-
-
-
-                {/* GRID */}
+                {/* HEADER */}
 
                 <div
                     className="
-                        absolute
-                        inset-0
-                        opacity-[0.03]
-                        bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]
-                        bg-size-[60px_60px]
+                        mb-6
+                        flex
+                        flex-wrap
+                        items-center
+                        justify-between
+                        gap-4
                     "
-                />
+                >
+
+                    <div className="flex items-center gap-3">
+
+                        <div
+                            className="
+                                rounded-full
+                                border
+                                border-orange-500/20
+                                bg-orange-500/10
+                                px-4
+                                py-2
+                                text-xs
+                                font-bold
+                                tracking-wide
+                                text-orange-300
+                            "
+                        >
+
+                            DAY {journal.day_number}
+
+                        </div>
 
 
+                        <div
+                            className="
+                                rounded-full
+                                border
+                                border-zinc-700
+                                bg-zinc-900
+                                px-4
+                                py-2
+                                text-xs
+                                font-medium
+                                capitalize
+                                text-zinc-400
+                            "
+                        >
 
-                <div className="relative z-10">
+                            {journal.entry_type}
 
-                    {/* TOP */}
+                        </div>
+
+                    </div>
+
+
 
                     <div
                         className="
                             flex
-                            flex-col
-                            gap-5
-                            md:flex-row
-                            md:items-start
-                            md:justify-between
+                            items-center
+                            gap-2
+                            rounded-full
+                            border
+                            border-emerald-500/20
+                            bg-emerald-500/10
+                            px-4
+                            py-2
+                            text-xs
+                            font-bold
+                            text-emerald-300
                         "
                     >
 
-                        <div>
+                        <TrendingUp size={14} />
 
-                            {/* TYPE */}
-
-                            <div
-                                className={`
-                                    inline-flex
-                                    items-center
-                                    gap-2
-                                    rounded-full
-                                    border
-                                    px-4
-                                    py-2
-                                    text-xs
-                                    font-semibold
-                                    uppercase
-                                    tracking-[0.25em]
-                                    ${style.border}
-                                    ${style.bg}
-                                    ${style.color}
-                                `}
-                            >
-
-                                <Flame size={14} />
-
-                                {entry.entry_type}
-
-                            </div>
-
-
-
-                            {/* DAY */}
-
-                            <h2
-                                className="
-                                    mt-5
-                                    text-4xl
-                                    font-black
-                                    tracking-tight
-                                    text-white
-                                "
-                            >
-                                Day {entry.day_number}
-                            </h2>
-
-
-
-                            {/* TIME */}
-
-                            <div
-                                className="
-                                    mt-3
-                                    flex
-                                    items-center
-                                    gap-2
-                                    text-sm
-                                    text-zinc-500
-                                "
-                            >
-
-                                <Clock size={16} />
-
-                                {new Date(
-                                    entry.created_at
-                                ).toLocaleString()}
-
-                            </div>
-
-                        </div>
-
-
-
-                        {/* PROGRESS */}
-
-                        <div
-                            className="
-                                rounded-[28px]
-                                border
-                                border-orange-500/20
-                                bg-orange-500/10
-                                px-6
-                                py-5
-                                text-center
-                            "
-                        >
-
-                            <p
-                                className="
-                                    text-xs
-                                    font-semibold
-                                    uppercase
-                                    tracking-[0.25em]
-                                    text-orange-300
-                                "
-                            >
-                                Progress
-                            </p>
-
-
-
-                            <h3
-                                className="
-                                    mt-2
-                                    text-4xl
-                                    font-black
-                                    tracking-tight
-                                    text-white
-                                "
-                            >
-                                {
-                                    entry.progress_percentage
-                                }
-                                %
-                            </h3>
-
-                        </div>
+                        {
+                            journal.progress_percentage
+                            ??
+                            0
+                        }%
 
                     </div>
 
-
-
-                    {/* CONTENT */}
-
-                    <div className="mt-8">
-
-                        <p
-                            className="
-                                whitespace-pre-wrap
-                                text-base
-                                leading-9
-                                text-zinc-300
-                            "
-                        >
-                            {entry.content}
-                        </p>
-
-                    </div>
+                </div>
 
 
 
-                    {/* CODE SNIPPETS */}
+                {/* CONTENT */}
 
-                    {entry.code_snippets &&
-                        entry.code_snippets.length > 0 && (
+                <div
+                    className="
+                        whitespace-pre-wrap
+                        text-[15px]
+                        leading-8
+                        text-zinc-300
+                    "
+                >
 
-                        <div className="mt-10 space-y-6">
+                    {journal.content}
 
-                            {entry.code_snippets.map(
-                                (
-                                    snippet,
-                                    index
-                                ) => (
-
-                                    <CodeSnippetBlock
-                                        key={index}
-                                        language={
-                                            snippet.language
-                                        }
-                                        code={
-                                            snippet.code
-                                        }
-                                    />
-
-                                )
-                            )}
-
-                        </div>
-
-                    )}
+                </div>
 
 
 
-                    {/* PROBLEMS */}
+                {/* PROBLEM SOLUTION */}
 
-                    {entry.problem_solutions &&
-                        entry.problem_solutions.length > 0 && (
+                {
+                    journal.problem_solutions &&
+                    journal.problem_solutions.length > 0 && (
 
-                        <div className="mt-10 space-y-5">
+                        <div className="mt-8 space-y-5">
 
-                            {entry.problem_solutions.map(
-                                (
-                                    item,
-                                    index
-                                ) => (
+                            {
+                                journal.problem_solutions.map(
 
-                                    <div
-                                        key={index}
-                                        className="
-                                            rounded-[28px]
-                                            border
-                                            border-white/10
-                                            bg-white/3
-                                            p-6
-                                        "
-                                    >
+                                    (
+                                        item: any,
+                                        index: number
+                                    ) => (
 
                                         <div
+                                            key={index}
                                             className="
-                                                grid
-                                                gap-6
-                                                lg:grid-cols-2
+                                                overflow-hidden
+                                                rounded-3xl
+                                                border
+                                                border-zinc-800
                                             "
                                         >
 
                                             {/* PROBLEM */}
 
-                                            <div>
+                                            <div
+                                                className="
+                                                    border-b
+                                                    border-red-500/10
+                                                    bg-red-500/3
+                                                    p-5
+                                                "
+                                            >
 
                                                 <div
                                                     className="
                                                         mb-3
-                                                        inline-flex
+                                                        flex
                                                         items-center
                                                         gap-2
-                                                        rounded-full
-                                                        border
-                                                        border-red-500/20
-                                                        bg-red-500/10
-                                                        px-4
-                                                        py-2
-                                                        text-xs
-                                                        font-semibold
-                                                        uppercase
-                                                        tracking-[0.25em]
-                                                        text-red-300
                                                     "
                                                 >
-                                                    Problem
+
+                                                    <AlertTriangle
+                                                        size={18}
+                                                        className="text-red-400"
+                                                    />
+
+                                                    <h3
+                                                        className="
+                                                            font-semibold
+                                                            text-red-300
+                                                        "
+                                                    >
+
+                                                        Problem
+
+                                                    </h3>
+
                                                 </div>
-
-
 
                                                 <p
                                                     className="
                                                         text-sm
                                                         leading-7
-                                                        text-zinc-400
+                                                        text-zinc-300
                                                     "
                                                 >
+
                                                     {item.problem}
+
                                                 </p>
 
                                             </div>
@@ -427,129 +225,202 @@ export default function JournalEntryCard({
 
                                             {/* SOLUTION */}
 
-                                            <div>
+                                            <div
+                                                className="
+                                                    bg-emerald-500/3
+                                                    p-5
+                                                "
+                                            >
 
                                                 <div
                                                     className="
                                                         mb-3
-                                                        inline-flex
+                                                        flex
                                                         items-center
                                                         gap-2
-                                                        rounded-full
-                                                        border
-                                                        border-emerald-500/20
-                                                        bg-emerald-500/10
-                                                        px-4
-                                                        py-2
-                                                        text-xs
-                                                        font-semibold
-                                                        uppercase
-                                                        tracking-[0.25em]
-                                                        text-emerald-300
                                                     "
                                                 >
-                                                    Solution
+
+                                                    <CheckCircle2
+                                                        size={18}
+                                                        className="text-emerald-400"
+                                                    />
+
+                                                    <h3
+                                                        className="
+                                                            font-semibold
+                                                            text-emerald-300
+                                                        "
+                                                    >
+
+                                                        Solution
+
+                                                    </h3>
+
                                                 </div>
-
-
 
                                                 <p
                                                     className="
                                                         text-sm
                                                         leading-7
-                                                        text-zinc-400
+                                                        text-zinc-300
                                                     "
                                                 >
+
                                                     {item.solution}
+
                                                 </p>
 
                                             </div>
 
                                         </div>
 
-                                    </div>
+                                    )
 
                                 )
-                            )}
+                            }
 
                         </div>
 
-                    )}
+                    )
+                }
 
 
 
-                    {/* MEDIA */}
+                {/* CODE SNIPPETS */}
 
-                    {entry.media_urls &&
-                        entry.media_urls.length > 0 && (
+                {
+                    journal.code_snippets &&
+                    journal.code_snippets.length > 0 && (
 
-                        <div
-                            className="
-                                mt-10
-                                grid
-                                grid-cols-1
-                                gap-5
-                                md:grid-cols-2
-                            "
-                        >
+                        <div className="mt-8 space-y-4">
 
-                            {entry.media_urls.map(
-                                (url, index) => (
+                            {
+                                journal.code_snippets.map(
 
-                                    <div
-                                        key={index}
-                                        className="
-                                            overflow-hidden
-                                            rounded-[28px]
-                                            border
-                                            border-white/10
-                                            bg-black/30
-                                        "
-                                    >
+                                    (
+                                        snippet: string,
+                                        index: number
+                                    ) => (
 
-                                        <img
-                                            src={url}
-                                            alt="journal media"
+                                        <div
+                                            key={index}
                                             className="
-                                                h-full
-                                                w-full
-                                                object-cover
-                                                transition-transform
-                                                duration-500
-                                                group-hover:scale-[1.03]
+                                                overflow-hidden
+                                                rounded-3xl
+                                                border
+                                                border-zinc-800
+                                                bg-black
                                             "
-                                        />
+                                        >
 
-                                    </div>
+                                            <div
+                                                className="
+                                                    flex
+                                                    items-center
+                                                    gap-2
+                                                    border-b
+                                                    border-zinc-800
+                                                    bg-zinc-950
+                                                    px-5
+                                                    py-3
+                                                    text-xs
+                                                    text-zinc-500
+                                                "
+                                            >
+
+                                                <Code2 size={14} />
+
+                                                Code Snippet
+
+                                            </div>
+
+                                            <pre
+                                                className="
+                                                    overflow-x-auto
+                                                    p-5
+                                                    text-sm
+                                                    leading-7
+                                                    text-zinc-300
+                                                "
+                                            >
+
+                                                <code>
+                                                    {snippet}
+                                                </code>
+
+                                            </pre>
+
+                                        </div>
+
+                                    )
 
                                 )
-                            )}
+                            }
 
                         </div>
 
-                    )}
+                    )
+                }
 
 
 
-                    {/* FOOTER */}
+                {/* FOOTER */}
 
-                    <div className="mt-10">
+                <div
+                    className="
+                        mt-8
+                        flex
+                        flex-wrap
+                        items-center
+                        justify-between
+                        gap-4
+                        border-t
+                        border-zinc-800
+                        pt-5
+                        text-xs
+                        text-zinc-500
+                    "
+                >
 
-                        <EntryReactionBar
-                            likes_count={
-                                entry.likes_count
-                            }
-                            comments_count={
-                                entry.comments_count
-                            }
-                        />
+                    <span>
+
+                        {
+                            new Date(
+                                journal.created_at
+                            ).toLocaleString()
+                        }
+
+                    </span>
+
+
+
+                    <div className="flex items-center gap-4">
+
+                        <span>
+                            {
+                                journal.likes_count
+                                ??
+                                0
+                            } likes
+                        </span>
+
+                        <span>
+                            {
+                                journal.comments_count
+                                ??
+                                0
+                            } comments
+                        </span>
 
                     </div>
 
                 </div>
 
-            </article>
+            </div>
 
-        </RevealWrapper>
+        </article>
+
     )
+
 }
