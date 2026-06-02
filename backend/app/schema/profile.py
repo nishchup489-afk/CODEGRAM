@@ -1,5 +1,6 @@
-from pydantic import BaseModel 
-import uuid 
+from pydantic import BaseModel, ConfigDict 
+import uuid
+from uuid import UUID
 
 class get_profile_data(BaseModel):
     id : uuid.UUID
@@ -39,3 +40,18 @@ class update_profile_data(BaseModel):
     github_url: str | None
     linkedin_url: str | None
     portfolio_url: str | None
+
+
+class PublicUser(BaseModel):
+
+    id: UUID
+
+    username: str
+
+    display_name: str | None
+
+    avatar_url: str | None
+
+    current_build: str | None
+
+    model_config = ConfigDict(from_attributes=True)

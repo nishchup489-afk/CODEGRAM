@@ -263,34 +263,53 @@ def get_project_slug(project_title):
     return project_slug or "project"
 
 
-async def slug_exists(db, slug):
+async def slug_exists(
+    db,
+    model,
+    slug,
+    user_id=None,
+):
 
-    result = await db.execute(
-        select(Project.id).where(Project.slug == slug)
+    query = select(model.id).where(
+        model.slug == slug
     )
+
+    if user_id:
+
+        query = query.where(
+            model.user_id == user_id
+        )
+
+    result = await db.execute(query)
 
     return result.first() is not None
 
 
-async def generate_unique_slug(db, project_title):
+
+async def generate_unique_slug(
+    db,
+    title,
+    model,
+    user_id=None,
+):
     """
     Returns a readable, collision-free slug.
 
-    The clean slug is tried first. Only if it is already
-    taken is cryptographic entropy appended. The database
-    `unique=True` constraint remains the real guarantee —
-    this just keeps the URL clean in the common case and
-    avoids most insert-time conflicts.
+    Clean slug first.
+    Entropy suffix only on collision.
     """
 
-    base = get_project_slug(project_title)
+    base = get_project_slug(title)
 
     slug = base
 
-    while await slug_exists(db, slug):
+    while await slug_exists(
+        db=db,
+        model=model,
+        slug=slug,
+        user_id=user_id,
+    ):
 
-        # secrets, not random: cryptographically strong.
-        # 3 bytes -> 6 hex chars, e.g. "villa-russo-cafe-a3f9c1"
         suffix = secrets.token_hex(3)
 
         slug = f"{base}-{suffix}"

@@ -78,7 +78,7 @@ const STATUS_META: Record<
 const FAQS = [
     {
         q: 'How does GitHub sync work?',
-        a: 'Once you connect GitHub from Settings → GitHub, Codegram can sync your selected repositories and connect them to your projects.',
+        a: 'Once you connect GitHub from Settings → GitHub, DevManiac can sync your selected repositories and connect them to your projects.',
     },
     {
         q: 'What counts as a shipped project?',
@@ -281,7 +281,7 @@ function ReportSection() {
                 </Link>
 
                 <a
-                    href='mailto:support@codegram.dev'
+                    href='mailto:support@DevManiac.dev'
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='blue'>
@@ -290,7 +290,7 @@ function ReportSection() {
 
                     <CardText
                         title='Email us'
-                        description='Prefer freeform? Write to support@codegram.dev.'
+                        description='Prefer freeform? Write to support@DevManiac.dev.'
                     />
                 </a>
             </div>
@@ -373,7 +373,7 @@ function EscalationSection() {
                 </button>
 
                 <a
-                    href='mailto:support@codegram.dev'
+                    href='mailto:support@DevManiac.dev'
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='blue'>
@@ -394,12 +394,12 @@ function OtherSupportSection() {
     const links = [
         {
             label: 'Documentation',
-            href: 'https://docs.codegram.dev',
+            href: 'https://docs.DevManiac.dev',
             external: true,
         },
         {
             label: 'Status page',
-            href: 'https://status.codegram.dev',
+            href: 'https://status.DevManiac.dev',
             external: true,
         },
         {
@@ -409,7 +409,7 @@ function OtherSupportSection() {
         },
         {
             label: 'Community Discord',
-            href: 'https://discord.gg/codegram',
+            href: 'https://discord.gg/DevManiac',
             external: true,
         },
     ]

@@ -212,7 +212,7 @@ export default function Page() {
               marginBottom: 48,
             }}
           >
-            CODEGRAM is where developers share projects,
+            DevManiac is where developers share projects,
             build reputation, and connect with people
             who actually ship products.
           </p>
@@ -251,7 +251,7 @@ export default function Page() {
               }}
             >
               <p style={{ color: '#52525b' }}>
-                $ codegram auth:start
+                $ DevManiac auth:start
               </p>
 
               <p style={{ color: '#4ade80' }}>

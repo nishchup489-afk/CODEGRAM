@@ -80,8 +80,8 @@ export default function DashboardLayout({
         },
 
         {
-            name: 'Notifications',
-            href: '/notifications',
+            name: 'Live Projects',
+            href: `/u/${currentUser.username}/live_projects`,
             icon: Bell,
         },
 
@@ -263,7 +263,7 @@ export default function DashboardLayout({
                                 text-transparent
                             "
                         >
-                            CODEGRAM
+                            DevManiac
                         </h1>
 
 

@@ -191,7 +191,7 @@ export default function ProfileSettingsPage() {
                 </h1>
 
                 <p className='mt-2 text-sm text-zinc-400'>
-                    Customize your developer identity on Codegram.
+                    Customize your developer identity on DevManiac.
                 </p>
 
             </div>

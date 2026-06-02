@@ -271,6 +271,6 @@ class SupportService:
         SendGrid) or push to a background queue. Keep it OUT of the request
         path once you have real volume.
         """
-        # TODO: send email to support@codegram.dev with ticket summary
+        # TODO: send email to support@DevManiac.dev with ticket summary
         # TODO: optionally push to a Slack webhook for fast triage
         pass

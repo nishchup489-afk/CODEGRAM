@@ -417,13 +417,13 @@ async def get_existing_project(
 
 async def get_projects(
     db: AsyncSession,
-    limit: int = 20,    # The limit Nami gave. 3 for islands , 20 for our codegram
+    limit: int = 20,    # The limit Nami gave. 3 for islands , 20 for our DevManiac
     cursor: datetime | None = None, # like pointer, which point i am   
                                     # This is Nami's pointer flag. she in a island , she add the flag
     current_user : User | None = None ,
 ):
     
-    # Among all islands Nami selecting closest 3 ( 20 for codegram ) islands
+    # Among all islands Nami selecting closest 3 ( 20 for DevManiac ) islands
     query = (    # select project , order by 'created_at descending' , limit by a number like 20
         select(Project)
         .options(selectinload(Project.user))

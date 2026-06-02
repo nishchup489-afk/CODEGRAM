@@ -334,7 +334,7 @@ export default function Loading() {
                             text-transparent
                         "
                     >
-                        CODEGRAM
+                        DevManiac
                     </h1>
 
 

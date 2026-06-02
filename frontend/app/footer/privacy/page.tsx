@@ -1,6 +1,6 @@
 // app/privacy/page.tsx
 //
-// Codegram — Privacy Policy
+// DevManiac — Privacy Policy
 // ---------------------------------------------------------------------------
 // Server component. Static legal content, so no "use client" needed.
 // Matches the Terms page: same fonts, stone + burnt-orange system, TOC, helpers.
@@ -21,14 +21,14 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 const LAST_UPDATED = "May 28, 2026";
-const ENTITY = "[Codegram / Your Legal Entity Name]";
-const CONTACT_EMAIL = "[privacy@codegram.dev]";
+const ENTITY = "[DevManiac / Your Legal Entity Name]";
+const CONTACT_EMAIL = "[privacy@DevManiac.dev]";
 const GOVERNING_STATE = "the State of New York, USA";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy · Codegram",
+  title: "Privacy Policy · DevManiac",
   description:
-    "How Codegram collects, uses, shares, and protects your information.",
+    "How DevManiac collects, uses, shares, and protects your information.",
 };
 
 type Section = {
@@ -44,9 +44,9 @@ const sections: Section[] = [
     body: (
       <>
         <P>
-          This Privacy Policy explains how {ENTITY} (&ldquo;Codegram,&rdquo;
+          This Privacy Policy explains how {ENTITY} (&ldquo;DevManiac,&rdquo;
           &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses,
-          shares, and protects your information when you use the Codegram website,
+          shares, and protects your information when you use the DevManiac website,
           applications, and services (the &ldquo;Service&rdquo;).
         </P>
         <P>
@@ -158,7 +158,7 @@ const sections: Section[] = [
           </LI>
           <LI>
             <Strong>Legal and safety.</Strong> When required by law, or to protect
-            the rights, safety, and security of Codegram, our users, or the public.
+            the rights, safety, and security of DevManiac, our users, or the public.
           </LI>
           <LI>
             <Strong>Business transfers.</Strong> In connection with a merger,
@@ -306,13 +306,13 @@ export default function PrivacyPage() {
             href="/"
             className="font-(family-name:--font-jetbrains-mono) text-xs uppercase tracking-[0.2em] text-orange-500/90 transition-colors hover:text-orange-400"
           >
-            ← codegram
+            ← DevManiac
           </Link>
           <h1 className="mt-6 font-(family-name:--font-instrument-serif) text-5xl leading-tight text-stone-50 sm:text-6xl">
             Privacy Policy
           </h1>
           <p className="mt-4 max-w-xl text-stone-400">
-            How Codegram collects, uses, shares, and protects your information.
+            How DevManiac collects, uses, shares, and protects your information.
           </p>
           <p className="mt-6 font-(family-name:--font-jetbrains-mono) text-xs uppercase tracking-[0.15em] text-stone-500">
             Last updated · {LAST_UPDATED}

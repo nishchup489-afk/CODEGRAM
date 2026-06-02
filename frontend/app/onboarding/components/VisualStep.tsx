@@ -330,7 +330,7 @@ export default function VisualStep({
                             Your banner and avatar
                             become part of your
                             developer identity across
-                            CODEGRAM.
+                            DevManiac.
                         </p>
 
                     </div>

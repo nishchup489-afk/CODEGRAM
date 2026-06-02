@@ -246,6 +246,30 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    live_projects = relationship(
+        "LiveProject" , 
+        back_populates="user" , 
+        cascade="all , delete-orphan"
+    )
+
+    live_project_journals = relationship(
+        "LiveProjectJournal" , 
+        back_populates="user" , 
+        cascade="all , delete-orphan"
+    )
+
+    live_project_journal_likes = relationship(
+    "LiveProjectJournalLike",
+    back_populates="user",
+    cascade="all, delete-orphan",
+    )
+
+    live_project_journal_comments = relationship(
+        "LiveProjectJournalComment",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 
 # =========================================================
 # FOLLOWS
@@ -312,19 +336,38 @@ class UserStackStat(Base):
         nullable=False,
     )
 
+    live_projects_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+
+    journal_entries_count = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+
+    score = Column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+
+    level = Column(
+        Integer,
+        default=1,
+        nullable=False,
+    )
+
+    last_used_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-    )
-
-    __table_args__ = (
-
-        UniqueConstraint(
-            "user_id",
-            "stack_name",
-            name="unique_user_stack",
-        ),
-
     )
 
     user = relationship(

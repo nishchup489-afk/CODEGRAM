@@ -106,7 +106,7 @@ export default function IdentityStep({
                     "
                 >
                     This is how developers will
-                    recognize you across CODEGRAM.
+                    recognize you across DevManiac.
                     Keep it clean, memorable,
                     and authentic.
                 </p>

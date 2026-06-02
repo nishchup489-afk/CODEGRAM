@@ -253,7 +253,7 @@ export default function SyncUserPage() {
                             text-transparent
                         "
                     >
-                        CODEGRAM
+                        DevManiac
                     </h1>
 
                     <p

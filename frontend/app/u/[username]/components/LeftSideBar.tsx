@@ -34,6 +34,8 @@ type LeftSidebarProps = {
     username: string
 }
 
+import useCurrentUser from "@/app/lib/currentUser"
+
 
 
 export default function LeftSidebar({
@@ -49,6 +51,8 @@ export default function LeftSidebar({
     const [showDPModal, setShowDPModal] = useState(false)
     const [ showNewPostModal , setShowNewPostModal ] = useState(false)
 
+    const { currentUser } = useCurrentUser();
+
     const options = [
 
     {
@@ -62,14 +66,14 @@ export default function LeftSidebar({
         type: "project",
         title: "Project",
         description: "Show something you shipped",
-        href: "/create/project",
+        href: `/u/${currentUser?.username}/create/project`,
     },
 
     {
         type: "live",
         title: "Live Project",
         description: "Share what you're building now",
-        href: "/create/live",
+        href: "/live_project/create",
     },
 
 ]
@@ -96,6 +100,7 @@ export default function LeftSidebar({
                     bg-black
                     px-4
                     py-6
+                    z-999
                 "
             >
 
@@ -115,7 +120,7 @@ export default function LeftSidebar({
                             text-transparent
                         "
                     >
-                        CODEGRAM
+                        DevManiac
                     </h1>
 
                 </div>

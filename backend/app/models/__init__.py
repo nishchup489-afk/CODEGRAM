@@ -7,3 +7,11 @@ from app.models.post import (
 )
 from app.models.comment import Comment
 from app.models.project import Project
+from app.core.database import Base
+
+from app.models.LiveProject import (
+    LiveProject,
+    LiveProjectJournal,
+    LiveProjectJournalLike,
+    LiveProjectJournalComment,
+)

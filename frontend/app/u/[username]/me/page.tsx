@@ -8,6 +8,7 @@ import ProfileHeader from "../components/ProfileHeader"
 import { useUser  } from "@clerk/nextjs"
 import { useParams } from "next/navigation"
 import { ProfileData } from "@/types/profile"
+import StacksAnalytics from "./components/StacksAnalytics"
 
 
 export default function Profile() {
@@ -111,12 +112,15 @@ export default function Profile() {
             </div>
 
             <div className="body">
+                {
+                    activeTab === "stacks" && <StacksAnalytics />
+                }
+
 
 {/*                 
                     {activeTab === "posts" && <PostsPreview />}
                     {activeTab === "projects" && <ProjectsPreview />}
                     {activeTab === "live" && <LiveProjectsPreview />}
-                    {activeTab === "stacks" && <StacksAnalytics />}
                    { activeTab === "contribution" && <ContributionPreview />}
                 */}
 

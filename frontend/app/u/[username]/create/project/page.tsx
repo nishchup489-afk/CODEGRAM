@@ -21,6 +21,7 @@ import api from "@/app/lib/api"
 import useCurrentUser from "@/app/lib/currentUser"
 
 import { uploadToCloudinary } from "@/app/lib/cloudinary"
+import { useRouter } from "next/navigation"
 
 
 
@@ -50,6 +51,8 @@ export default function CreateProject() {
 
 
     const containerRef = useRef<HTMLDivElement>(null)
+
+    const router = useRouter();
 
 
 
@@ -389,7 +392,7 @@ export default function CreateProject() {
 
                         <p className="mt-6 max-w-175 text-sm leading-8 text-zinc-400 sm:text-base">
 
-                            Codegram validates repositories,
+                            DevManiac validates repositories,
                             verifies deployments,
                             extracts stack intelligence,
                             and turns projects into proof.
@@ -406,7 +409,7 @@ export default function CreateProject() {
 
                         <button
                             onClick={() =>
-                                setProjectType("live")
+                                router.push(`/live_project/create`)
                             }
                             className={`flex-1 rounded-3xl border p-6 text-left transition-all duration-300 ${
 
@@ -528,7 +531,7 @@ export default function CreateProject() {
                                             e.target.value
                                         )
                                     }
-                                    placeholder="Codegram"
+                                    placeholder="DevManiac"
                                     className="w-full rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none transition-all focus:border-orange-500"
                                 />
 

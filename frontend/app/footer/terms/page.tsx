@@ -1,6 +1,6 @@
 // app/terms/page.tsx
 //
-// Codegram — Terms of Service
+// DevManiac — Terms of Service
 // ---------------------------------------------------------------------------
 // Server component. Static legal content, so no "use client" needed.
 //
@@ -23,16 +23,16 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 const LAST_UPDATED = "May 28, 2026";
-const ENTITY = "[Codegram / Your Legal Entity Name]";
-const CONTACT_EMAIL = "[legal@codegram.dev]"; // [TODO : add real email]
-const DMCA_EMAIL = "[dmca@codegram.dev]";
+const ENTITY = "[DevManiac / Your Legal Entity Name]";
+const CONTACT_EMAIL = "[legal@DevManiac.dev]"; // [TODO : add real email]
+const DMCA_EMAIL = "[dmca@DevManiac.dev]";
 const GOVERNING_STATE = "the State of New York, USA";
 const VENUE = "the state and federal courts located in [New York County], New York";
 
 export const metadata: Metadata = {
-  title: "Terms of Service · Codegram",
+  title: "Terms of Service · DevManiac",
   description:
-    "The terms that govern your use of Codegram — the platform where your build history is your portfolio.",
+    "The terms that govern your use of DevManiac — the platform where your build history is your portfolio.",
 };
 
 type Section = {
@@ -49,9 +49,9 @@ const sections: Section[] = [
       <>
         <P>
           These Terms of Service (the &ldquo;Terms&rdquo;) form a binding agreement
-          between you and {ENTITY} (&ldquo;Codegram,&rdquo; &ldquo;we,&rdquo;
+          between you and {ENTITY} (&ldquo;DevManiac,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us,&rdquo; or &ldquo;our&rdquo;) and govern your access to and use
-          of the Codegram website, applications, and services (together, the
+          of the DevManiac website, applications, and services (together, the
           &ldquo;Service&rdquo;).
         </P>
         <P>
@@ -152,7 +152,7 @@ const sections: Section[] = [
     body: (
       <>
         <P>
-          Because Codegram centers on code and build history, you make the following
+          Because DevManiac centers on code and build history, you make the following
           representations every time you post:
         </P>
         <List>
@@ -172,7 +172,7 @@ const sections: Section[] = [
           </LI>
         </List>
         <P>
-          You agree to indemnify and hold Codegram harmless from any claim arising
+          You agree to indemnify and hold DevManiac harmless from any claim arising
           out of Your Content or your breach of these representations, as described
           in Section 11.
         </P>
@@ -218,11 +218,11 @@ const sections: Section[] = [
   },
   {
     id: "our-ip",
-    title: "7. Codegram&rsquo;s Intellectual Property",
+    title: "7. DevManiac&rsquo;s Intellectual Property",
     body: (
       <P>
-        The Service itself — including its software, design, layout, the Codegram
-        name and logo, and all related marks — is owned by Codegram or its licensors
+        The Service itself — including its software, design, layout, the DevManiac
+        name and logo, and all related marks — is owned by DevManiac or its licensors
         and is protected by intellectual-property laws. Except for the rights
         expressly granted to you here, nothing in these Terms transfers any of those
         rights to you. You may not use our branding without prior written permission.
@@ -269,7 +269,7 @@ const sections: Section[] = [
     title: "10. Limitation of Liability",
     body: (
       <P>
-        TO THE MAXIMUM EXTENT PERMITTED BY LAW, CODEGRAM AND ITS AFFILIATES WILL NOT
+        TO THE MAXIMUM EXTENT PERMITTED BY LAW, DevManiac AND ITS AFFILIATES WILL NOT
         BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
         DAMAGES, OR ANY LOSS OF DATA, PROFITS, OR GOODWILL, ARISING FROM OR RELATED
         TO YOUR USE OF THE SERVICE. OUR TOTAL LIABILITY FOR ANY CLAIM WILL NOT EXCEED
@@ -284,7 +284,7 @@ const sections: Section[] = [
     title: "11. Indemnification",
     body: (
       <P>
-        You agree to defend, indemnify, and hold harmless Codegram and its officers,
+        You agree to defend, indemnify, and hold harmless DevManiac and its officers,
         employees, and agents from and against any claims, damages, liabilities, and
         expenses (including reasonable legal fees) arising out of Your Content, your
         use of the Service, or your breach of these Terms — including any claim that
@@ -300,7 +300,7 @@ const sections: Section[] = [
         <P>
           We respect intellectual-property rights and respond to valid notices under
           the Digital Millennium Copyright Act (DMCA). If you believe content on
-          Codegram infringes your copyright, send a notice to our designated agent at{" "}
+          DevManiac infringes your copyright, send a notice to our designated agent at{" "}
           {DMCA_EMAIL} including: identification of the work, the infringing
           material&rsquo;s location, your contact information, a good-faith
           statement, a statement of accuracy under penalty of perjury, and your
@@ -365,13 +365,13 @@ export default function TermsPage() {
             href="/"
             className="font-(family-name:--font-jetbrains-mono) text-xs uppercase tracking-[0.2em] text-orange-500/90 transition-colors hover:text-orange-400"
           >
-            ← codegram
+            ← DevManiac
           </Link>
           <h1 className="mt-6 font-(family-name:--font-instrument-serif) text-5xl leading-tight text-stone-50 sm:text-6xl">
             Terms of Service
           </h1>
           <p className="mt-4 max-w-xl text-stone-400">
-            The terms that govern your use of Codegram — where your build history is
+            The terms that govern your use of DevManiac — where your build history is
             your portfolio.
           </p>
           <p className="mt-6 font-(family-name:--font-jetbrains-mono) text-xs uppercase tracking-[0.15em] text-stone-500">
@@ -424,7 +424,7 @@ export default function TermsPage() {
 
             <p className="mt-3 text-sm leading-relaxed text-stone-400">
                 These Terms are provided for informational purposes and may be updated
-                as Codegram evolves. Continued use of the platform constitutes acceptance
+                as DevManiac evolves. Continued use of the platform constitutes acceptance
                 of the latest version of these Terms.
             </p>
             </footer>

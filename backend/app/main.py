@@ -7,6 +7,7 @@ from app.router.dashboard_layout import router as dashboard_router
 from app.router.profile import router as profile_router
 from app.router.project import router as project_router
 from app.router.bookmark import router as bookmark_router
+from app.router.live_projects import router as live_project_router
 
 app = FastAPI()
 
@@ -16,6 +17,8 @@ app.include_router(dashboard_router)
 app.include_router(profile_router)
 app.include_router(project_router)
 app.include_router(bookmark_router)
+app.include_router(live_project_router)
+
 
 origins = [
     "http://localhost:3000",  
@@ -31,4 +34,4 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "CODEGRAM API"}
+    return {"message": "DevManiac API"}

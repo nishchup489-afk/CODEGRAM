@@ -20,8 +20,8 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import logo from "@/public/codegram_logo_full.png";
-import dashboardPreview from "@/public/codegram_dashboard.png";
+import logo from "@/public/DevManiac_logo_full.png";
+import dashboardPreview from "@/public/DevManiac_dashboard.png";
 
 /* ─────────────────────────────────────────────
    DATA
@@ -110,7 +110,7 @@ const testimonials = [
   },
   {
     quote:
-      "My Codegram profile shows 8 shipped projects with exact stacks. No recruiter asks me to prove my skills anymore — they can just see it.",
+      "My DevManiac profile shows 8 shipped projects with exact stacks. No recruiter asks me to prove my skills anymore — they can just see it.",
     name: "Jake T.",
     role: "Self-taught Dev",
     stack: "Rust · Svelte",
@@ -274,7 +274,7 @@ export default function Page() {
               <Link href="/" className="shrink-0">
                 <Image
                   src={logo}
-                  alt="Codegram"
+                  alt="DevManiac"
                   width={180}
                   height={48}
                   priority
@@ -333,7 +333,7 @@ export default function Page() {
               Twitter tracks your takes.
               <br />
               <span className="text-[#E8560A]">
-                Codegram tracks your journey.
+                DevManiac tracks your journey.
               </span>
             </h1>
 
@@ -398,7 +398,7 @@ export default function Page() {
                 <div className="h-3 w-3 rounded-full bg-[#28c840]" />
 
                 <div className="ml-4 flex h-7 items-center rounded-md border border-white/5 bg-black/35 px-4 font-mono text-xs text-zinc-600">
-                  codegram.dev/feed
+                  DevManiac.dev/feed
                 </div>
 
                 <div className="ml-auto hidden items-center gap-2 text-xs text-zinc-600 md:flex">
@@ -411,7 +411,7 @@ export default function Page() {
               <div className="relative z-10">
                 <Image
                   src={dashboardPreview}
-                  alt="Codegram dashboard"
+                  alt="DevManiac dashboard"
                   priority
                   className="h-auto w-full object-cover brightness-[1.04]"
                 />
@@ -650,7 +650,7 @@ export default function Page() {
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-6 text-sm text-zinc-500 md:flex-row lg:px-8">
           <Image
             src={logo}
-            alt="Codegram"
+            alt="DevManiac"
             width={150}
             height={40}
             className="h-8 w-auto object-contain opacity-90"
@@ -668,7 +668,7 @@ export default function Page() {
             ))}
           </div>
 
-          <p>2026 Codegram. Built in public.</p>
+          <p>2026 DevManiac. Built in public.</p>
         </div>
       </footer>
     </main>

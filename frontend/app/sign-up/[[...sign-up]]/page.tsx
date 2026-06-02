@@ -214,7 +214,7 @@ export default function Page() {
               marginBottom: 48,
             }}
           >
-            Create your CODEGRAM profile, showcase your projects,
+            Create your DevManiac profile, showcase your projects,
             and connect with developers who actually build.
           </p>
 
@@ -263,7 +263,7 @@ export default function Page() {
               </p>
 
               <p style={{ color: '#E8560A' }}>
-                → welcome to CODEGRAM
+                → welcome to DevManiac
               </p>
             </div>
           </div>
@@ -557,7 +557,7 @@ export default function Page() {
      <div className="mt-6">
       <div className="h-px w-full bg-linear-to-r from-transparent via-zinc-800 to-transparent" />
       <p className="mt-4 text-balance text-center text-[0.8rem] leading-6 text-zinc-500">
-        By continuing, you agree to Codegram&rsquo;s{" "}
+        By continuing, you agree to DevManiac&rsquo;s{" "}
         <Link
           href="/footer/terms"
           className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"

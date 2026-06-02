@@ -285,7 +285,7 @@ export default function NotFound() {
                         text-zinc-700
                     "
                 >
-                    CODEGRAM • BUILD • SHIP • REPEAT
+                    DevManiac • BUILD • SHIP • REPEAT
                 </p>
 
             </div>

@@ -111,7 +111,7 @@ export default function LeftPanel() {
                         text-zinc-400
                     "
                 >
-                    CODEGRAM is where developers
+                    DevManiac is where developers
                     showcase projects, build reputation,
                     and connect with people who
                     actually ship things.
@@ -197,7 +197,7 @@ export default function LeftPanel() {
                             size={16}
                             className="text-red-400"
                         />
-                        preparing CODEGRAM workspace
+                        preparing DevManiac workspace
                     </div>
 
                     <div

@@ -211,7 +211,7 @@ export default function SocialStep({
 
                             <ArrowRight size={16} />
 
-                            preparing CODEGRAM launch sequence
+                            preparing DevManiac launch sequence
 
                         </div>
 
@@ -545,7 +545,7 @@ export default function SocialStep({
                     {
                         loading
                             ? 'Initializing profile...'
-                            : 'Enter CODEGRAM'
+                            : 'Enter DevManiac'
                     }
 
                     {

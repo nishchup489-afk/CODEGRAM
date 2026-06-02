@@ -211,7 +211,7 @@ export default function Loading() {
                                 text-orange-400/80
                             "
                         >
-                            CODEGRAM
+                            DevManiac
                         </p>
 
                     </div>

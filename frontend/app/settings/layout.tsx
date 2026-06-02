@@ -114,7 +114,7 @@ export default function SettingsLayout({
                             </h1>
 
                             <p className='text-xs text-zinc-500'>
-                                Manage your Codegram account
+                                Manage your DevManiac account
                             </p>
 
                         </div>
@@ -185,7 +185,7 @@ export default function SettingsLayout({
                             </h1>
 
                             <p className='mt-2 text-sm text-zinc-500'>
-                                Customize your Codegram experience.
+                                Customize your DevManiac experience.
                             </p>
 
                         </div>
@@ -279,7 +279,7 @@ export default function SettingsLayout({
                             <div className='rounded-2xl border border-white/10 bg-white/[0.03] p-4'>
 
                                 <p className='text-sm font-semibold'>
-                                    Codegram
+                                    DevManiac
                                 </p>
 
                                 <p className='mt-1 text-xs leading-relaxed text-zinc-500'>

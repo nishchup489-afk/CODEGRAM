@@ -1,6 +1,6 @@
 // app/community/page.tsx
 //
-// Codegram — Community Guidelines
+// DevManiac — Community Guidelines
 // ---------------------------------------------------------------------------
 // Server component. Matches the Terms & Privacy pages: same fonts, stone +
 // burnt-orange system, TOC, helpers. Voice is warmer and more direct — these
@@ -17,12 +17,12 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 const LAST_UPDATED = "May 28, 2026";
-const REPORT_EMAIL = "[report@codegram.dev]";
+const REPORT_EMAIL = "[report@DevManiac.dev]";
 
 export const metadata: Metadata = {
-  title: "Community Guidelines · Codegram",
+  title: "Community Guidelines · DevManiac",
   description:
-    "How we keep Codegram a place worth building in public — the house rules for our community.",
+    "How we keep DevManiac a place worth building in public — the house rules for our community.",
 };
 
 type Section = {
@@ -34,11 +34,11 @@ type Section = {
 const sections: Section[] = [
   {
     id: "what-for",
-    title: "1. What Codegram Is For",
+    title: "1. What DevManiac Is For",
     body: (
       <>
         <P>
-          Codegram exists so your real work can speak for you. Here, your build
+          DevManiac exists so your real work can speak for you. Here, your build
           history <Strong>is</Strong> your portfolio — the commits, the projects,
           the messy middle, the things you shipped. That only works if the
           community treats the place with care.
@@ -164,7 +164,7 @@ const sections: Section[] = [
             data.
           </LI>
           <LI>
-            If you find a security issue in Codegram itself, please report it
+            If you find a security issue in DevManiac itself, please report it
             privately to {REPORT_EMAIL} rather than posting it publicly.
           </LI>
         </List>
@@ -177,7 +177,7 @@ const sections: Section[] = [
     body: (
       <>
         <P>
-          Reputation on Codegram should be earned. Don&rsquo;t shortcut it.
+          Reputation on DevManiac should be earned. Don&rsquo;t shortcut it.
         </P>
         <List>
           <LI>
@@ -200,7 +200,7 @@ const sections: Section[] = [
     title: "8. Keep It On-Topic &amp; Appropriate",
     body: (
       <P>
-        Codegram is a developer community. Keep content relevant to building and
+        DevManiac is a developer community. Keep content relevant to building and
         learning. No sexually explicit material, no content promoting violence or
         illegal activity, and no flooding feeds with off-topic noise. We&rsquo;d
         rather have a focused community than a loud one.
@@ -250,13 +250,13 @@ export default function CommunityGuidelinesPage() {
             href="/"
             className="font-(family-name:--font-jetbrains-mono) text-xs uppercase tracking-[0.2em] text-orange-500/90 transition-colors hover:text-orange-400"
           >
-            ← codegram
+            ← DevManiac
           </Link>
           <h1 className="mt-6 font-(family-name:--font-instrument-serif) text-5xl leading-tight text-stone-50 sm:text-6xl">
             Community Guidelines
           </h1>
           <p className="mt-4 max-w-xl text-stone-400">
-            How we keep Codegram a place worth building in public.
+            How we keep DevManiac a place worth building in public.
           </p>
           <p className="mt-6 font-(family-name:--font-jetbrains-mono) text-xs uppercase tracking-[0.15em] text-stone-500">
             Last updated · {LAST_UPDATED}

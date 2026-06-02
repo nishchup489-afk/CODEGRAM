@@ -9,7 +9,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "CODEGRAM",
+  title: "DevManiac",
   description: "Build in public. Ship with purpose.",
 };
 
