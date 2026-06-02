@@ -198,6 +198,8 @@ async def create_live_project(
         )
     )
 
+    new_live_project.days_count = 1
+
     return new_live_project
 
 

@@ -5,10 +5,15 @@ import { useEffect, useState } from "react"
 import api from "@/app/lib/api"
 
 import ProfileHeader from "../components/ProfileHeader"
-import { useUser  } from "@clerk/nextjs"
+
+import { useUser } from "@clerk/nextjs"
 import { useParams } from "next/navigation"
+
 import { ProfileData } from "@/types/profile"
+
 import StacksAnalytics from "./components/StacksAnalytics"
+import ProjectsPreview from "./components/ProjectPreview"
+import LiveProjectsPreview from "./components/LiveProjectPreview"
 
 
 export default function Profile() {
@@ -19,14 +24,16 @@ export default function Profile() {
 
     const [activeTab, setActiveTab] = useState("stacks")
 
-    const [profileData, setProfileData] = useState<ProfileData | null>(null)
+    const [profileData, setProfileData] =
+        useState<ProfileData | null>(null)
 
     const [loading, setLoading] = useState(true)
-    const { user , isLoaded} = useUser()
 
-
+    const { user, isLoaded } = useUser()
 
     useEffect(() => {
+
+        if (!username) return
 
         const getProfile = async () => {
 
@@ -53,76 +60,149 @@ export default function Profile() {
         getProfile()
 
     }, [username])
-    if (!username) return
 
+    if (!username) return null
 
     if (loading || !isLoaded) {
 
-        return <div>Loading...</div>
+        return (
+
+            <div className="flex min-h-screen items-center justify-center bg-black text-zinc-400">
+
+                Loading...
+
+            </div>
+
+        )
 
     }
-
 
     if (!profileData) {
 
-        return <div>User not found</div>
+        return (
+
+            <div className="flex min-h-screen items-center justify-center bg-black text-zinc-400">
+
+                User not found
+
+            </div>
+
+        )
 
     }
 
-
-
-
     return (
 
-        <div>
+        <div className="min-h-screen bg-black text-white">
 
-            <div className="header">
+            <div className="mx-auto w-full max-w-6xl px-4 py-6">
 
                 <ProfileHeader
                     profileData={profileData}
                     isOwner={
-                            user?.id === profileData.clerk_user_id
-                        }
+                        user?.id === profileData.clerk_user_id
+                    }
                 />
 
             </div>
 
-            <div className="tabs">
+            <div className="mx-auto mt-8 w-full max-w-6xl px-4">
 
-                <button onClick={() => setActiveTab("stacks")}>
-                    stacks
-                </button>
+                <div className="border-b border-zinc-800">
 
-                <button onClick={() => setActiveTab("projects")}>
-                    projects
-                </button>
+                    <div className="flex overflow-x-auto scrollbar-hide">
 
-                <button onClick={() => setActiveTab("live")}>
-                    live
-                </button>
+                        <button
+                            onClick={() => setActiveTab("stacks")}
+                            className={`
+                                relative px-5 py-3 text-sm font-medium transition-all
+                                ${
+                                    activeTab === "stacks"
+                                        ? "text-orange-400"
+                                        : "text-zinc-500 hover:text-zinc-200"
+                                }
+                            `}
+                        >
 
-                <button onClick={() => setActiveTab("posts")}>
-                    posts
-                </button>
+                            Stacks
 
-                <button onClick={() => setActiveTab("contribution")}>
-                    contribution
-                </button>
+                            {
+                                activeTab === "stacks" && (
+                                    <div className="absolute bottom-0 left-0 h-0.5 w-full bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.9)]" />
+                                )
+                            }
 
-            </div>
+                        </button>
 
-            <div className="body">
-                {
-                    activeTab === "stacks" && <StacksAnalytics />
-                }
+                        <button
+                            onClick={() => setActiveTab("projects")}
+                            className={`
+                                relative px-5 py-3 text-sm font-medium transition-all
+                                ${
+                                    activeTab === "projects"
+                                        ? "text-orange-400"
+                                        : "text-zinc-500 hover:text-zinc-200"
+                                }
+                            `}
+                        >
 
+                            Projects
 
-{/*                 
-                    {activeTab === "posts" && <PostsPreview />}
-                    {activeTab === "projects" && <ProjectsPreview />}
-                    {activeTab === "live" && <LiveProjectsPreview />}
-                   { activeTab === "contribution" && <ContributionPreview />}
-                */}
+                            {
+                                activeTab === "projects" && (
+                                    <div className="absolute bottom-0 left-0 h-0.5 w-full bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.9)]" />
+                                )
+                            }
+
+                        </button>
+
+                        <button
+                            onClick={() => setActiveTab("live")}
+                            className={`
+                                relative px-5 py-3 text-sm font-medium transition-all
+                                ${
+                                    activeTab === "live"
+                                        ? "text-orange-400"
+                                        : "text-zinc-500 hover:text-zinc-200"
+                                }
+                            `}
+                        >
+
+                            Live Projects
+
+                            {
+                                activeTab === "live" && (
+                                    <div className="absolute bottom-0 left-0 h-0.5 w-full bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.9)]" />
+                                )
+                            }
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div className="mt-6">
+
+                    {
+                        activeTab === "stacks" && (
+                            <StacksAnalytics />
+                        )
+                    }
+
+                    {
+                        activeTab === "projects" && (
+                            <ProjectsPreview />
+                        )
+                    }
+
+                    {
+                        activeTab === "live" && (
+                            <LiveProjectsPreview />
+                        )
+                    }
+
+                </div>
 
             </div>
 

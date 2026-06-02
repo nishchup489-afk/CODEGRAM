@@ -1,169 +1,153 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
-
-import {
-    Github,
-    Globe,
-    CalendarDays,
-    Eye,
-    BookOpen,
-    ArrowLeft,
-} from "lucide-react"
+import { useUser } from "@clerk/nextjs"
 
 import api from "@/app/lib/api"
-import type {
-    GetLiveProject,
-    GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject"
-import LiveProjectHero from "../[slug]/components/hero/LiveProjectHero"
-import JournalSection from "../[slug]/components/journal/JournalSection"
-import LiveProjectSetupPanel from "../[slug]/components/setup/LiveProjectSetupPanel"
-import LatestCommitCard from "../[slug]/components/commit/LatestCommitCard"
+import CreateLiveProjectHeader from "../components/live-project/create/CreateLiveProjectHeader"
+import CreateLiveProjectBasicInfo from "../components/live-project/create/CreateLiveProjectBasicInfo"
+import CreateLiveProjectCategory from "../components/live-project/create/CreateLiveProjectCategory"
+import CreateLiveProjectTechStack from "../components/live-project/create/CreateLiveProjectTechStack"
+import CreateLiveProjectRepository from "../components/live-project/create/CreateLiveProjectTechStack"
+import CreateLiveProjectAdvanced from "../components/live-project/create/CreateLiveProjectAdvanced"
+import CreateLiveProjectVisibility from "../components/live-project/create/CreateLiveProjectVisibility"
+import CreateLiveProjectActions from "../components/live-project/CreateLiveProjectAction"
+import CreateLiveProjectPreview from "../components/live-project/create/CreateLiveProjectPreview"
 
 
 
 
-
-export default function Page() {
-
-    const params = useParams()
+export default function CreateLiveProjectPage() {
 
     const router = useRouter()
 
-    const slug = params.slug as string
+    const { user } = useUser()
 
 
-    const [project, setProject] =
-        useState<GetLiveProject | null>(null)
 
-    const [journals, setJournals] =
-        useState<GetLiveProjectJournal[]>([])
+    const [step, setStep] = useState(1)
 
-    const [loading, setLoading] =
+
+
+    const [title, setTitle] = useState("")
+
+    const [goal, setGoal] = useState("")
+
+
+
+    const [category, setCategory] =
+        useState("")
+
+
+
+    const [githubUrl, setGithubUrl] =
+        useState("")
+
+
+
+    const [techStack, setTechStack] =
+        useState<string[]>([])
+
+
+
+    const [showAdvanced, setShowAdvanced] =
+        useState(false)
+
+    const [liveUrl, setLiveUrl] =
+        useState("")
+
+    const [demoVideoUrl, setDemoVideoUrl] =
+        useState("")
+
+    const [thumbnailUrl, setThumbnailUrl] =
+        useState("")
+
+
+
+    const [isPublic, setIsPublic] =
         useState(true)
+
+
+
+    const [submitting, setSubmitting] =
+        useState(false)
 
     const [error, setError] =
         useState("")
-    
-    const [composerOpen, setComposerOpen] =
-    useState(false)
 
 
-    useEffect(() => {
 
-        if (!slug) return
-
-        const fetchLiveProject = async () => {
-
-            try {
-
-                setLoading(true)
-
-                setError("")
+    const generatedSlug = title
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
 
 
-                const [
-                    projectRes,
-                    journalsRes,
-                ] = await Promise.all([
 
-                    api.get(
-                        `/live-projects/${slug}`
-                    ),
+    const handleSubmit = async () => {
 
-                    api.get(
-                        `/live-projects/${slug}/journals`
-                    ),
+        try {
 
-                ])
+            setSubmitting(true)
+
+            setError("")
 
 
-                setProject(projectRes.data)
 
-                setJournals(journalsRes.data)
+            const response = await api.post(
 
-            }
+                `/live-projects?clerk_user_id=${user?.id}`,
 
-            catch (err: any) {
+                {
 
-                console.error(err)
+                    title,
 
-                setError(
-                    err?.response?.data?.detail ||
-                    "Failed to load live project"
-                )
+                    slug: generatedSlug,
 
-            }
+                    goal,
 
-            finally {
+                    category,
 
-                setLoading(false)
+                    github_url: githubUrl,
 
-            }
+                    tech_stack: techStack,
+
+                    live_url: liveUrl,
+
+                    demo_video_url: demoVideoUrl,
+
+                    thumbnail_url: thumbnailUrl,
+
+                    is_public: isPublic,
+
+                }
+
+            )
+
+
+
+            router.push(
+                `/live_project/${response.data.slug}`
+            )
+
+        } catch (err: any) {
+
+            console.error(err)
+
+            setError(
+                err?.response?.data?.detail
+                ||
+                "Failed to create project"
+            )
+
+        } finally {
+
+            setSubmitting(false)
 
         }
-
-        fetchLiveProject()
-
-    }, [slug])
-
-
-    const handlePublish = (
-        entry: GetLiveProjectJournal
-    ) => {
-
-        setJournals((prev) => [
-            entry,
-            ...prev,
-        ])
-
-        setComposerOpen(false)
-
-    }
-
-
-    if (loading) {
-
-        return (
-
-            <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-zinc-400">
-
-                Loading live project...
-
-            </div>
-
-        )
-
-    }
-
-
-
-    if (error || !project) {
-
-        return (
-
-            <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#0a0a0a] px-6 text-center">
-
-                <p className="text-lg text-red-400">
-
-                    {error}
-
-                </p>
-
-                <button
-                    onClick={() => router.back()}
-                    className="rounded-full border border-zinc-700 px-5 py-2 text-sm text-zinc-300 transition hover:border-orange-500 hover:text-orange-400"
-                >
-                    Go Back
-                </button>
-
-            </div>
-
-        )
 
     }
 
@@ -171,330 +155,350 @@ export default function Page() {
 
     return (
 
-        <main className="min-h-screen bg-[#0a0a0a] text-white">
+        <main className="min-h-screen bg-black text-white">
 
-            <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+            <div className="mx-auto max-w-7xl px-4 py-8">
 
-
-                {/* BACK BUTTON */}
-
-                <button
-                    onClick={() => router.back()}
-                    className="mb-8 flex items-center gap-2 text-sm text-zinc-500 transition hover:text-orange-400"
-                >
-                    <ArrowLeft size={16} />
-                    Back
-                </button>
+                <CreateLiveProjectHeader />
 
 
 
-                {/* HERO */}
+                <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_420px]">
 
-                <LiveProjectHero
-                    project={project}
-                />
+                    {/* LEFT */}
 
+                    <div>
 
+                        {/* STEP INDICATOR */}
 
-                {/* MAIN GRID */}
+                        <div className="mb-8 flex items-center gap-3">
 
-                <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-[1fr_380px]">
+                            {
+                                [1, 2, 3, 4].map((item) => (
 
+                                    <div
+                                        key={item}
+                                        className={`
+                                            h-2 flex-1 rounded-full transition-all
+                                            ${
+                                                step >= item
+                                                    ? "bg-orange-500"
+                                                    : "bg-zinc-800"
+                                            }
+                                        `}
+                                    />
 
-                    {/* LEFT SIDE */}
+                                ))
+                            }
 
-                    <div className="space-y-8">
-
-
-                        {/* ABOUT */}
-
-                        <section className="rounded-3xl border border-zinc-800 bg-[#111111] p-6">
-
-                            <h2 className="mb-5 text-xl font-semibold">
-
-                                About Project
-
-                            </h2>
-
-                            <p className="whitespace-pre-wrap leading-8 text-zinc-400">
-
-                                {project.description ||
-                                    "No description added yet."}
-
-                            </p>
-
-                        </section>
+                        </div>
 
 
 
-                        {/* CURRENT STATUS */}
+                        {/* STEP 1 */}
 
-                        {(project.current_status ||
-                            project.current_goal) && (
+                        {
+                            step === 1 && (
 
-                            <section className="rounded-3xl border border-zinc-800 bg-[#111111] p-6">
+                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
 
-                                <h2 className="mb-5 text-xl font-semibold">
+                                    <div className="mb-8">
 
-                                    Current Build Status
+                                        <p className="text-sm font-medium text-orange-400">
 
-                                </h2>
+                                            Step 1
 
-                                <div className="space-y-5">
+                                        </p>
 
-                                    {project.current_status && (
+                                        <h1 className="mt-2 text-3xl font-bold">
 
-                                        <div>
+                                            What are you building?
 
-                                            <p className="mb-2 text-sm text-zinc-500">
+                                        </h1>
 
-                                                Current Status
+                                    </div>
 
-                                            </p>
 
-                                            <p className="leading-7 text-zinc-300">
 
-                                                {project.current_status}
+                                    <CreateLiveProjectBasicInfo
+                                        title={title}
+                                        setTitle={setTitle}
+                                        goal={goal}
+                                        setGoal={setGoal}
+                                        generatedSlug={generatedSlug}
+                                    />
 
-                                            </p>
 
-                                        </div>
 
-                                    )}
+                                    <div className="mt-10 flex justify-end">
 
-                                    {project.current_goal && (
+                                        <button
+                                            onClick={() => setStep(2)}
+                                            className="rounded-2xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400"
+                                        >
 
-                                        <div>
+                                            Continue →
 
-                                            <p className="mb-2 text-sm text-zinc-500">
+                                        </button>
 
-                                                Current Goal
-
-                                            </p>
-
-                                            <p className="leading-7 text-zinc-300">
-
-                                                {project.current_goal}
-
-                                            </p>
-
-                                        </div>
-
-                                    )}
+                                    </div>
 
                                 </div>
 
-                            </section>
-
-                        )}
-
+                            )
+                        }
 
 
-                        {/* JOURNALS */}
 
-                    <JournalSection
-                        journals={journals}
-                        project={project}
-                        composerOpen={composerOpen}
-                        setComposerOpen={setComposerOpen}
-                        onPublish={handlePublish}
-                    />
+                        {/* STEP 2 */}
+
+                        {
+                            step === 2 && (
+
+                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+
+                                    <div className="mb-8">
+
+                                        <p className="text-sm font-medium text-orange-400">
+
+                                            Step 2
+
+                                        </p>
+
+                                        <h1 className="mt-2 text-3xl font-bold">
+
+                                            Choose your stack
+
+                                        </h1>
+
+                                    </div>
+
+
+
+                                    <CreateLiveProjectCategory
+                                        category={category}
+                                        setCategory={setCategory}
+                                    />
+
+
+
+                                    <div className="mt-10">
+
+                                        {/* <CreateLiveProjectTechStack
+                                            techStack={techStack}
+                                            setTechStack={setTechStack}
+                                        /> */}
+
+                                    </div>
+
+
+
+                                    <div className="mt-10 flex items-center justify-between">
+
+                                        <button
+                                            onClick={() => setStep(1)}
+                                            className="text-zinc-500 transition hover:text-white"
+                                        >
+
+                                            ← Back
+
+                                        </button>
+
+                                        <button
+                                            onClick={() => setStep(3)}
+                                            className="rounded-2xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400"
+                                        >
+
+                                            Continue →
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            )
+                        }
+
+
+
+                        {/* STEP 3 */}
+
+                        {
+                            step === 3 && (
+
+                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+
+                                    <div className="mb-8">
+
+                                        <p className="text-sm font-medium text-orange-400">
+
+                                            Step 3
+
+                                        </p>
+
+                                        <h1 className="mt-2 text-3xl font-bold">
+
+                                            Connect repository
+
+                                        </h1>
+
+                                    </div>
+
+
+
+                                    <CreateLiveProjectRepository
+                                        githubUrl={githubUrl}
+                                        setGithubUrl={setGithubUrl}
+                                    />
+
+
+
+                                    <div className="mt-10">
+
+                                        <CreateLiveProjectAdvanced
+
+                                            showAdvanced={showAdvanced}
+                                            setShowAdvanced={setShowAdvanced}
+
+                                            githubUrl={githubUrl}
+                                            setGithubUrl={setGithubUrl}
+
+                                            liveUrl={liveUrl}
+                                            setLiveUrl={setLiveUrl}
+
+                                            demoVideoUrl={demoVideoUrl}
+                                            setDemoVideoUrl={setDemoVideoUrl}
+
+                                            thumbnailUrl={thumbnailUrl}
+                                            setThumbnailUrl={setThumbnailUrl}
+
+                                        />
+
+                                    </div>
+
+
+
+                                    <div className="mt-10 flex items-center justify-between">
+
+                                        <button
+                                            onClick={() => setStep(2)}
+                                            className="text-zinc-500 transition hover:text-white"
+                                        >
+
+                                            ← Back
+
+                                        </button>
+
+                                        <button
+                                            onClick={() => setStep(4)}
+                                            className="rounded-2xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400"
+                                        >
+
+                                            Continue →
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            )
+                        }
+
+
+
+                        {/* STEP 4 */}
+
+                        {
+                            step === 4 && (
+
+                                <div className="rounded-[2rem] border border-zinc-800 bg-[#0d0d11] p-7">
+
+                                    <div className="mb-8">
+
+                                        <p className="text-sm font-medium text-orange-400">
+
+                                            Final Step
+
+                                        </p>
+
+                                        <h1 className="mt-2 text-3xl font-bold">
+
+                                            Launch your journey
+
+                                        </h1>
+
+                                    </div>
+
+
+
+                                    <CreateLiveProjectVisibility
+                                        isPublic={isPublic}
+                                        setIsPublic={setIsPublic}
+                                    />
+
+
+
+                                    {
+                                        error && (
+
+                                            <div className="mt-6 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
+
+                                                {error}
+
+                                            </div>
+
+                                        )
+                                    }
+
+
+
+                                    <div className="mt-10">
+
+                                        <CreateLiveProjectActions
+                                            handleSubmit={handleSubmit}
+                                            submitting={submitting}
+                                        />
+
+                                    </div>
+
+
+
+                                    <div className="mt-6">
+
+                                        <button
+                                            onClick={() => setStep(3)}
+                                            className="text-zinc-500 transition hover:text-white"
+                                        >
+
+                                            ← Back
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            )
+                        }
 
                     </div>
 
 
 
-                    {/* RIGHT SIDEBAR */}
-
-                    <aside className="space-y-6">
-
-
-                        {/* PROJECT CONSOLE */}
-
-                    <LiveProjectSetupPanel
-                        project={project}
-                        setProject={setProject}
-                        isOwner={false}
-                        openEditModal={() => {}}
-                    />
-
-
-                        {/* QUICK STATS */}
-
-                        <section className="rounded-3xl border border-zinc-800 bg-[#111111] p-6">
-
-                            <h2 className="mb-5 text-lg font-semibold">
-
-                                Project Stats
-
-                            </h2>
-
-                            <div className="space-y-4">
-
-
-                                <div className="flex items-center justify-between">
-
-                                    <div className="flex items-center gap-2 text-zinc-400">
-
-                                        <CalendarDays size={16} />
-
-                                        <span>Day Count</span>
-
-                                    </div>
-
-                                    <span className="font-medium">
-
-                                        Day {project.days_count}
-
-                                    </span>
-
-                                </div>
-
-
-                                <div className="flex items-center justify-between">
-
-                                    <div className="flex items-center gap-2 text-zinc-400">
-
-                                        <Eye size={16} />
-
-                                        <span>Views</span>
-
-                                    </div>
-
-                                    <span className="font-medium">
-
-                                        {project.views_count}
-
-                                    </span>
-
-                                </div>
-
-
-                                <div className="flex items-center justify-between">
-
-                                    <div className="flex items-center gap-2 text-zinc-400">
-
-                                        <BookOpen size={16} />
-
-                                        <span>Journal Entries</span>
-
-                                    </div>
-
-                                    <span className="font-medium">
-
-                                        {project.journal_count}
-
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </section>
-
-
-
-                        {/* TECH STACK */}
-
-                        <section className="rounded-3xl border border-zinc-800 bg-[#111111] p-6">
-
-                            <h2 className="mb-5 text-lg font-semibold">
-
-                                Tech Stack
-
-                            </h2>
-
-                            <div className="flex flex-wrap gap-2">
-
-                                {project.tech_stack.length > 0 ? (
-
-                                    project.tech_stack.map((tech) => (
-
-                                        <span
-                                            key={tech}
-                                            className="rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs text-orange-300"
-                                        >
-                                            {tech}
-                                        </span>
-
-                                    ))
-
-                                ) : (
-
-                                    <p className="text-sm text-zinc-500">
-
-                                        No tech stack added.
-
-                                    </p>
-
-                                )}
-
-                            </div>
-
-                        </section>
-
-
-
-                        {/* LINKS */}
-
-                        {(project.github_url ||
-                            project.live_url) && (
-
-                            <section className="rounded-3xl border border-zinc-800 bg-[#111111] p-6">
-
-                                <h2 className="mb-5 text-lg font-semibold">
-
-                                    Links
-
-                                </h2>
-
-                                <div className="flex flex-col gap-3">
-
-
-                                    {project.github_url && (
-
-                                        <a
-                                            href={project.github_url}
-                                            target="_blank"
-                                            className="flex items-center justify-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm transition hover:border-orange-500 hover:bg-orange-500/10"
-                                        >
-                                            <Github size={16} />
-
-                                            GitHub Repository
-                                        </a>
-
-                                    )}
-
-
-                                    {project.live_url && (
-
-                                        <a
-                                            href={project.live_url}
-                                            target="_blank"
-                                            className="flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 py-3 text-sm font-medium text-black transition hover:bg-orange-400"
-                                        >
-                                            <Globe size={16} />
-
-                                            Live Demo
-                                        </a>
-
-                                    )}
-
-                                </div>
-
-                            </section>
-
-                        )}
-
-
-
-                        {/* COMMIT CARD */}
-
-                        <LatestCommitCard
-                            githubUrl={project.github_url}
+                    {/* RIGHT */}
+
+                    <div className="sticky top-6 h-fit">
+
+                        <CreateLiveProjectPreview
+                            title={title}
+                            goal={goal}
+                            techStack={techStack}
+                            isPublic={isPublic}
                         />
 
-                    </aside>
+                    </div>
 
                 </div>
 

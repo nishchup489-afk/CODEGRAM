@@ -1,7 +1,13 @@
 type Props = {
+
     title: string
+
     goal: string
+
+    techStack: string[]
+
     isPublic: boolean
+
 }
 
 export default function CreateLiveProjectPreview({
