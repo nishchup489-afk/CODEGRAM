@@ -14,7 +14,6 @@ import {
     User,
     Settings,
     Search,
-    Plus,
 } from "lucide-react";
 
 import LeftSidebar from "./components/LeftSideBar";
@@ -27,6 +26,16 @@ type CurrentUser = {
     display_name: string;
     username: string;
     banner_url: string | null;
+
+    project_count?: number;
+    followers_count?: number;
+    live_projects_count?: number;
+    build_streak_days?: number;
+
+    stack_stats?: {
+        name: string;
+        count: number;
+    }[];
 };
 
 export default function DashboardLayout({
@@ -81,62 +90,44 @@ export default function DashboardLayout({
         fetchCurrentUser();
     }, [isLoaded, user?.id]);
 
-    const username = currentUser.username;
-
+    const safeUsername =
+        currentUser.username || "loading";
 
     const navItems = [
         {
-            name: 'Feed',
-            href: `/u/${currentUser.username}`,
+            name: "Feed",
+            href: `/u/${safeUsername}`,
             icon: Home,
         },
 
         {
-            name: 'Explore',
-            href: `/u/${currentUser.username}/projects`,
+            name: "Explore",
+            href: `/u/${safeUsername}/projects`,
             icon: Compass,
         },
 
         {
-            name: 'Live Projects',
-            href: `/u/${currentUser.username}/live_projects`,
+            name: "Live Projects",
+            href: `/u/${safeUsername}/live_projects`,
             icon: Bell,
         },
 
         {
-            name: 'Bookmarks',
-            href: `/u/${currentUser.username}/bookmarks`,
+            name: "Bookmarks",
+            href: `/u/${safeUsername}/bookmarks`,
             icon: Bookmark,
         },
 
         {
-            name: 'Profile',
-            href: `/u/${currentUser.username}/me`,
+            name: "Profile",
+            href: `/u/${safeUsername}/me`,
             icon: User,
         },
 
         {
-            name: 'Settings',
+            name: "Settings",
             href: `/settings`,
             icon: Settings,
-        },
-    ]
-
-    const suggestedBuilders = [
-        {
-            name: "Tyler",
-            username: "@tyler",
-            stack: "Python • Rust",
-        },
-        {
-            name: "Sara",
-            username: "@sara",
-            stack: "React • Go",
-        },
-        {
-            name: "DevK",
-            username: "@devk",
-            stack: "Next.js • Supabase",
         },
     ];
 
@@ -177,7 +168,9 @@ export default function DashboardLayout({
                         <div className="flex items-center gap-3">
                             <button
                                 type="button"
-                                onClick={() => router.push("/search")}
+                                onClick={() =>
+                                    router.push("/search")
+                                }
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Search size={18} />
@@ -185,7 +178,9 @@ export default function DashboardLayout({
 
                             <button
                                 type="button"
-                                onClick={() => router.push("/settings")}
+                                onClick={() =>
+                                    router.push("/settings")
+                                }
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Settings size={18} />
@@ -193,12 +188,15 @@ export default function DashboardLayout({
 
                             <button
                                 type="button"
-                                onClick={() => router.push("/notifications")}
+                                onClick={() =>
+                                    router.push("/notifications")
+                                }
                                 className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Bell size={18} />
 
-                                <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-orange-500" />
+                                {/* remove this later when real notifications exist */}
+                                {/* <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-orange-500" /> */}
                             </button>
                         </div>
                     </div>
@@ -220,28 +218,32 @@ export default function DashboardLayout({
             {/* RIGHT SIDEBAR */}
 
             <RightSidebar
-                avatarUrl={
-                    loading
-                        ? null
-                        : currentUser.avatar_url
-                }
-                displayName={
-                    loading
-                        ? "Loading..."
-                        : currentUser.display_name
-                }
-                username={
-                    loading
-                        ? "loading"
-                        : currentUser.username
-                }
-                bannerUrl={
-                    loading
-                        ? null
-                        : currentUser.banner_url
-                }
-                suggestedBuilders={suggestedBuilders}
-            />
+                    avatarUrl={
+                        loading
+                            ? null
+                            : currentUser.avatar_url
+                    }
+                    displayName={
+                        loading
+                            ? "Loading..."
+                            : currentUser.display_name
+                    }
+                    username={
+                        loading
+                            ? "loading"
+                            : currentUser.username
+                    }
+                    bannerUrl={
+                        loading
+                            ? null
+                            : currentUser.banner_url
+                    }
+                    projectCount={currentUser.project_count ?? 0}
+                    followersCount={currentUser.followers_count ?? 0}
+                    liveProjectsCount={currentUser.live_projects_count ?? 0}
+                    buildStreakDays={currentUser.build_streak_days ?? 0}
+                    stackStats={currentUser.stack_stats ?? []}
+                />
 
             {/* MOBILE BOTTOM NAV */}
 

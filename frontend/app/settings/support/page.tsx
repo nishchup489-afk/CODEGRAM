@@ -350,7 +350,7 @@ function ReportSection() {
                 </Link>
 
                 <a
-                    href='mailto:support@devmaniac.dev'
+                    href='mailto:devmaniacsupport@gmail.com'
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='blue'>
@@ -359,7 +359,7 @@ function ReportSection() {
 
                     <CardText
                         title='Email us'
-                        description='Prefer freeform? Write to support@devmaniac.dev.'
+                        description='Prefer freeform? Write to devmaniacsupport@gmail.com.'
                     />
                 </a>
             </div>
@@ -451,7 +451,7 @@ function EscalationSection({
                 </button>
 
                 <a
-                    href='mailto:support@devmaniac.dev'
+                    href='mailto:devmaniacsupport@gmail.com'
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='blue'>
@@ -524,7 +524,7 @@ function BasicSupportBot() {
 
         if (!match) {
             setAnswer(
-                'I do not know that yet. For this MVP, submit a report or email support@devmaniac.dev.'
+                'I do not know that yet. For this MVP, submit a report or email devmaniacsupport@gmail.com.'
             )
             return
         }

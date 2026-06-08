@@ -5,7 +5,6 @@ import Image from "next/image"
 import {
     Flame,
     Code2,
-    TrendingUp,
     X,
     User,
 } from "lucide-react"
@@ -13,17 +12,13 @@ import {
 import { useState } from "react"
 
 
-
-type SuggestedBuilder = {
+type StackStat = {
     name: string
-    username: string
-    stack: string
+    count: number
 }
 
 
-
 type RightSidebarProps = {
-
     avatarUrl: string | null
 
     bannerUrl?: string | null
@@ -32,13 +27,19 @@ type RightSidebarProps = {
 
     username: string
 
-    suggestedBuilders: SuggestedBuilder[]
+    projectCount?: number
+
+    followersCount?: number
+
+    liveProjectsCount?: number
+
+    buildStreakDays?: number
+
+    stackStats?: StackStat[]
 }
 
 
-
 export default function RightSidebar({
-
     avatarUrl,
 
     bannerUrl,
@@ -47,30 +48,41 @@ export default function RightSidebar({
 
     username,
 
-    suggestedBuilders,
+    projectCount = 0,
 
+    followersCount = 0,
+
+    liveProjectsCount = 0,
+
+    buildStreakDays = 0,
+
+    stackStats = [],
 }: RightSidebarProps) {
-
-
-
     const [
         showAvatarViewer,
         setShowAvatarViewer,
     ] = useState(false)
-
-
 
     const [
         showBannerViewer,
         setShowBannerViewer,
     ] = useState(false)
 
+    const totalBuilds =
+        projectCount + liveProjectsCount
 
+    const shippedPercentage =
+        totalBuilds > 0
+            ? Math.round((projectCount / totalBuilds) * 100)
+            : 0
+
+    const maxStackCount =
+        stackStats.length > 0
+            ? Math.max(...stackStats.map((item) => item.count))
+            : 0
 
     return (
-
         <>
-
             <aside
                 className="
                     sticky
@@ -83,11 +95,7 @@ export default function RightSidebar({
                     xl:block
                 "
             >
-
                 <div className="space-y-6">
-
-
-
                     {/* PROFILE SUMMARY */}
 
                     <div
@@ -99,14 +107,12 @@ export default function RightSidebar({
                             bg-white/3
                         "
                     >
-
-
-
                         {/* BANNER */}
 
                         <button
                             type="button"
                             onClick={() =>
+                                bannerUrl &&
                                 setShowBannerViewer(true)
                             }
                             className="
@@ -118,45 +124,30 @@ export default function RightSidebar({
                                 bg-zinc-900
                             "
                         >
-
-                            {
-                                bannerUrl ? (
-
-                                    <Image
-                                        src={bannerUrl}
-                                        alt="Banner"
-                                        fill
-                                        className="
-                                            object-cover
-                                        "
-                                    />
-
-                                ) : (
-
-                                    <div
-                                        className="
-                                            h-full
-                                            w-full
-                                            bg-linear-to-r
-                                            from-zinc-900
-                                            via-zinc-800
-                                            to-black
-                                        "
-                                    />
-
-                                )
-                            }
-
+                            {bannerUrl ? (
+                                <Image
+                                    src={bannerUrl}
+                                    alt="Banner"
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <div
+                                    className="
+                                        h-full
+                                        w-full
+                                        bg-linear-to-r
+                                        from-zinc-900
+                                        via-zinc-800
+                                        to-black
+                                    "
+                                />
+                            )}
                         </button>
-
-
 
                         {/* CONTENT */}
 
                         <div className="p-5">
-
-
-
                             {/* AVATAR + USER */}
 
                             <div
@@ -167,14 +158,12 @@ export default function RightSidebar({
                                     gap-4
                                 "
                             >
-
-
-
                                 {/* AVATAR */}
 
                                 <button
                                     type="button"
                                     onClick={() =>
+                                        avatarUrl &&
                                         setShowAvatarViewer(true)
                                     }
                                     className="
@@ -189,78 +178,47 @@ export default function RightSidebar({
                                         shadow-2xl
                                     "
                                 >
-
-                                    {
-                                        avatarUrl ? (
-
-                                            <Image
-                                                src={avatarUrl}
-                                                alt="Profile"
-                                                fill
-                                                sizes="96px"
-                                                className="
-                                                    object-cover
-                                                "
+                                    {avatarUrl ? (
+                                        <Image
+                                            src={avatarUrl}
+                                            alt="Profile"
+                                            fill
+                                            sizes="96px"
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <div
+                                            className="
+                                                flex
+                                                h-full
+                                                w-full
+                                                items-center
+                                                justify-center
+                                                bg-zinc-900
+                                            "
+                                        >
+                                            <User
+                                                size={34}
+                                                className="text-zinc-600"
                                             />
-
-                                        ) : (
-
-                                            <div
-                                                className="
-                                                    flex
-                                                    h-full
-                                                    w-full
-                                                    items-center
-                                                    justify-center
-                                                    bg-zinc-900
-                                                "
-                                            >
-
-                                                <User
-                                                    size={34}
-                                                    className="
-                                                        text-zinc-600
-                                                    "
-                                                />
-
-                                            </div>
-
-                                        )
-                                    }
-
+                                        </div>
+                                    )}
                                 </button>
-
-
 
                                 {/* USER INFO */}
 
                                 <div className="pb-2">
-
-                                    <p
-                                        className="
-                                            text-xl
-                                            font-bold
-                                        "
-                                    >
-                                        {displayName}
+                                    <p className="text-xl font-bold">
+                                        {displayName || "Loading..."}
                                     </p>
 
-                                    <p
-                                        className="
-                                            text-sm
-                                            text-zinc-500
-                                        "
-                                    >
-                                        @{username}
+                                    <p className="text-sm text-zinc-500">
+                                        @{username || "loading"}
                                     </p>
-
                                 </div>
-
                             </div>
 
-
-
-                            {/* STATS */}
+                            {/* REAL STATS */}
 
                             <div
                                 className="
@@ -270,16 +228,14 @@ export default function RightSidebar({
                                     gap-3
                                 "
                             >
-
                                 <div>
-
                                     <p
                                         className="
                                             text-3xl
                                             font-black
                                         "
                                     >
-                                        4
+                                        {projectCount}
                                     </p>
 
                                     <p
@@ -290,20 +246,16 @@ export default function RightSidebar({
                                     >
                                         projects
                                     </p>
-
                                 </div>
 
-
-
                                 <div>
-
                                     <p
                                         className="
                                             text-3xl
                                             font-black
                                         "
                                     >
-                                        38
+                                        {followersCount}
                                     </p>
 
                                     <p
@@ -314,20 +266,16 @@ export default function RightSidebar({
                                     >
                                         followers
                                     </p>
-
                                 </div>
 
-
-
                                 <div>
-
                                     <p
                                         className="
                                             text-3xl
                                             font-black
                                         "
                                     >
-                                        67%
+                                        {shippedPercentage}%
                                     </p>
 
                                     <p
@@ -338,468 +286,289 @@ export default function RightSidebar({
                                     >
                                         shipped
                                     </p>
-
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
 
+                    {/* BUILD STREAK - REAL ONLY */}
 
-
-                    {/* BUILD STREAK */}
-
-                    <div
-                        className="
-                            rounded-3xl
-                            border
-                            border-white/10
-                            bg-white/3
-                            p-5
-                        "
-                    >
-
+                    {buildStreakDays > 0 && (
                         <div
                             className="
-                                flex
-                                items-center
-                                gap-2
+                                rounded-3xl
+                                border
+                                border-white/10
+                                bg-white/3
+                                p-5
                             "
                         >
+                            <div className="flex items-center gap-2">
+                                <Flame
+                                    size={18}
+                                    className="text-orange-500"
+                                />
 
-                            <Flame
-                                size={18}
-                                className="text-orange-500"
-                            />
+                                <h2 className="font-semibold">
+                                    Build Streak
+                                </h2>
+                            </div>
 
-                            <h2 className="font-semibold">
-                                Build Streak
-                            </h2>
+                            <div className="mt-5">
+                                <p
+                                    className="
+                                        text-4xl
+                                        font-black
+                                        text-orange-500
+                                    "
+                                >
+                                    {buildStreakDays}
+                                </p>
 
-                        </div>
+                                <p
+                                    className="
+                                        text-sm
+                                        text-zinc-500
+                                    "
+                                >
+                                    days active
+                                </p>
+                            </div>
 
-
-
-                        <div className="mt-5">
-
-                            <p
+                            <div
                                 className="
-                                    text-4xl
-                                    font-black
-                                    text-orange-500
+                                    mt-5
+                                    flex
+                                    gap-1
                                 "
                             >
-                                12
-                            </p>
-
-                            <p
-                                className="
-                                    text-sm
-                                    text-zinc-500
-                                "
-                            >
-                                days active
-                            </p>
-
-                        </div>
-
-
-
-                        <div
-                            className="
-                                mt-5
-                                flex
-                                gap-1
-                            "
-                        >
-
-                            {
-                                Array.from({
-                                    length: 18
+                                {Array.from({
+                                    length: Math.min(
+                                        buildStreakDays,
+                                        18
+                                    ),
                                 }).map((_, i) => (
-
                                     <div
                                         key={i}
-                                        className={`
+                                        className="
                                             h-3
                                             flex-1
                                             rounded-full
-
-                                            ${
-                                                i > 14
-                                                ? 'bg-orange-500'
-                                                : 'bg-green-500'
-                                            }
-                                        `}
+                                            bg-orange-500
+                                        "
                                     />
-
-                                ))
-                            }
-
+                                ))}
+                            </div>
                         </div>
+                    )}
 
-                    </div>
+                    {/* STACK - REAL ONLY */}
 
-
-
-                    {/* STACK */}
-
-                    <div
-                        className="
-                            rounded-3xl
-                            border
-                            border-white/10
-                            bg-white/3
-                            p-5
-                        "
-                    >
-
+                    {stackStats.length > 0 && (
                         <div
                             className="
-                                flex
-                                items-center
-                                gap-2
+                                rounded-3xl
+                                border
+                                border-white/10
+                                bg-white/3
+                                p-5
                             "
                         >
+                            <div
+                                className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                "
+                            >
+                                <Code2
+                                    size={18}
+                                    className="text-orange-500"
+                                />
 
-                            <Code2
-                                size={18}
-                                className="text-orange-500"
-                            />
+                                <h2 className="font-semibold">
+                                    Your Stack
+                                </h2>
+                            </div>
 
-                            <h2 className="font-semibold">
-                                Your Stack
-                            </h2>
+                            <div
+                                className="
+                                    mt-6
+                                    space-y-4
+                                "
+                            >
+                                {stackStats.map((item) => {
+                                    const progress =
+                                        maxStackCount > 0
+                                            ? Math.round(
+                                                  (item.count /
+                                                      maxStackCount) *
+                                                      100
+                                              )
+                                            : 0
 
-                        </div>
-
-
-
-                        <div
-                            className="
-                                mt-6
-                                space-y-4
-                            "
-                        >
-
-                            {
-                                [
-                                    ['Python', 92],
-                                    ['FastAPI', 85],
-                                    ['Next.js', 74],
-                                    ['PostgreSQL', 68],
-                                    ['React', 61],
-                                ].map(([name, progress]) => (
-
-                                    <div key={name as string}>
-
-                                        <div
-                                            className="
-                                                mb-2
-                                                flex
-                                                justify-between
-                                                text-sm
-                                            "
-                                        >
-
-                                            <p>{name}</p>
-
-                                            <p
+                                    return (
+                                        <div key={item.name}>
+                                            <div
                                                 className="
-                                                    text-zinc-500
+                                                    mb-2
+                                                    flex
+                                                    justify-between
+                                                    text-sm
                                                 "
                                             >
-                                                {progress}%
-                                            </p>
+                                                <p>{item.name}</p>
 
-                                        </div>
-
-
-
-                                        <div
-                                            className="
-                                                h-2
-                                                overflow-hidden
-                                                rounded-full
-                                                bg-white/10
-                                            "
-                                        >
+                                                <p
+                                                    className="
+                                                        text-zinc-500
+                                                    "
+                                                >
+                                                    {item.count}
+                                                </p>
+                                            </div>
 
                                             <div
-                                                style={{
-                                                    width: `${progress}%`,
-                                                }}
                                                 className="
-                                                    h-full
+                                                    h-2
+                                                    overflow-hidden
                                                     rounded-full
-                                                    bg-linear-to-r
-                                                    from-red-500
-                                                    to-orange-500
-                                                "
-                                            />
-
-                                        </div>
-
-                                    </div>
-
-                                ))
-                            }
-
-                        </div>
-
-                    </div>
-
-
-
-                    {/* SUGGESTED BUILDERS */}
-
-                    <div
-                        className="
-                            rounded-3xl
-                            border
-                            border-white/10
-                            bg-white/3
-                            p-5
-                        "
-                    >
-
-                        <div
-                            className="
-                                flex
-                                items-center
-                                gap-2
-                            "
-                        >
-
-                            <TrendingUp
-                                size={18}
-                                className="text-orange-500"
-                            />
-
-                            <h2 className="font-semibold">
-                                Suggested Builders
-                            </h2>
-
-                        </div>
-
-
-
-                        <div
-                            className="
-                                mt-6
-                                space-y-5
-                            "
-                        >
-
-                            {
-                                suggestedBuilders.map((builder) => (
-
-                                    <div
-                                        key={builder.username}
-                                        className="
-                                            flex
-                                            items-center
-                                            justify-between
-                                        "
-                                    >
-
-                                        <div>
-
-                                            <p className="font-medium">
-                                                {builder.name}
-                                            </p>
-
-                                            <p
-                                                className="
-                                                    text-xs
-                                                    text-zinc-500
+                                                    bg-white/10
                                                 "
                                             >
-                                                {builder.stack}
-                                            </p>
-
+                                                <div
+                                                    style={{
+                                                        width: `${progress}%`,
+                                                    }}
+                                                    className="
+                                                        h-full
+                                                        rounded-full
+                                                        bg-linear-to-r
+                                                        from-red-500
+                                                        to-orange-500
+                                                    "
+                                                />
+                                            </div>
                                         </div>
-
-
-
-                                        <button
-                                            className="
-                                                rounded-full
-                                                border
-                                                border-orange-500/20
-                                                bg-orange-500/10
-                                                px-4
-                                                py-2
-                                                text-sm
-                                                text-orange-400
-                                                transition-all
-                                                hover:bg-orange-500/20
-                                            "
-                                        >
-                                            Follow
-                                        </button>
-
-                                    </div>
-
-                                ))
-                            }
-
+                                    )
+                                })}
+                            </div>
                         </div>
-
-                    </div>
-
+                    )}
                 </div>
-
             </aside>
-
-
 
             {/* FULLSCREEN AVATAR VIEWER */}
 
-            {
-                showAvatarViewer &&
-                avatarUrl && (
+            {showAvatarViewer && avatarUrl && (
+                <div
+                    className="
+                        fixed
+                        inset-0
+                        z-100
+                        flex
+                        items-center
+                        justify-center
+                        bg-black/95
+                        p-6
+                    "
+                >
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setShowAvatarViewer(false)
+                        }
+                        className="
+                            absolute
+                            right-6
+                            top-6
+                            rounded-full
+                            border
+                            border-white/10
+                            bg-white/10
+                            p-3
+                            transition
+                            hover:bg-white/20
+                        "
+                    >
+                        <X size={24} />
+                    </button>
 
                     <div
                         className="
-                            fixed
-                            inset-0
-                            z-100
-                            flex
-                            items-center
-                            justify-center
-                            bg-black/95
-                            p-6
+                            relative
+                            h-[80vh]
+                            w-[80vh]
+                            max-w-full
+                            overflow-hidden
+                            rounded-3xl
                         "
                     >
-
-                        <button
-                            onClick={() =>
-                                setShowAvatarViewer(false)
-                            }
-                            className="
-                                absolute
-                                right-6
-                                top-6
-                                rounded-full
-                                border
-                                border-white/10
-                                bg-white/10
-                                p-3
-                                transition
-                                hover:bg-white/20
-                            "
-                        >
-
-                            <X size={24} />
-
-                        </button>
-
-
-
-                        <div
-                            className="
-                                relative
-                                h-[80vh]
-                                w-[80vh]
-                                max-w-full
-                                overflow-hidden
-                                rounded-3xl
-                            "
-                        >
-
-                            <Image
-                                src={avatarUrl}
-                                alt="Fullscreen avatar"
-                                fill
-                                className="
-                                    object-contain
-                                "
-                            />
-
-                        </div>
-
+                        <Image
+                            src={avatarUrl}
+                            alt="Fullscreen avatar"
+                            fill
+                            className="object-contain"
+                        />
                     </div>
-
-                )
-            }
-
-
+                </div>
+            )}
 
             {/* FULLSCREEN BANNER VIEWER */}
 
-            {
-                showBannerViewer &&
-                bannerUrl && (
+            {showBannerViewer && bannerUrl && (
+                <div
+                    className="
+                        fixed
+                        inset-0
+                        z-100
+                        flex
+                        items-center
+                        justify-center
+                        bg-black/95
+                        p-6
+                    "
+                >
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setShowBannerViewer(false)
+                        }
+                        className="
+                            absolute
+                            right-6
+                            top-6
+                            rounded-full
+                            border
+                            border-white/10
+                            bg-white/10
+                            p-3
+                            transition
+                            hover:bg-white/20
+                        "
+                    >
+                        <X size={24} />
+                    </button>
 
                     <div
                         className="
-                            fixed
-                            inset-0
-                            z-100
-                            flex
-                            items-center
-                            justify-center
-                            bg-black/95
-                            p-6
+                            relative
+                            h-[80vh]
+                            w-full
+                            max-w-6xl
+                            overflow-hidden
+                            rounded-3xl
                         "
                     >
-
-                        <button
-                            onClick={() =>
-                                setShowBannerViewer(false)
-                            }
-                            className="
-                                absolute
-                                right-6
-                                top-6
-                                rounded-full
-                                border
-                                border-white/10
-                                bg-white/10
-                                p-3
-                                transition
-                                hover:bg-white/20
-                            "
-                        >
-
-                            <X size={24} />
-
-                        </button>
-
-
-
-                        <div
-                            className="
-                                relative
-                                h-[80vh]
-                                w-full
-                                max-w-6xl
-                                overflow-hidden
-                                rounded-3xl
-                            "
-                        >
-
-                            <Image
-                                src={bannerUrl}
-                                alt="Fullscreen banner"
-                                fill
-                                className="
-                                    object-contain
-                                "
-                            />
-
-                        </div>
-
+                        <Image
+                            src={bannerUrl}
+                            alt="Fullscreen banner"
+                            fill
+                            className="object-contain"
+                        />
                     </div>
-
-                )
-            }
-
+                </div>
+            )}
         </>
-
     )
-
 }

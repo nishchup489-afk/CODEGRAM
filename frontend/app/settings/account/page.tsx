@@ -599,7 +599,7 @@ function DeleteRequestModal({
         subject
     )}`
 
-    const mailHref = `mailto:support@devmaniac.dev?subject=${encodeURIComponent(
+    const mailHref = `mailto:devmaniacsupport@gmail.com?subject=${encodeURIComponent(
         subject
     )}&body=${encodeURIComponent(body)}`
 
