@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
 
-from app.db.base import Base
+from app.core.database import Base
 
 
 class TicketCategory(str, enum.Enum):

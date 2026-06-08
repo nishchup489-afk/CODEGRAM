@@ -226,6 +226,7 @@ export default function GetLiveProjectPage() {
                     composerOpen={composerOpen}
                     setComposerOpen={setComposerOpen}
                     onPublish={publishEntry}
+                    isOwner={currentUser?.id === project.user_id}
                 />
             </div>
         </main>

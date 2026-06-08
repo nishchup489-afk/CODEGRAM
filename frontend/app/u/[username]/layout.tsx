@@ -1,9 +1,10 @@
-'use client'
+"use client";
 
-import api from '@/app/lib/api'
-import { useState, useEffect } from 'react'
+import api from "@/app/lib/api";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import { useUser } from '@clerk/nextjs'
+import { useUser } from "@clerk/nextjs";
 
 import {
     Home,
@@ -13,57 +14,74 @@ import {
     User,
     Settings,
     Search,
-} from 'lucide-react'
+    Plus,
+} from "lucide-react";
 
-import LeftSidebar from './components/LeftSideBar'
-import RightSidebar from './components/RightSideBar'
-import MobileBottomNav from './components/MobileBottomNav'
-import FloatingCreateButton from './components/FloatingCreateButton'
-
-
+import LeftSidebar from "./components/LeftSideBar";
+import RightSidebar from "./components/RightSideBar";
+import MobileBottomNav from "./components/MobileBottomNav";
+import FloatingCreateButton from "./components/FloatingCreateButton";
 
 type CurrentUser = {
-
-    avatar_url: string | null
-
-    display_name: string
-
-    username: string
-
-    banner_url: string | null
-}
-
-
-
+    avatar_url: string | null;
+    display_name: string;
+    username: string;
+    banner_url: string | null;
+};
 
 export default function DashboardLayout({
     children,
 }: {
-    children: React.ReactNode
+    children: React.ReactNode;
 }) {
+    const router = useRouter();
 
-    const { user } = useUser()
+    const { user, isLoaded } = useUser();
 
-
-
-    const [loading, setLoading] = useState(true)
-
-    const [error, setError] = useState("")
-
-
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     const [currentUser, setCurrentUser] =
         useState<CurrentUser>({
-
             avatar_url: null,
-
             display_name: "",
-
             username: "",
+            banner_url: null,
+        });
 
-            banner_url: null
-        })
+    useEffect(() => {
+        if (!isLoaded) return;
 
+        if (!user?.id) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchCurrentUser = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const result = await api.get(
+                    `/profile/me?clerk_user_id=${user.id}`
+                );
+
+                setCurrentUser(result.data);
+            } catch (err) {
+                console.error(err);
+
+                setError(
+                    "There was a problem loading dashboard data"
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCurrentUser();
+    }, [isLoaded, user?.id]);
+
+    const username = currentUser.username;
 
 
     const navItems = [
@@ -104,298 +122,126 @@ export default function DashboardLayout({
         },
     ]
 
-
-
-    useEffect(() => {
-
-        if (!user?.id) return
-
-
-
-        const fetchCurrentUser = async () => {
-
-            try {
-
-                setLoading(true)
-
-                setError("")
-
-
-
-                const result = await api.get(
-                    `/profile/me?clerk_user_id=${user.id}`
-                )
-
-
-
-                setCurrentUser(result.data)
-
-            } catch (err) {
-
-                console.error(err)
-
-                setError(
-                    "There was a problem loading dashboard data"
-                )
-
-            } finally {
-
-                setLoading(false)
-
-            }
-
-        }
-
-
-
-        fetchCurrentUser()
-
-    }, [user?.id])
-
-
-
     const suggestedBuilders = [
-
         {
-            name: 'Tyler',
-            username: '@tyler',
-            stack: 'Python • Rust',
+            name: "Tyler",
+            username: "@tyler",
+            stack: "Python • Rust",
         },
-
         {
-            name: 'Sara',
-            username: '@sara',
-            stack: 'React • Go',
+            name: "Sara",
+            username: "@sara",
+            stack: "React • Go",
         },
-
         {
-            name: 'DevK',
-            username: '@devk',
-            stack: 'Next.js • Supabase',
+            name: "DevK",
+            username: "@devk",
+            stack: "Next.js • Supabase",
         },
-    ]
-
-
+    ];
 
     return (
-
-        <div
-            className="
-                flex
-                min-h-screen
-                bg-[#050505]
-                text-white
-            "
-        >
-
-
+        <div className="flex min-h-screen bg-[#050505] text-white">
             {/* LEFT SIDEBAR */}
 
             <LeftSidebar
                 navItems={navItems}
                 avatarUrl={
                     loading
-                    ? null
-                    : currentUser.avatar_url
+                        ? null
+                        : currentUser.avatar_url
                 }
                 displayName={
                     loading
-                    ? "Loading..."
-                    : currentUser.display_name
+                        ? "Loading..."
+                        : currentUser.display_name
                 }
                 username={
                     loading
-                    ? "loading"
-                    : currentUser.username
+                        ? "loading"
+                        : currentUser.username
                 }
             />
 
-
-
             {/* MAIN */}
 
-            <main
-                className="
-                    min-w-0
-                    flex-1
-                    border-r
-                    border-white/10
-                    pb-24
-                    md:pb-0
-                "
-            >
-
-
+            <main className="min-w-0 flex-1 border-r border-white/10 pb-28 md:pb-0">
                 {/* MOBILE TOPBAR */}
 
-                <div
-                    className="
-                        sticky
-                        top-0
-                        z-40
-                        border-b
-                        border-white/10
-                        bg-black/80
-                        backdrop-blur-xl
-                        md:hidden
-                    "
-                >
-
-                    <div
-                        className="
-                            flex
-                            items-center
-                            justify-between
-                            px-4
-                            py-4
-                        "
-                    >
-
-                        <h1
-                            className="
-                                bg-linear-to-r
-                                from-red-500
-                                to-orange-400
-                                bg-clip-text
-                                text-2xl
-                                font-black
-                                tracking-[-0.08em]
-                                text-transparent
-                            "
-                        >
+                <div className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl md:hidden">
+                    <div className="flex items-center justify-between px-4 py-4">
+                        <h1 className="bg-linear-to-r from-red-500 to-orange-400 bg-clip-text text-2xl font-black tracking-[-0.08em] text-transparent">
                             DevManiac
                         </h1>
 
-
-
-                        <div
-                            className="
-                                flex
-                                items-center
-                                gap-3
-                            "
-                        >
-
+                        <div className="flex items-center gap-3">
                             <button
-                                className="
-                                    flex
-                                    h-10
-                                    w-10
-                                    items-center
-                                    justify-center
-                                    rounded-full
-                                    border
-                                    border-white/10
-                                    bg-white/4
-                                "
+                                type="button"
+                                onClick={() => router.push("/search")}
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
-
                                 <Search size={18} />
-
                             </button>
 
-
+                            <button
+                                type="button"
+                                onClick={() => router.push("/settings")}
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
+                            >
+                                <Settings size={18} />
+                            </button>
 
                             <button
-                                className="
-                                    relative
-                                    flex
-                                    h-10
-                                    w-10
-                                    items-center
-                                    justify-center
-                                    rounded-full
-                                    border
-                                    border-white/10
-                                    bg-white/4
-                                "
+                                type="button"
+                                onClick={() => router.push("/notifications")}
+                                className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
-
                                 <Bell size={18} />
 
-
-
-                                <div
-                                    className="
-                                        absolute
-                                        right-2
-                                        top-2
-                                        h-2
-                                        w-2
-                                        rounded-full
-                                        bg-orange-500
-                                    "
-                                />
-
+                                <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-orange-500" />
                             </button>
-
                         </div>
-
                     </div>
-
                 </div>
-
-
 
                 {/* ERROR */}
 
-                {
-                    error && (
-
-                        <div
-                            className="
-                                border-b
-                                border-red-500/20
-                                bg-red-500/10
-                                px-4
-                                py-3
-                                text-sm
-                                text-red-400
-                            "
-                        >
-                            {error}
-                        </div>
-
-                    )
-                }
-
-
+                {error && (
+                    <div className="border-b border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                        {error}
+                    </div>
+                )}
 
                 {/* PAGE CONTENT */}
 
                 {children}
-
             </main>
-
-
 
             {/* RIGHT SIDEBAR */}
 
             <RightSidebar
                 avatarUrl={
                     loading
-                    ? null
-                    : currentUser.avatar_url
+                        ? null
+                        : currentUser.avatar_url
                 }
                 displayName={
                     loading
-                    ? "Loading..."
-                    : currentUser.display_name
+                        ? "Loading..."
+                        : currentUser.display_name
                 }
                 username={
                     loading
-                    ? "loading"
-                    : currentUser.username
+                        ? "loading"
+                        : currentUser.username
                 }
                 bannerUrl={
                     loading
-                    ? null
-                    : currentUser.banner_url
+                        ? null
+                        : currentUser.banner_url
                 }
                 suggestedBuilders={suggestedBuilders}
             />
-
-
 
             {/* MOBILE BOTTOM NAV */}
 
@@ -403,23 +249,18 @@ export default function DashboardLayout({
                 navItems={navItems}
                 avatarUrl={
                     loading
-                    ? null
-                    : currentUser.avatar_url
+                        ? null
+                        : currentUser.avatar_url
                 }
             />
-
-
 
             {/* FLOATING CREATE BUTTON */}
 
             <FloatingCreateButton
                 onClick={() =>
-                    console.log("Create Post")
+                    router.push("/create-project")
                 }
             />
-
         </div>
-
-    )
-
+    );
 }

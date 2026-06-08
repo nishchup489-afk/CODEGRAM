@@ -12,24 +12,23 @@ import {
     Archive,
     X,
 } from "lucide-react"
-import { ProfileHeaderProps } from "@/types/profile"
+import { UserFullProfile } from "@/app/lib/type/profileAnalytics";
 
+type ProfileHeaderProps = {
+    profileData: UserFullProfile;
 
+    loading?: boolean;
 
+    error?: string;
 
-
-
+    isOwner?: boolean;
+};
 
 export default function ProfileHeader({
-
     profileData,
-
     loading = false,
-
     error = "",
-
     isOwner = false,
-
 }: ProfileHeaderProps) {
 
     const router = useRouter()

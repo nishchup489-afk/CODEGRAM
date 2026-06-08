@@ -127,7 +127,7 @@ export default function CreateLiveProjectPage() {
 
             )
 
-
+            console.log("CREATE RESPONSE:", response.data)
 
             router.push(
                 `/live_project/${response.data.slug}`

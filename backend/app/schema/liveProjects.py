@@ -242,3 +242,73 @@ class GetLiveProjectJournalLike(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+
+# =========================================================
+# FEED LIVE PROJECT
+# =========================================================
+
+class FeedLiveProject(BaseModel):
+
+    id: UUID
+
+    title: str
+
+    slug: str
+
+    thumbnail_url: str | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+
+# =========================================================
+# FEED EVENTS
+# =========================================================
+
+class CreateFeedEvent(BaseModel):
+
+    event_type: str
+
+    content: str | None = None
+
+    live_project_id: UUID | None = None
+
+    event_metadata: dict = Field(
+        default_factory=dict
+    )
+
+    is_public: bool = True
+
+
+class GetFeedEvent(BaseModel):
+
+    id: UUID
+
+    user_id: UUID
+
+    user: PublicUser
+
+    live_project_id: UUID | None
+
+    live_project: FeedLiveProject | None = None
+
+    event_type: str
+
+    content: str | None
+
+    event_metadata: dict
+
+    likes_count: int
+
+    comments_count: int
+
+    is_public: bool
+
+    created_at: datetime
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )

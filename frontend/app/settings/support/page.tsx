@@ -1,7 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type React from 'react'
 import Link from 'next/link'
+
+import { useUser } from '@clerk/nextjs'
+
+import api from '@/app/lib/api'
 
 import {
     AlertCircle,
@@ -14,6 +19,8 @@ import {
     Sparkles,
     Send,
     Loader2,
+    Bot,
+    MessageCircle,
 } from 'lucide-react'
 
 type TicketStatus =
@@ -30,14 +37,25 @@ type TicketCategory =
     | 'feature_not_working'
     | 'other'
 
+type TicketPriority =
+    | 'low'
+    | 'normal'
+    | 'high'
+    | 'urgent'
+
 interface SupportTicket {
     id: string
     ticket_number: string
+    user_id: string | null
+    project_id: string | null
     subject: string
+    description: string
     status: TicketStatus
     category: TicketCategory
+    priority: TicketPriority
     created_at: string
     updated_at: string
+    resolved_at: string | null
 }
 
 const STATUS_META: Record<
@@ -61,7 +79,7 @@ const STATUS_META: Record<
     waiting_on_user: {
         label: 'Waiting on you',
         color: 'text-[#E8560A]',
-        icon: AlertCircle,
+        icon: MessageCircle,
     },
     resolved: {
         label: 'Resolved',
@@ -78,61 +96,73 @@ const STATUS_META: Record<
 const FAQS = [
     {
         q: 'How does GitHub sync work?',
-        a: 'Once you connect GitHub from Settings → GitHub, DevManiac can sync your selected repositories and connect them to your projects.',
+        a: 'Once you connect GitHub from Settings → GitHub, DevManiac can sync selected repositories and attach them to your projects.',
     },
     {
         q: 'What counts as a shipped project?',
-        a: 'A project is shipped when you mark it as complete or production-ready from the project page.',
+        a: 'A project counts as shipped when it has a real outcome: live link, GitHub repo, demo, or a completed project page.',
     },
     {
         q: 'Can I make a project private?',
-        a: 'Yes. Private projects will not appear publicly on your profile or in search.',
+        a: 'Yes. Private projects do not appear publicly on your profile, feed, or search.',
     },
     {
         q: 'How are my profile stats calculated?',
-        a: 'Profile stats are based on your projects, activity, stars, and developer contributions.',
+        a: 'Stats are calculated from projects, live project logs, stars, activity, and developer contributions.',
     },
     {
         q: 'How do I change my username?',
-        a: 'Go to Settings → Profile. Username changes may be limited later to prevent abuse.',
+        a: 'Go to Settings → Profile. Username changes may be rate-limited later to prevent abuse.',
     },
     {
         q: 'How do I delete my account?',
-        a: 'Go to Settings → Account → Danger Zone. Deletion should require confirmation before becoming permanent.',
+        a: 'Go to Settings → Account → Danger Zone. Account deletion should require confirmation before becoming permanent.',
     },
 ]
 
 export default function SupportPage() {
-    const [openTicket, setOpenTicket] =
-        useState<SupportTicket | null>(null)
+    const { user, isLoaded } = useUser()
 
-    const [loadingTicket, setLoadingTicket] =
-        useState(true)
+    const [openTickets, setOpenTickets] = useState<SupportTicket[]>([])
+    const [loadingTickets, setLoadingTickets] = useState(true)
+    const [ticketError, setTicketError] = useState('')
+
+    const [botOpen, setBotOpen] = useState(false)
+
+    const clerkUserId = user?.id
 
     useEffect(() => {
-        async function fetchOpenTicket() {
+        if (!isLoaded) return
+
+        if (!clerkUserId) {
+            setOpenTickets([])
+            setLoadingTickets(false)
+            return
+        }
+
+        async function fetchOpenTickets() {
             try {
-                const res = await fetch(
-                    '/api/v1/support/tickets?status=open&limit=1'
-                )
+                setLoadingTickets(true)
+                setTicketError('')
 
-                if (!res.ok) {
-                    throw new Error('Failed to fetch ticket')
-                }
+                const res = await api.get('/support/tickets/open', {
+                    params: {
+                        clerk_user_id: clerkUserId,
+                    },
+                })
 
-                const data: SupportTicket[] =
-                    await res.json()
-
-                setOpenTicket(data[0] ?? null)
-            } catch {
-                setOpenTicket(null)
+                setOpenTickets(res.data ?? [])
+            } catch (error) {
+                console.error(error)
+                setOpenTickets([])
+                setTicketError('Could not load your support tickets.')
             } finally {
-                setLoadingTicket(false)
+                setLoadingTickets(false)
             }
         }
 
-        fetchOpenTicket()
-    }, [])
+        fetchOpenTickets()
+    }, [isLoaded, clerkUserId])
 
     return (
         <div className='mx-auto max-w-3xl space-y-16 px-6 py-12'>
@@ -146,37 +176,51 @@ export default function SupportPage() {
                 </p>
             </header>
 
-            <CurrentCaseSection
-                ticket={openTicket}
-                loading={loadingTicket}
+            <CurrentCasesSection
+                tickets={openTickets}
+                loading={loadingTickets}
+                error={ticketError}
             />
 
             <ReportSection />
 
             <FaqSection />
 
-            <EscalationSection />
+            <EscalationSection
+                botOpen={botOpen}
+                setBotOpen={setBotOpen}
+            />
+
+            {botOpen && <BasicSupportBot />}
 
             <OtherSupportSection />
         </div>
     )
 }
 
-function CurrentCaseSection({
-    ticket,
+function CurrentCasesSection({
+    tickets,
     loading,
+    error,
 }: {
-    ticket: SupportTicket | null
+    tickets: SupportTicket[]
     loading: boolean
+    error: string
 }) {
     return (
         <section className='space-y-4'>
             <div className='flex items-baseline justify-between'>
-                <h2 className='text-2xl font-semibold text-[#F9FAFB]'>
-                    Your open case
-                </h2>
+                <div>
+                    <h2 className='text-2xl font-semibold text-[#F9FAFB]'>
+                        Your open cases
+                    </h2>
 
-                {ticket && (
+                    <p className='mt-1 text-sm text-[#9CA3AF]'>
+                        Active reports stay here until they are resolved or closed.
+                    </p>
+                </div>
+
+                {tickets.length > 0 && (
                     <Link
                         href='/settings/support/tickets'
                         className='text-sm text-[#9CA3AF] transition-colors hover:text-[#F9FAFB]'
@@ -190,13 +234,28 @@ function CurrentCaseSection({
                 <div className='rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-6'>
                     <div className='flex items-center gap-3 text-[#9CA3AF]'>
                         <Loader2 className='h-4 w-4 animate-spin' />
+
                         <span className='text-sm'>
                             Checking your tickets…
                         </span>
                     </div>
                 </div>
-            ) : ticket ? (
-                <OpenTicketCard ticket={ticket} />
+            ) : error ? (
+                <div className='rounded-xl border border-[#7F1D1D]/60 bg-[#1C1C1E] p-6'>
+                    <div className='flex items-center gap-3 text-sm text-red-400'>
+                        <AlertCircle className='h-4 w-4' />
+                        {error}
+                    </div>
+                </div>
+            ) : tickets.length > 0 ? (
+                <div className='space-y-3'>
+                    {tickets.map((ticket) => (
+                        <OpenTicketCard
+                            key={ticket.id}
+                            ticket={ticket}
+                        />
+                    ))}
+                </div>
             ) : (
                 <EmptyTicketState />
             )}
@@ -215,18 +274,24 @@ function OpenTicketCard({
     return (
         <Link
             href={`/settings/support/tickets/${ticket.id}`}
-            className='group block rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-6 transition-colors hover:border-[#E8560A]/40'
+            className='group block rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
         >
             <div className='flex items-start justify-between gap-4'>
                 <div className='min-w-0 space-y-2'>
-                    <div className='flex items-center gap-2'>
-                        <span className='text-xs text-[#9CA3AF]'>
+                    <div className='flex flex-wrap items-center gap-2'>
+                        <span className='rounded-full bg-[#0F0F0F] px-2 py-1 text-xs text-[#9CA3AF]'>
                             {ticket.ticket_number}
                         </span>
 
-                        <span className={`flex items-center gap-1.5 text-xs ${meta.color}`}>
+                        <span
+                            className={`flex items-center gap-1.5 text-xs ${meta.color}`}
+                        >
                             <Icon className='h-3.5 w-3.5' />
                             {meta.label}
+                        </span>
+
+                        <span className='text-xs capitalize text-[#9CA3AF]'>
+                            {ticket.priority} priority
                         </span>
                     </div>
 
@@ -234,7 +299,11 @@ function OpenTicketCard({
                         {ticket.subject}
                     </h3>
 
-                    <p className='text-xs text-[#9CA3AF]'>
+                    <p className='line-clamp-2 text-sm leading-relaxed text-[#9CA3AF]'>
+                        {ticket.description}
+                    </p>
+
+                    <p className='text-xs text-[#6B7280]'>
                         Opened {formatRelativeTime(ticket.created_at)}
                     </p>
                 </div>
@@ -281,7 +350,7 @@ function ReportSection() {
                 </Link>
 
                 <a
-                    href='mailto:support@DevManiac.dev'
+                    href='mailto:support@devmaniac.dev'
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='blue'>
@@ -290,7 +359,7 @@ function ReportSection() {
 
                     <CardText
                         title='Email us'
-                        description='Prefer freeform? Write to support@DevManiac.dev.'
+                        description='Prefer freeform? Write to support@devmaniac.dev.'
                     />
                 </a>
             </div>
@@ -299,8 +368,7 @@ function ReportSection() {
 }
 
 function FaqSection() {
-    const [openIndex, setOpenIndex] =
-        useState<number | null>(null)
+    const [openIndex, setOpenIndex] = useState<number | null>(null)
 
     return (
         <section className='space-y-4'>
@@ -317,7 +385,11 @@ function FaqSection() {
                     return (
                         <div
                             key={faq.q}
-                            className={!isLast ? 'border-b border-[#2D2D2D]' : ''}
+                            className={
+                                !isLast
+                                    ? 'border-b border-[#2D2D2D]'
+                                    : ''
+                            }
                         >
                             <button
                                 onClick={() =>
@@ -349,7 +421,13 @@ function FaqSection() {
     )
 }
 
-function EscalationSection() {
+function EscalationSection({
+    botOpen,
+    setBotOpen,
+}: {
+    botOpen: boolean
+    setBotOpen: React.Dispatch<React.SetStateAction<boolean>>
+}) {
     return (
         <section className='space-y-4'>
             <SectionTitle
@@ -359,7 +437,7 @@ function EscalationSection() {
 
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 <button
-                    onClick={() => console.log('Open bot')}
+                    onClick={() => setBotOpen((prev) => !prev)}
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 text-left transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='orange'>
@@ -367,13 +445,13 @@ function EscalationSection() {
                     </IconBox>
 
                     <CardText
-                        title='Ask our bot'
-                        description='Searches docs, status, and past issues instantly.'
+                        title={botOpen ? 'Close bot' : 'Ask our bot'}
+                        description='Basic MVP helper for common support questions.'
                     />
                 </button>
 
                 <a
-                    href='mailto:support@DevManiac.dev'
+                    href='mailto:support@devmaniac.dev'
                     className='group flex items-start gap-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1E] p-5 transition-colors hover:border-[#E8560A]/40'
                 >
                     <IconBox variant='blue'>
@@ -390,17 +468,127 @@ function EscalationSection() {
     )
 }
 
+function BasicSupportBot() {
+    const [message, setMessage] = useState('')
+    const [answer, setAnswer] = useState(
+        'Ask me about GitHub sync, project privacy, shipped projects, username changes, or account deletion.'
+    )
+
+    const faqAnswerMap = useMemo(
+        () => [
+            {
+                keywords: ['github', 'sync', 'repo', 'repository'],
+                answer:
+                    'Go to Settings → GitHub. Connect your GitHub account, then choose which repositories DevManiac should sync.',
+            },
+            {
+                keywords: ['private', 'privacy', 'hide'],
+                answer:
+                    'You can make a project private. Private projects will not show publicly on your profile, feed, or search.',
+            },
+            {
+                keywords: ['ship', 'shipped', 'complete', 'project'],
+                answer:
+                    'A shipped project should have a real outcome: live link, GitHub repo, demo, or a completed project page.',
+            },
+            {
+                keywords: ['username', 'name'],
+                answer:
+                    'Go to Settings → Profile to change your username. Later, username changes may be limited to prevent abuse.',
+            },
+            {
+                keywords: ['delete', 'account', 'remove'],
+                answer:
+                    'Go to Settings → Account → Danger Zone. Deletion should require confirmation before it becomes permanent.',
+            },
+            {
+                keywords: ['bug', 'broken', 'error', 'issue'],
+                answer:
+                    'For bugs, submit a report with the page URL, what happened, and what you expected. Screenshots help a lot.',
+            },
+        ],
+        []
+    )
+
+    function handleAsk() {
+        const normalized = message.trim().toLowerCase()
+
+        if (!normalized) {
+            setAnswer('Type a question first. The bot is small, not psychic yet 😭')
+            return
+        }
+
+        const match = faqAnswerMap.find((item) =>
+            item.keywords.some((keyword) => normalized.includes(keyword))
+        )
+
+        if (!match) {
+            setAnswer(
+                'I do not know that yet. For this MVP, submit a report or email support@devmaniac.dev.'
+            )
+            return
+        }
+
+        setAnswer(match.answer)
+    }
+
+    return (
+        <section className='rounded-2xl border border-[#2D2D2D] bg-[#1C1C1E] p-5'>
+            <div className='mb-4 flex items-center gap-3'>
+                <div className='rounded-lg bg-[#E8560A]/10 p-2 text-[#E8560A]'>
+                    <Bot className='h-5 w-5' />
+                </div>
+
+                <div>
+                    <h2 className='font-semibold text-[#F9FAFB]'>
+                        DevManiac Bot
+                    </h2>
+
+                    <p className='text-xs text-[#9CA3AF]'>
+                        Basic MVP bot. FAQ search only for now.
+                    </p>
+                </div>
+            </div>
+
+            <div className='rounded-xl border border-[#2D2D2D] bg-[#0F0F0F] p-4 text-sm leading-relaxed text-[#D1D5DB]'>
+                {answer}
+            </div>
+
+            <div className='mt-4 flex gap-2'>
+                <input
+                    value={message}
+                    onChange={(event) => setMessage(event.target.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                            handleAsk()
+                        }
+                    }}
+                    placeholder='Ask about GitHub sync, bugs, privacy...'
+                    className='min-w-0 flex-1 rounded-xl border border-[#2D2D2D] bg-[#0F0F0F] px-4 py-3 text-sm text-[#F9FAFB] outline-none placeholder:text-[#6B7280] focus:border-[#E8560A]/60'
+                />
+
+                <button
+                    onClick={handleAsk}
+                    className='rounded-xl bg-[#E8560A] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#ff6a1a]'
+                >
+                    Ask
+                </button>
+            </div>
+        </section>
+    )
+}
+
 function OtherSupportSection() {
     const links = [
         {
             label: 'Documentation',
-            href: 'https://docs.DevManiac.dev',
-            external: true,
+            href: '/docs',
+            external: false,
         },
         {
             label: 'Status page',
-            href: 'https://status.DevManiac.dev',
-            external: true,
+            href: '/status',
+            external: false,
         },
         {
             label: 'Changelog',
@@ -409,7 +597,7 @@ function OtherSupportSection() {
         },
         {
             label: 'Community Discord',
-            href: 'https://discord.gg/DevManiac',
+            href: 'https://discord.gg/devmaniac',
             external: true,
         },
     ]
@@ -439,6 +627,7 @@ function OtherSupportSection() {
                                 className={className}
                             >
                                 <span>{link.label}</span>
+
                                 <ExternalLink className='h-4 w-4 text-[#9CA3AF]' />
                             </a>
                         )
@@ -451,6 +640,7 @@ function OtherSupportSection() {
                             className={className}
                         >
                             <span>{link.label}</span>
+
                             <ChevronDown className='h-4 w-4 -rotate-90 text-[#9CA3AF]' />
                         </Link>
                     )

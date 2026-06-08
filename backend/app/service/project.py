@@ -1,7 +1,7 @@
 from datetime import datetime
 import uuid
 
-from fastapi import HTTPException
+from fastapi import HTTPException , status
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -534,6 +534,38 @@ async def get_projects(
 
         "has_more": has_more,
     }
+
+
+
+# GET ONE USERS ALL PROJECT 
+
+async def get_users_all_profile(
+        db: AsyncSession , 
+        
+        username : str , 
+):
+    user = await db.scalar(
+        select(User)
+        .where(
+            User.username == username
+        )
+        .options(
+            selectinload(User.projects),
+            selectinload(User.live_projects), 
+            selectinload(User.stack_stats)
+        )
+    )
+
+    if not user : 
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="user not found"
+        )
+
+    return user
+
+
+
 
 
 # =========================================================

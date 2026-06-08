@@ -34,6 +34,7 @@ from app.service.project import (
     create_new_project,
     get_existing_project,
     get_projects,
+    get_users_all_profile,
     remove_project_bookmark,
     update_existing_project,
     add_project_star,
@@ -46,6 +47,7 @@ from app.service.project import (
 )
 from app.models.user import User
 from app.core.auth import get_current_user_optional
+from app.schema.ProfileAnalytics import UserFullProfileResponse
 
 
 router = APIRouter(
@@ -107,6 +109,24 @@ async def get_project(
         slug=slug,
         clerk_user_id=clerk_user_id
     )
+
+
+# =========================================================
+# GET ALL PROJECTS OF A USER
+# =========================================================
+@router.get(
+    "/{username}/full-profile",
+    response_model=UserFullProfileResponse,
+)
+async def get_full_profile(
+    username: str,
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_users_all_profile(
+        db=db,
+        username=username,
+    )
+
 
 # =========================================================
 # ANALYZE REPOSITORY

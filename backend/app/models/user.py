@@ -277,6 +277,20 @@ class User(Base):
     )
 
 
+    support_tickets = relationship(
+        "SupportTicket",
+        foreign_keys="SupportTicket.user_id",
+        back_populates="user",
+    )
+
+    feedback_items = relationship(
+        "Feedback",
+        foreign_keys="Feedback.user_id",
+        back_populates="user",
+    )
+
+
+
 # =========================================================
 # FOLLOWS
 # =========================================================

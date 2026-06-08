@@ -20,8 +20,8 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import logo from "@/public/DevManiac_logo_full.png";
-import dashboardPreview from "@/public/DevManiac_dashboard.png";
+import logo from "@/public/codegram_logo_full.png";
+import dashboardPreview from "@/public/codegram_dashboard.png";
 
 /* ─────────────────────────────────────────────
    DATA

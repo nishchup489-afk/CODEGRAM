@@ -42,10 +42,11 @@ type Props = {
             React.SetStateAction<boolean>
         >
 
-    onPublish:
-        (
-            data: PublishPayload
-        ) => Promise<void>
+    onPublish: (
+        data: PublishPayload
+    ) => Promise<void>
+
+    isOwner: boolean
 
 }
 
@@ -60,6 +61,8 @@ export default function JournalSection({
     setComposerOpen,
 
     onPublish,
+
+    isOwner,
 
 }: Props) {
 
@@ -170,6 +173,8 @@ export default function JournalSection({
 
                     {/* ACTION */}
 
+                    {isOwner &&           
+                    (
                     <button
                         onClick={() =>
                             setComposerOpen(true)
@@ -215,6 +220,7 @@ export default function JournalSection({
                         </span>
 
                     </button>
+                )}
 
                 </div>
 
@@ -224,7 +230,7 @@ export default function JournalSection({
 
             {/* COMPOSER */}
 
-            {
+            { isOwner &&
                 composerOpen && (
 
                     <div
@@ -253,7 +259,7 @@ export default function JournalSection({
 
             {/* BODY */}
 
-            <div className="p-6">
+            {(<div className="p-6">
 
                 {
                     journals.length > 0 ? (
@@ -385,7 +391,7 @@ export default function JournalSection({
                     )
                 }
 
-            </div>
+            </div>)}
 
         </section>
 

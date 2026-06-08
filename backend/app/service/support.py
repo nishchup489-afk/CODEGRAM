@@ -2,7 +2,9 @@ from typing import Optional, Any
 from uuid import UUID
 from datetime import datetime, timezone
 
-from sqlalchemy import select, func, text
+from fastapi import HTTPException, status
+
+from sqlalchemy import select, func, text, case
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
@@ -12,62 +14,97 @@ from app.models.support import (
     TicketStatus,
     TicketPriority,
 )
+
 from app.models.user import User
 from app.models.project import Project
+
 from app.schema.support import (
     SupportTicketCreate,
     SupportTicketAdminUpdate,
 )
-from app.core.exceptions import NotFoundError, ForbiddenError, ValidationError
 
 
 class SupportService:
-    """
-    Business logic for support tickets.
 
-    Routes should never touch the SupportTicket model directly — they call
-    this service. This keeps validation, authorization, and side effects
-    (notifications, audit logs) in one place.
-    """
-
-    def __init__(self, db: AsyncSession):
+    def __init__(
+        self,
+        db: AsyncSession,
+    ):
         self.db = db
 
-    # ---------- Ticket number generation ----------
 
-    async def _generate_ticket_number(self) -> str:
-        """
-        Uses a Postgres sequence for monotonic, human-readable ticket numbers.
-        Requires `CREATE SEQUENCE support_ticket_seq START 1;` in a migration.
-        """
-        result = await self.db.execute(text("SELECT nextval('support_ticket_seq')"))
-        n = result.scalar_one()
-        return f"CG-{n:04d}"
+    # =========================================================
+    # USER HELPERS
+    # =========================================================
 
-    # ---------- Create ----------
+    async def get_user_by_clerk_user_id(
+        self,
+        clerk_user_id: str,
+    ) -> User:
+
+        result = await self.db.execute(
+            select(User).where(
+                User.clerk_user_id == clerk_user_id
+            )
+        )
+
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found.",
+            )
+
+        return user
+
+
+    # =========================================================
+    # TICKET NUMBER GENERATION
+    # Requires support_ticket_seq migration.
+    # =========================================================
+
+    async def _generate_ticket_number(
+        self,
+    ) -> str:
+
+        result = await self.db.execute(
+            text("SELECT nextval('support_ticket_seq')")
+        )
+
+        number = result.scalar_one()
+
+        return f"CG-{number:04d}"
+
+
+    # =========================================================
+    # CREATE TICKET
+    # =========================================================
 
     async def create_ticket(
         self,
-        user: User,
+        clerk_user_id: str,
         payload: SupportTicketCreate,
         request_diagnostics: Optional[dict[str, Any]] = None,
     ) -> SupportTicket:
-        """
-        Create a new support ticket.
 
-        `request_diagnostics` is merged with any client-supplied diagnostics
-        and overrides them on conflict — the server's view of the request
-        is more trustworthy than the client's.
-        """
-        # If a project_id was provided, verify it exists AND belongs to the user.
-        # Don't leak existence of other users' projects.
+        user = await self.get_user_by_clerk_user_id(
+            clerk_user_id=clerk_user_id,
+        )
+
         if payload.project_id is not None:
-            await self._verify_project_ownership(payload.project_id, user.id)
+            await self._verify_project_ownership(
+                project_id=payload.project_id,
+                user_id=user.id,
+            )
 
-        # Merge diagnostics: client-supplied first, server overrides on conflict.
         diagnostics: Optional[dict[str, Any]] = None
+
         if payload.diagnostics or request_diagnostics:
-            diagnostics = {**(payload.diagnostics or {}), **(request_diagnostics or {})}
+            diagnostics = {
+                **(payload.diagnostics or {}),
+                **(request_diagnostics or {}),
+            }
 
         ticket_number = await self._generate_ticket_number()
 
@@ -80,108 +117,250 @@ class SupportService:
             description=payload.description.strip(),
             diagnostics=diagnostics,
             status=TicketStatus.open,
-            priority=self._infer_initial_priority(payload.category),
+            priority=self._infer_initial_priority(
+                payload.category
+            ),
         )
 
         self.db.add(ticket)
 
         try:
-            await self.db.flush()
-        except IntegrityError as e:
-            # ticket_number collision is the only realistic case here
-            await self.db.rollback()
-            raise ValidationError("Could not create ticket. Please try again.") from e
+            await self.db.commit()
 
-        await self.db.commit()
+        except IntegrityError as error:
+            await self.db.rollback()
+
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not create ticket. Please try again.",
+            ) from error
+
         await self.db.refresh(ticket)
 
-        # Side effects (email notify, etc.) AFTER commit so they don't
-        # block the response and don't fire on rollback.
         await self._notify_support_team(ticket)
 
         return ticket
 
-    # ---------- Read ----------
+
+    # =========================================================
+    # GET SINGLE USER TICKET
+    # =========================================================
 
     async def get_ticket_for_user(
-        self, ticket_id: UUID, user: User
+        self,
+        clerk_user_id: str,
+        ticket_id: UUID,
     ) -> SupportTicket:
-        """Fetch a ticket the user owns. 404 if not theirs or doesn't exist."""
+
+        user = await self.get_user_by_clerk_user_id(
+            clerk_user_id=clerk_user_id,
+        )
+
         result = await self.db.execute(
             select(SupportTicket).where(
                 SupportTicket.id == ticket_id,
                 SupportTicket.user_id == user.id,
             )
         )
+
         ticket = result.scalar_one_or_none()
+
         if ticket is None:
-            raise NotFoundError("Ticket not found.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Ticket not found.",
+            )
+
         return ticket
+
+
+    # =========================================================
+    # LIST USER TICKETS
+    # For support page.
+    # =========================================================
 
     async def list_user_tickets(
         self,
-        user: User,
-        status: Optional[TicketStatus] = None,
+        clerk_user_id: str,
+        ticket_status: Optional[TicketStatus] = None,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[SupportTicket], int]:
-        """
-        Return (tickets, total_count) for the current user.
-        Most recent first.
-        """
-        limit = min(max(limit, 1), 100)
-        offset = max(offset, 0)
 
-        base_filter = [SupportTicket.user_id == user.id]
-        if status is not None:
-            base_filter.append(SupportTicket.status == status)
+        user = await self.get_user_by_clerk_user_id(
+            clerk_user_id=clerk_user_id,
+        )
+
+        limit = min(
+            max(limit, 1),
+            100,
+        )
+
+        offset = max(
+            offset,
+            0,
+        )
+
+        filters = [
+            SupportTicket.user_id == user.id
+        ]
+
+        if ticket_status is not None:
+            filters.append(
+                SupportTicket.status == ticket_status
+            )
 
         items_query = (
             select(SupportTicket)
-            .where(*base_filter)
-            .order_by(SupportTicket.created_at.desc())
+            .where(*filters)
+            .order_by(
+                SupportTicket.created_at.desc()
+            )
             .limit(limit)
             .offset(offset)
         )
-        count_query = select(func.count(SupportTicket.id)).where(*base_filter)
+
+        count_query = (
+            select(func.count(SupportTicket.id))
+            .where(*filters)
+        )
 
         items_result = await self.db.execute(items_query)
         count_result = await self.db.execute(count_query)
 
-        return items_result.scalars().all(), count_result.scalar_one()
+        return (
+            list(items_result.scalars().all()),
+            count_result.scalar_one(),
+        )
 
-    # ---------- Admin operations ----------
+
+    # =========================================================
+    # LIST CURRENT OPEN USER TICKETS
+    # For top "Your open case" section.
+    # =========================================================
+
+    async def list_user_open_tickets(
+        self,
+        clerk_user_id: str,
+    ) -> list[SupportTicket]:
+
+        user = await self.get_user_by_clerk_user_id(
+            clerk_user_id=clerk_user_id,
+        )
+
+        result = await self.db.execute(
+            select(SupportTicket)
+            .where(
+                SupportTicket.user_id == user.id,
+                SupportTicket.status.in_(
+                    [
+                        TicketStatus.open,
+                        TicketStatus.in_progress,
+                        TicketStatus.waiting_on_user,
+                    ]
+                ),
+            )
+            .order_by(
+                SupportTicket.created_at.desc()
+            )
+        )
+
+        return list(result.scalars().all())
+
+
+    # =========================================================
+    # CLOSE USER TICKET
+    # User can close his own ticket.
+    # =========================================================
+
+    async def close_user_ticket(
+        self,
+        clerk_user_id: str,
+        ticket_id: UUID,
+    ) -> SupportTicket:
+
+        ticket = await self.get_ticket_for_user(
+            clerk_user_id=clerk_user_id,
+            ticket_id=ticket_id,
+        )
+
+        if ticket.status == TicketStatus.closed:
+            return ticket
+
+        ticket.status = TicketStatus.closed
+
+        await self.db.commit()
+        await self.db.refresh(ticket)
+
+        return ticket
+
+
+    # =========================================================
+    # MARK USER TICKET RESOLVED
+    # Useful when issue is fixed.
+    # =========================================================
+
+    async def resolve_user_ticket(
+        self,
+        clerk_user_id: str,
+        ticket_id: UUID,
+    ) -> SupportTicket:
+
+        user = await self.get_user_by_clerk_user_id(
+            clerk_user_id=clerk_user_id,
+        )
+
+        ticket = await self.get_ticket_for_user(
+            clerk_user_id=clerk_user_id,
+            ticket_id=ticket_id,
+        )
+
+        ticket.status = TicketStatus.resolved
+        ticket.resolved_at = datetime.now(timezone.utc)
+        ticket.resolved_by_user_id = user.id
+
+        await self.db.commit()
+        await self.db.refresh(ticket)
+
+        return ticket
+
+
+    # =========================================================
+    # ADMIN UPDATE TICKET
+    # Protect properly later.
+    # =========================================================
 
     async def admin_update_ticket(
         self,
         ticket_id: UUID,
-        admin: User,
         payload: SupportTicketAdminUpdate,
     ) -> SupportTicket:
-        """
-        Admin-only: update status, priority, or internal notes.
-        Auto-stamps resolved_at / resolved_by when status flips to resolved.
-        """
-        if not getattr(admin, "is_admin", False):
-            raise ForbiddenError("Admin access required.")
 
         result = await self.db.execute(
-            select(SupportTicket).where(SupportTicket.id == ticket_id)
+            select(SupportTicket).where(
+                SupportTicket.id == ticket_id
+            )
         )
+
         ticket = result.scalar_one_or_none()
+
         if ticket is None:
-            raise NotFoundError("Ticket not found.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Ticket not found.",
+            )
 
-        data = payload.model_dump(exclude_unset=True)
+        data = payload.model_dump(
+            exclude_unset=True
+        )
 
-        # Status transition side effects
         new_status = data.get("status")
+
         if new_status is not None and new_status != ticket.status:
             if new_status == TicketStatus.resolved and ticket.resolved_at is None:
                 ticket.resolved_at = datetime.now(timezone.utc)
-                ticket.resolved_by_user_id = admin.id
-            elif new_status != TicketStatus.resolved and ticket.resolved_at is not None:
-                # Reopening — clear resolution metadata
+
+            elif new_status != TicketStatus.resolved:
                 ticket.resolved_at = None
                 ticket.resolved_by_user_id = None
 
@@ -190,87 +369,156 @@ class SupportService:
 
         await self.db.commit()
         await self.db.refresh(ticket)
+
         return ticket
+
+
+    # =========================================================
+    # ADMIN LIST TICKETS
+    # MVP. Add admin auth later.
+    # =========================================================
 
     async def admin_list_tickets(
         self,
-        admin: User,
-        status: Optional[TicketStatus] = None,
+        ticket_status: Optional[TicketStatus] = None,
         category: Optional[TicketCategory] = None,
         priority: Optional[TicketPriority] = None,
         limit: int = 50,
         offset: int = 0,
     ) -> tuple[list[SupportTicket], int]:
-        """Admin queue view. Open + high-priority first."""
-        if not getattr(admin, "is_admin", False):
-            raise ForbiddenError("Admin access required.")
 
-        limit = min(max(limit, 1), 100)
-        offset = max(offset, 0)
+        limit = min(
+            max(limit, 1),
+            100,
+        )
+
+        offset = max(
+            offset,
+            0,
+        )
 
         filters = []
-        if status is not None:
-            filters.append(SupportTicket.status == status)
-        if category is not None:
-            filters.append(SupportTicket.category == category)
-        if priority is not None:
-            filters.append(SupportTicket.priority == priority)
 
-        # Priority ordering: urgent → high → normal → low
-        priority_order = func.array_position(
-            text("ARRAY['urgent','high','normal','low']::text[]"),
-            SupportTicket.priority,
+        if ticket_status is not None:
+            filters.append(
+                SupportTicket.status == ticket_status
+            )
+
+        if category is not None:
+            filters.append(
+                SupportTicket.category == category
+            )
+
+        if priority is not None:
+            filters.append(
+                SupportTicket.priority == priority
+            )
+
+        priority_rank = case(
+            (
+                SupportTicket.priority == TicketPriority.urgent,
+                1,
+            ),
+            (
+                SupportTicket.priority == TicketPriority.high,
+                2,
+            ),
+            (
+                SupportTicket.priority == TicketPriority.normal,
+                3,
+            ),
+            (
+                SupportTicket.priority == TicketPriority.low,
+                4,
+            ),
+            else_=5,
+        )
+
+        open_rank = case(
+            (
+                SupportTicket.status == TicketStatus.open,
+                1,
+            ),
+            (
+                SupportTicket.status == TicketStatus.in_progress,
+                2,
+            ),
+            (
+                SupportTicket.status == TicketStatus.waiting_on_user,
+                3,
+            ),
+            else_=4,
         )
 
         items_query = (
             select(SupportTicket)
             .where(*filters)
             .order_by(
-                # Open tickets first
-                (SupportTicket.status == TicketStatus.open).desc(),
-                priority_order.asc(),
+                open_rank.asc(),
+                priority_rank.asc(),
                 SupportTicket.created_at.desc(),
             )
             .limit(limit)
             .offset(offset)
         )
-        count_query = select(func.count(SupportTicket.id)).where(*filters)
+
+        count_query = (
+            select(func.count(SupportTicket.id))
+            .where(*filters)
+        )
 
         items_result = await self.db.execute(items_query)
         count_result = await self.db.execute(count_query)
 
-        return items_result.scalars().all(), count_result.scalar_one()
+        return (
+            list(items_result.scalars().all()),
+            count_result.scalar_one(),
+        )
 
-    # ---------- Internal helpers ----------
+
+    # =========================================================
+    # INTERNAL HELPERS
+    # =========================================================
 
     async def _verify_project_ownership(
-        self, project_id: UUID, user_id: UUID
+        self,
+        project_id: UUID,
+        user_id: UUID,
     ) -> None:
+
         result = await self.db.execute(
             select(Project.id).where(
                 Project.id == project_id,
                 Project.user_id == user_id,
             )
         )
-        if result.scalar_one_or_none() is None:
-            # 404, not 403 — don't leak that the project exists
-            raise NotFoundError("Project not found.")
 
-    def _infer_initial_priority(self, category: TicketCategory) -> TicketPriority:
-        """
-        Light heuristic — admins can override. Account issues and integration
-        failures tend to be more blocking than feature requests.
-        """
-        if category in (TicketCategory.account, TicketCategory.integration):
+        if result.scalar_one_or_none() is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Project not found.",
+            )
+
+
+    def _infer_initial_priority(
+        self,
+        category: TicketCategory,
+    ) -> TicketPriority:
+
+        if category in (
+            TicketCategory.account,
+            TicketCategory.integration,
+        ):
             return TicketPriority.high
+
         return TicketPriority.normal
 
-    async def _notify_support_team(self, ticket: SupportTicket) -> None:
-        """
-        Stub for now. Wire this up to your email provider (Resend, Postmark,
-        SendGrid) or push to a background queue. Keep it OUT of the request
-        path once you have real volume.
-        """
-        # TODO: send email to support@DevManiac.dev with ticket summary
-        # TODO: optionally push to a Slack webhook for fast triage
+
+    async def _notify_support_team(
+        self,
+        ticket: SupportTicket,
+    ) -> None:
+
+        # MVP: no email yet.
+        # Later: Resend/Postmark/Slack webhook.
         pass

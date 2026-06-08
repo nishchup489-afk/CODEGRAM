@@ -667,13 +667,12 @@ class FeedEvent(Base):
 
     # FLEXIBLE PAYLOAD
 
-    metadata = Column(
-        JSONB,
-        nullable=False,
-        default=dict,
-        server_default=text("'{}'::jsonb"),
-    )
-
+    event_metadata = Column(
+    JSONB,
+    nullable=False,
+    default=dict,
+    server_default=text("'{}'::jsonb"),
+)
 
 
     # ENGAGEMENT

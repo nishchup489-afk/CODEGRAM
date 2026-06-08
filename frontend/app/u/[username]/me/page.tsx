@@ -9,7 +9,7 @@ import ProfileHeader from "../components/ProfileHeader"
 import { useUser } from "@clerk/nextjs"
 import { useParams } from "next/navigation"
 
-import { ProfileData } from "@/types/profile"
+import { UserFullProfile } from "@/app/lib/type/profileAnalytics"
 
 import StacksAnalytics from "./components/StacksAnalytics"
 import ProjectsPreview from "./components/ProjectPreview"
@@ -25,7 +25,7 @@ export default function Profile() {
     const [activeTab, setActiveTab] = useState("stacks")
 
     const [profileData, setProfileData] =
-        useState<ProfileData | null>(null)
+        useState<UserFullProfile | null>(null);
 
     const [loading, setLoading] = useState(true)
 
@@ -40,8 +40,8 @@ export default function Profile() {
             try {
 
                 const response = await api.get(
-                    `/profile/${username}`
-                )
+                    `/projects/${username}/full-profile`
+                );
 
                 setProfileData(response.data)
 
@@ -192,13 +192,17 @@ export default function Profile() {
 
                     {
                         activeTab === "projects" && (
-                            <ProjectsPreview />
+                            <ProjectsPreview 
+                            profile={profileData}
+                            />
                         )
                     }
 
                     {
                         activeTab === "live" && (
-                            <LiveProjectsPreview />
+                            <LiveProjectsPreview
+                                profile={profileData}
+                            />
                         )
                     }
 

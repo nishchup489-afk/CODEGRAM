@@ -12,6 +12,7 @@ from app.models.LiveProject import (
     LiveProjectJournal,
     LiveProjectJournalLike,
     LiveProjectJournalComment,
+    FeedEvent
 )
 
 from app.models.user import User
@@ -23,6 +24,8 @@ from app.schema.liveProjects import (
     UpdateLiveProjectJournal,
     CreateLiveProjectJournalComment,
     UpdateLiveProjectJournalComment,
+    CreateFeedEvent, 
+    GetFeedEvent
 )
 
 from app.utility.project_utility import (
@@ -185,6 +188,30 @@ async def create_live_project(
     )
 
     db.add(new_live_project)
+    db.flush()
+
+    await create_feed_event(
+
+        db=db,
+
+        user_id=user.id,
+
+        live_project_id=new_live_project.id,
+
+        event_type="live_project_created",
+
+        content=f"Started building {new_live_project.title}",
+
+        event_metadata={
+
+            "goal": new_live_project.goal,
+
+            "tech_stack":
+                new_live_project.tech_stack,
+
+        },
+
+    )
 
     await db.commit()
 
@@ -267,19 +294,38 @@ async def get_live_projects_feed(
 ):
 
     result = await db.scalars(
+
         select(LiveProject)
+
         .options(
             selectinload(LiveProject.user)
         )
+
         .where(
             LiveProject.is_public == True
         )
+
         .order_by(
             LiveProject.created_at.desc()
         )
+
     )
 
-    return result.all()
+    projects = result.all()
+
+    for project in projects:
+
+        project.days_count = (
+
+            datetime.now(timezone.utc).date()
+
+            -
+
+            project.created_at.date()
+
+        ).days + 1
+
+    return projects
 
 
 # =========================================================
@@ -468,6 +514,35 @@ async def create_live_project_journal(
         .values(
             journal_count=LiveProject.journal_count + 1
         )
+    )
+
+    await db.flush()
+
+    await create_feed_event(
+
+        db=db,
+
+        user_id=user.id,
+
+        live_project_id=live_project.id,
+
+        event_type="journal_published",
+
+        content=data.content[:240],
+
+        event_metadata={
+
+            "journal_id":
+                str(new_journal.id),
+
+            "entry_type":
+                data.entry_type,
+
+            "progress_percentage":
+                data.progress_percentage,
+
+        },
+
     )
 
     await db.commit()
@@ -936,3 +1011,71 @@ async def unlike_live_project_journal(
         "likes_count": updated_likes_count,
         "is_liked": False,
     }
+
+
+
+async def create_feed_event(
+    db: AsyncSession,
+
+    user_id: UUID,
+
+    event_type: str,
+
+    content: str | None = None,
+
+    live_project_id: UUID | None = None,
+
+    event_metadata: dict | None = None,
+
+):
+
+    new_event = FeedEvent(
+
+        user_id=user_id,
+
+        live_project_id=live_project_id,
+
+        event_type=event_type,
+
+        content=content,
+
+        event_metadata=event_metadata or {},
+
+    )
+
+    db.add(new_event)
+
+    return new_event
+
+
+async def get_feed_events(
+    db: AsyncSession,
+):
+
+    events = await db.scalars(
+
+        select(FeedEvent)
+
+        .options(
+
+            selectinload(FeedEvent.user),
+
+            selectinload(
+                FeedEvent.live_project
+            ),
+
+        )
+
+        .where(
+            FeedEvent.is_public == True
+        )
+
+        .order_by(
+            FeedEvent.created_at.desc()
+        )
+
+        .limit(50)
+
+    )
+
+    return events.all()
