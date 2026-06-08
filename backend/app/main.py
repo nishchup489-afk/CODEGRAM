@@ -12,6 +12,7 @@ from app.router.feed_event import router as feed_event_router
 from app.router.dashboard import router as main_dashboard_router
 from app.api.v1.support import router as support_router
 from app.api.v1.feedback import router as feedback_router
+from app.api.v1 import admin
 
 app = FastAPI()
 
@@ -26,7 +27,9 @@ app.include_router(feed_event_router)
 app.include_router(main_dashboard_router)
 app.include_router(support_router)
 app.include_router(feedback_router)
-
+app.include_router(
+    admin.router
+)
 
 origins = [
     "http://localhost:3000",  
