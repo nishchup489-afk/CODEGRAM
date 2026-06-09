@@ -186,7 +186,7 @@ export default function Profile() {
 
                     {
                         activeTab === "stacks" && (
-                            <StacksAnalytics />
+                            <StacksAnalytics profile={profileData} />
                         )
                     }
 
