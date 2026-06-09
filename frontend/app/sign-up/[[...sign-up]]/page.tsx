@@ -1,16 +1,48 @@
 'use client'
 
-import { SignUp } from '@clerk/nextjs'
+import { SignUp, useUser } from '@clerk/nextjs'
 import { useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import api from '@/app/lib/api'
 import gsap from 'gsap'
 import Link from 'next/link'
 
 export default function Page() {
+  const router = useRouter()
+
+  const { user, isLoaded } = useUser()
 
   const glowRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const leftRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isLoaded) return
+    if (!user?.id) return
+
+    const redirectExistingUser = async () => {
+      try {
+        const res = await api.get(
+          `/sync_user/onboarding?clerk_user_id=${user.id}`
+        )
+
+        const currentUser = res.data
+
+        if (!currentUser?.onboarding_completed) {
+          router.replace('/onboarding')
+          return
+        }
+
+        router.replace(`/u/${currentUser.username}`)
+      } catch (err) {
+        console.error(err)
+        router.replace('/sync')
+      }
+    }
+
+    redirectExistingUser()
+  }, [isLoaded, user?.id, router])
 
   useEffect(() => {
 
@@ -339,6 +371,7 @@ export default function Page() {
               path="/sign-up"
               signInUrl="/sign-in"
               forceRedirectUrl="/sync"
+              signInFallbackRedirectUrl="/sync"
 
               appearance={{
                 variables: {
