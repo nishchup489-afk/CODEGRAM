@@ -21,6 +21,7 @@ import LeftSidebar from "./components/LeftSideBar";
 import RightSidebar from "./components/RightSideBar";
 import MobileBottomNav from "./components/MobileBottomNav";
 import FloatingCreateButton from "./components/FloatingCreateButton";
+import AppFooter from "@/app/components/AppFooter";
 
 type CurrentUser = {
     avatar_url: string | null;
@@ -158,64 +159,59 @@ const navItems = [
 
             {/* MAIN */}
 
-            <main className="min-w-0 flex-1 border-r border-white/10 pb-28 md:pb-0">
-                {/* MOBILE TOPBAR */}
+                <main className="min-w-0 flex-1 border-r border-white/10 pb-28 md:pb-0">
+                    {/* MOBILE TOPBAR */}
 
-                <div className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl md:hidden">
-                    <div className="flex items-center justify-between px-4 py-4">
-                        <h1 className="bg-linear-to-r from-red-500 to-orange-400 bg-clip-text text-2xl font-black tracking-[-0.08em] text-transparent">
-                            DevManiac
-                        </h1>
+                    <div className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl md:hidden">
+                        <div className="flex items-center justify-between px-4 py-4">
+                            <h1 className="bg-linear-to-r from-red-500 to-orange-400 bg-clip-text text-2xl font-black tracking-[-0.08em] text-transparent">
+                                DevManiac
+                            </h1>
 
-                        <div className="flex items-center gap-3">
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    router.push("/search")
-                                }
-                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
-                            >
-                                <Search size={18} />
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => router.push("/search")}
+                                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
+                                >
+                                    <Search size={18} />
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    router.push("/settings")
-                                }
-                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
-                            >
-                                <Settings size={18} />
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => router.push("/settings")}
+                                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
+                                >
+                                    <Settings size={18} />
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    router.push("/notifications")
-                                }
-                                className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
-                            >
-                                <Bell size={18} />
-
-                                {/* remove this later when real notifications exist */}
-                                {/* <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-orange-500" /> */}
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => router.push("/notifications")}
+                                    className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
+                                >
+                                    <Bell size={18} />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* ERROR */}
+                    {/* ERROR */}
 
-                {error && (
-                    <div className="border-b border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-                        {error}
+                    {error && (
+                        <div className="border-b border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* PAGE CONTENT */}
+
+                    <div className="min-h-screen">
+                        {children}
                     </div>
-                )}
 
-                {/* PAGE CONTENT */}
-
-                {children}
-            </main>
+                    <AppFooter />
+                </main>
 
             {/* RIGHT SIDEBAR */}
 
