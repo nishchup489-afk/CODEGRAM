@@ -169,7 +169,7 @@ export default function VisualStep({
                     <span
                         className="
                             block
-                            bg-gradient-to-r
+                            bg-linear-to-r
                             from-red-500
                             via-orange-400
                             to-red-600
@@ -210,7 +210,7 @@ export default function VisualStep({
                     rounded-[34px]
                     border
                     border-white/10
-                    bg-white/[0.03]
+                    bg-white/3
                     backdrop-blur-2xl
                 "
             >
@@ -224,7 +224,7 @@ export default function VisualStep({
                         overflow-hidden
                         border-b
                         border-white/10
-                        bg-gradient-to-br
+                        bg-linear-to-br
                         from-red-500/20
                         via-orange-500/10
                         to-black
@@ -278,7 +278,7 @@ export default function VisualStep({
                             rounded-3xl
                             border-4
                             border-black
-                            bg-gradient-to-br
+                            bg-linear-to-br
                             from-red-500
                             to-orange-500
                             shadow-[0_0_50px_rgba(249,115,22,0.25)]
@@ -311,7 +311,7 @@ export default function VisualStep({
                             className="
                                 text-2xl
                                 font-black
-                                tracking-[-0.05em]
+                                tracking-tighter
                             "
                         >
                             Your visual profile
@@ -353,7 +353,7 @@ export default function VisualStep({
                         rounded-3xl
                         border
                         border-white/10
-                        bg-white/[0.03]
+                        bg-white/3
                         p-6
                     "
                 >
@@ -417,10 +417,10 @@ export default function VisualStep({
                             border
                             border-dashed
                             border-white/10
-                            bg-white/[0.03]
+                            bg-white/3
                             transition-all
                             hover:border-orange-500/30
-                            hover:bg-orange-500/[0.03]
+                            hover:bg-orange-500/3
                         "
                     >
 
@@ -504,14 +504,14 @@ export default function VisualStep({
                                 rounded-2xl
                                 border
                                 border-white/10
-                                bg-white/[0.05]
+                                bg-white/5
                                 px-5
                                 text-white
                                 outline-none
                                 transition-all
                                 placeholder:text-zinc-500
                                 focus:border-orange-500/40
-                                focus:bg-white/[0.08]
+                                focus:bg-white/8
                                 focus:ring-4
                                 focus:ring-orange-500/10
                             "
@@ -530,7 +530,7 @@ export default function VisualStep({
                         rounded-3xl
                         border
                         border-white/10
-                        bg-white/[0.03]
+                        bg-white/3
                         p-6
                     "
                 >
@@ -594,10 +594,10 @@ export default function VisualStep({
                             border
                             border-dashed
                             border-white/10
-                            bg-white/[0.03]
+                            bg-white/3
                             transition-all
                             hover:border-orange-500/30
-                            hover:bg-orange-500/[0.03]
+                            hover:bg-orange-500/3
                         "
                     >
 
@@ -681,14 +681,14 @@ export default function VisualStep({
                                 rounded-2xl
                                 border
                                 border-white/10
-                                bg-white/[0.05]
+                                bg-white/5
                                 px-5
                                 text-white
                                 outline-none
                                 transition-all
                                 placeholder:text-zinc-500
                                 focus:border-orange-500/40
-                                focus:bg-white/[0.08]
+                                focus:bg-white/8
                                 focus:ring-4
                                 focus:ring-orange-500/10
                             "
@@ -729,12 +729,12 @@ export default function VisualStep({
                         rounded-2xl
                         border
                         border-white/10
-                        bg-white/[0.04]
+                        bg-white/4
                         text-lg
                         font-semibold
                         text-zinc-300
                         transition-all
-                        hover:bg-white/[0.08]
+                        hover:bg-white/8
                     "
                 >
 
@@ -762,7 +762,7 @@ export default function VisualStep({
                         gap-3
                         overflow-hidden
                         rounded-2xl
-                        bg-gradient-to-r
+                        bg-linear-to-r
                         from-red-500
                         via-orange-500
                         to-red-600

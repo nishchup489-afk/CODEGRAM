@@ -9,6 +9,11 @@ import {
     ShieldCheck,
     Code2,
     Layers3,
+    UserRound,
+    Rocket,
+    MapPin,
+    MessageSquareMore,
+    LifeBuoy,
 } from 'lucide-react'
 
 
@@ -17,6 +22,8 @@ export default function LeftPanel() {
     const panelRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+
+        if (!panelRef.current) return
 
         gsap.fromTo(
             panelRef.current,
@@ -111,10 +118,9 @@ export default function LeftPanel() {
                         text-zinc-400
                     "
                 >
-                    DevManiac is where developers
-                    showcase projects, build reputation,
-                    and connect with people who
-                    actually ship things.
+                    DevManiac helps you turn your work into proof:
+                    finished projects, live build logs, developer links,
+                    and a profile that shows what you actually ship.
                 </p>
 
             </div>
@@ -181,7 +187,7 @@ export default function LeftPanel() {
                             size={16}
                             className="text-emerald-400"
                         />
-                        identity verified
+                        profile identity ready
                     </div>
 
                     <div className="flex items-center gap-3 text-zinc-500">
@@ -189,7 +195,7 @@ export default function LeftPanel() {
                             size={16}
                             className="text-orange-400"
                         />
-                        syncing developer graph
+                        developer links waiting
                     </div>
 
                     <div className="flex items-center gap-3 text-zinc-500">
@@ -197,7 +203,7 @@ export default function LeftPanel() {
                             size={16}
                             className="text-red-400"
                         />
-                        preparing DevManiac workspace
+                        builder workspace preparing
                     </div>
 
                     <div
@@ -206,7 +212,7 @@ export default function LeftPanel() {
                             text-orange-400
                         "
                     >
-                        → waiting for onboarding completion
+                        → complete setup to enter DevManiac
                     </div>
 
                 </div>
@@ -214,13 +220,13 @@ export default function LeftPanel() {
             </div>
 
 
-            {/* BOTTOM PREVIEW */}
+            {/* USEFUL PREVIEW */}
 
             <div
                 className="
                     mt-10
                     grid
-                    grid-cols-3
+                    grid-cols-2
                     gap-4
                 "
             >
@@ -235,24 +241,31 @@ export default function LeftPanel() {
                         backdrop-blur-xl
                     "
                 >
+                    <UserRound
+                        size={22}
+                        className="text-orange-400"
+                    />
+
                     <p
                         className="
-                            text-3xl
-                            font-black
-                            tracking-tighter
+                            mt-4
+                            text-base
+                            font-bold
+                            text-white
                         "
                     >
-                        12k+
+                        Public profile
                     </p>
 
                     <p
                         className="
                             mt-2
                             text-sm
+                            leading-6
                             text-zinc-500
                         "
                     >
-                        developer profiles
+                        Set your username, avatar, bio, links, and current build.
                     </p>
                 </div>
 
@@ -267,24 +280,31 @@ export default function LeftPanel() {
                         backdrop-blur-xl
                     "
                 >
+                    <Rocket
+                        size={22}
+                        className="text-orange-400"
+                    />
+
                     <p
                         className="
-                            text-3xl
-                            font-black
-                            tracking-tighter
+                            mt-4
+                            text-base
+                            font-bold
+                            text-white
                         "
                     >
-                        84k+
+                        Ship proof
                     </p>
 
                     <p
                         className="
                             mt-2
                             text-sm
+                            leading-6
                             text-zinc-500
                         "
                     >
-                        projects shipped
+                        Add finished projects and live projects after onboarding.
                     </p>
                 </div>
 
@@ -299,27 +319,103 @@ export default function LeftPanel() {
                         backdrop-blur-xl
                     "
                 >
+                    <MapPin
+                        size={22}
+                        className="text-orange-400"
+                    />
+
                     <p
                         className="
-                            text-3xl
-                            font-black
-                            tracking-tighter
+                            mt-4
+                            text-base
+                            font-bold
+                            text-white
                         "
                     >
-                        4.9★
+                        Optional location
                     </p>
 
                     <p
                         className="
                             mt-2
                             text-sm
+                            leading-6
                             text-zinc-500
                         "
                     >
-                        builder reputation
+                        Add a city or skip it. Your profile stays under your control.
                     </p>
                 </div>
 
+
+                <div
+                    className="
+                        rounded-3xl
+                        border
+                        border-white/10
+                        bg-white/3
+                        p-5
+                        backdrop-blur-xl
+                    "
+                >
+                    <MessageSquareMore
+                        size={22}
+                        className="text-orange-400"
+                    />
+
+                    <p
+                        className="
+                            mt-4
+                            text-base
+                            font-bold
+                            text-white
+                        "
+                    >
+                        Feedback loop
+                    </p>
+
+                    <p
+                        className="
+                            mt-2
+                            text-sm
+                            leading-6
+                            text-zinc-500
+                        "
+                    >
+                        Use feedback and support anytime something feels rough.
+                    </p>
+                </div>
+
+            </div>
+
+
+            {/* SMALL FOOTER NOTE */}
+
+            <div
+                className="
+                    mt-6
+                    flex
+                    items-center
+                    gap-3
+                    rounded-3xl
+                    border
+                    border-orange-500/20
+                    bg-orange-500/10
+                    px-5
+                    py-4
+                    text-sm
+                    leading-6
+                    text-orange-100/80
+                "
+            >
+                <LifeBuoy
+                    size={18}
+                    className="shrink-0 text-orange-300"
+                />
+
+                <p>
+                    Early production build: your feedback helps shape the next version.
+                </p>
             </div>
 
         </div>

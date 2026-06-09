@@ -33,13 +33,19 @@ class get_profile_data(BaseModel):
 
 class update_profile_data(BaseModel):
     username: str
-    display_name: str | None
-    bio: str | None
-    avatar_url: str | None
-    banner_url: str | None
-    github_url: str | None
-    linkedin_url: str | None
-    portfolio_url: str | None
+    display_name: str | None = None
+    bio: str | None = None
+
+    avatar_url: str | None = None
+    banner_url: str | None = None
+
+    github_url: str | None = None
+    linkedin_url: str | None = None
+    portfolio_url: str | None = None
+    instagram_url: str | None = None
+
+    location: str | None = None
+    current_build: str | None = None
 
 
 class PublicUser(BaseModel):

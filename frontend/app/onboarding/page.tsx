@@ -24,6 +24,9 @@ import VisualStep from './components/VisualStep'
 
 import SocialStep from './components/SocialStep'
 
+import LocationStep from './components/LocationStep'
+import FinalGuideStep from './components/FinalGuideStep'
+
 export default function OnBoardingPage() {
 
     const router = useRouter()
@@ -59,6 +62,12 @@ export default function OnBoardingPage() {
 
     const [portfolioUrl, setPortfolioUrl] = useState('')
 
+    const [instagramUrl, setInstagramUrl] = useState('')
+
+    const [location, setLocation] = useState('')
+
+    const [currentBuild, setCurrentBuild] = useState('')
+
 
     // =========================================================
     // PREFILL
@@ -68,32 +77,22 @@ export default function OnBoardingPage() {
 
         if (!user) return
 
-
-
         if (!displayName) {
             setDisplayName(user.fullName || '')
         }
-
-
 
         if (!avatarUrl) {
             setAvatarUrl(user.imageUrl || '')
         }
 
-
-
         if (!username) {
 
             const generatedUsername =
-
                 user.username ||
-
                 user.primaryEmailAddress?.emailAddress
                     ?.split('@')[0]
                     ?.replace(/[^a-zA-Z0-9_]/g, '')
                     ?.toLowerCase()
-
-
 
             if (generatedUsername) {
                 setUsername(generatedUsername)
@@ -149,44 +148,54 @@ export default function OnBoardingPage() {
 
     const handleFinalSubmit = async () => {
 
+        if (!user?.id) {
+            setError('User session missing. Please sign in again.')
+            return
+        }
+
         try {
 
             setLoading(true)
 
             setError('')
 
-            const response = await api.post(
+            await api.post(
                 '/sync_user/onboarding',
                 {
-                    clerk_user_id: user?.id,
+                    clerk_user_id: user.id,
 
-                    username,
+                    username: username.trim(),
 
-                    display_name: displayName,
+                    display_name: displayName.trim(),
 
-                    bio,
+                    bio: bio.trim() || null,
 
-                    avatar_url: avatarUrl,
+                    avatar_url: avatarUrl || null,
 
-                    banner_url: bannerUrl,
+                    banner_url: bannerUrl || null,
 
-                    github_url: githubUrl,
+                    github_url: githubUrl.trim() || null,
 
-                    linkedin_url: linkedinUrl,
+                    linkedin_url: linkedinUrl.trim() || null,
 
-                    portfolio_url: portfolioUrl,
+                    portfolio_url: portfolioUrl.trim() || null,
+
+                    instagram_url: instagramUrl.trim() || null,
+
+                    location: location.trim() || null,
+
+                    current_build: currentBuild.trim() || null,
                 }
             )
 
-            
-
-            router.push('/feed')
+            router.push('/sync')
 
         } catch (err: any) {
 
             console.error(err)
 
             setError(
+                err?.response?.data?.detail ||
                 err?.response?.data?.message ||
                 'Something went wrong.'
             )
@@ -229,7 +238,6 @@ export default function OnBoardingPage() {
                 "
             />
 
-
             <div
                 className="
                     relative
@@ -237,21 +245,19 @@ export default function OnBoardingPage() {
                     max-w-7xl
                     mx-auto
                     min-h-screen
-                    px-6
+                    px-4
+                    py-6
+                    sm:px-6
                     lg:px-12
                     grid
                     lg:grid-cols-2
-                    gap-16
+                    gap-10
+                    lg:gap-16
                     items-center
                 "
             >
 
-                {/* LEFT PANEL */}
-
                 <LeftPanel />
-
-
-                {/* RIGHT SIDE */}
 
                 <div
                     className="
@@ -261,8 +267,6 @@ export default function OnBoardingPage() {
                         max-w-2xl
                     "
                 >
-
-                    {/* GLOW */}
 
                     <div
                         className="
@@ -277,19 +281,18 @@ export default function OnBoardingPage() {
                         "
                     />
 
-
-                    {/* CARD */}
-
                     <div
                         ref={cardRef}
                         className="
                             relative
-                            rounded-[40px]
+                            rounded-[28px]
                             border
                             border-white/10
                             bg-white/4
                             backdrop-blur-2xl
-                            p-8
+                            p-5
+                            sm:p-8
+                            lg:rounded-[40px]
                             lg:p-10
                             shadow-[0_0_100px_rgba(239,68,68,0.08)]
                         "
@@ -302,7 +305,7 @@ export default function OnBoardingPage() {
                             <div
                                 className="
                                     flex
-                                    items-center
+                                    items-start
                                     justify-between
                                     gap-4
                                 "
@@ -312,7 +315,8 @@ export default function OnBoardingPage() {
 
                                     <p
                                         className="
-                                            text-sm
+                                            text-xs
+                                            sm:text-sm
                                             uppercase
                                             tracking-[0.2em]
                                             text-orange-400
@@ -324,7 +328,8 @@ export default function OnBoardingPage() {
                                     <h1
                                         className="
                                             mt-3
-                                            text-4xl
+                                            text-3xl
+                                            sm:text-4xl
                                             font-black
                                             tracking-[-0.06em]
                                         "
@@ -334,26 +339,26 @@ export default function OnBoardingPage() {
 
                                 </div>
 
-
                                 <div
                                     className="
+                                        shrink-0
                                         rounded-2xl
                                         border
                                         border-white/10
                                         bg-white/4
-                                        px-4
-                                        py-3
-                                        text-sm
+                                        px-3
+                                        py-2
+                                        sm:px-4
+                                        sm:py-3
+                                        text-xs
+                                        sm:text-sm
                                         text-zinc-400
                                     "
                                 >
-                                    Step {step} / 3
+                                    Step {step} / 5
                                 </div>
 
                             </div>
-
-
-                            {/* PROGRESS */}
 
                             <div className="mt-8">
                                 <ProgressBar step={step} />
@@ -386,9 +391,7 @@ export default function OnBoardingPage() {
                         {/* STEP 1 */}
 
                         {step === 1 && (
-
                             <IdentityStep
-
                                 username={username}
                                 setUsername={setUsername}
 
@@ -398,18 +401,18 @@ export default function OnBoardingPage() {
                                 bio={bio}
                                 setBio={setBio}
 
+                                currentBuild={currentBuild}
+                                setCurrentBuild={setCurrentBuild}
+
                                 onContinue={() => setStep(2)}
                             />
-
                         )}
 
 
                         {/* STEP 2 */}
 
                         {step === 2 && (
-
                             <VisualStep
-
                                 avatarUrl={avatarUrl}
                                 setAvatarUrl={setAvatarUrl}
 
@@ -420,16 +423,13 @@ export default function OnBoardingPage() {
 
                                 onContinue={() => setStep(3)}
                             />
-
                         )}
 
 
                         {/* STEP 3 */}
 
                         {step === 3 && (
-
                             <SocialStep
-
                                 githubUrl={githubUrl}
                                 setGithubUrl={setGithubUrl}
 
@@ -439,13 +439,36 @@ export default function OnBoardingPage() {
                                 portfolioUrl={portfolioUrl}
                                 setPortfolioUrl={setPortfolioUrl}
 
+                                instagramUrl={instagramUrl}
+                                setInstagramUrl={setInstagramUrl}
+
                                 onBack={() => setStep(2)}
+                                onContinue={() => setStep(4)}
+                            />
+                        )}
 
+
+                        {/* STEP 4 */}
+
+                        {step === 4 && (
+                            <LocationStep
+                                location={location}
+                                setLocation={setLocation}
+                                onBack={() => setStep(3)}
+                                onContinue={() => setStep(5)}
+                                onSkip={() => setStep(5)}
+                            />
+                        )}
+
+
+                        {/* STEP 5 */}
+
+                        {step === 5 && (
+                            <FinalGuideStep
+                                onBack={() => setStep(4)}
                                 onSubmit={handleFinalSubmit}
-
                                 loading={loading}
                             />
-
                         )}
 
                     </div>

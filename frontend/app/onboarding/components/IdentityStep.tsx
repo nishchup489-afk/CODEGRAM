@@ -9,7 +9,6 @@ import {
 
 
 interface IdentityStepProps {
-
     username: string
     setUsername: React.Dispatch<React.SetStateAction<string>>
 
@@ -19,12 +18,13 @@ interface IdentityStepProps {
     bio: string
     setBio: React.Dispatch<React.SetStateAction<string>>
 
+    currentBuild: string
+    setCurrentBuild: React.Dispatch<React.SetStateAction<string>>
+
     onContinue: () => void
 }
 
-
 export default function IdentityStep({
-
     username,
     setUsername,
 
@@ -34,10 +34,11 @@ export default function IdentityStep({
     bio,
     setBio,
 
+    currentBuild,
+    setCurrentBuild,
+
     onContinue,
-
 }: IdentityStepProps) {
-
 
     return (
 
@@ -83,7 +84,7 @@ export default function IdentityStep({
                     <span
                         className="
                             block
-                            bg-gradient-to-r
+                            bg-linear-to-r
                             from-red-500
                             via-orange-400
                             to-red-600
@@ -120,10 +121,10 @@ export default function IdentityStep({
                 className="
                     relative
                     overflow-hidden
-                    rounded-[32px]
+                    rounded-4xl
                     border
                     border-white/10
-                    bg-white/[0.03]
+                    bg-white/3
                     p-6
                     backdrop-blur-2xl
                 "
@@ -135,7 +136,7 @@ export default function IdentityStep({
                     className="
                         absolute
                         inset-0
-                        bg-gradient-to-br
+                        bg-linear-to-br
                         from-red-500/10
                         via-orange-500/5
                         to-transparent
@@ -157,7 +158,7 @@ export default function IdentityStep({
                                 items-center
                                 justify-center
                                 rounded-2xl
-                                bg-gradient-to-br
+                                bg-linear-to-br
                                 from-red-500
                                 to-orange-500
                                 shadow-[0_0_40px_rgba(249,115,22,0.25)]
@@ -305,7 +306,7 @@ export default function IdentityStep({
                                 rounded-2xl
                                 border
                                 border-white/10
-                                bg-white/[0.05]
+                                bg-white/5
                                 pl-14
                                 pr-5
                                 text-lg
@@ -314,7 +315,7 @@ export default function IdentityStep({
                                 transition-all
                                 placeholder:text-zinc-500
                                 focus:border-orange-500/40
-                                focus:bg-white/[0.08]
+                                focus:bg-white/8
                                 focus:ring-4
                                 focus:ring-orange-500/10
                             "
@@ -380,7 +381,7 @@ export default function IdentityStep({
                                 rounded-2xl
                                 border
                                 border-white/10
-                                bg-white/[0.05]
+                                bg-white/5
                                 pl-14
                                 pr-5
                                 text-lg
@@ -389,7 +390,7 @@ export default function IdentityStep({
                                 transition-all
                                 placeholder:text-zinc-500
                                 focus:border-orange-500/40
-                                focus:bg-white/[0.08]
+                                focus:bg-white/8
                                 focus:ring-4
                                 focus:ring-orange-500/10
                             "
@@ -424,13 +425,13 @@ export default function IdentityStep({
                             setBio(e.target.value)
                         }
                         className="
-                            min-h-[140px]
+                            min-h-35
                             w-full
                             resize-none
                             rounded-3xl
                             border
                             border-white/10
-                            bg-white/[0.05]
+                            bg-white/5
                             p-6
                             text-base
                             leading-8
@@ -439,7 +440,7 @@ export default function IdentityStep({
                             transition-all
                             placeholder:text-zinc-500
                             focus:border-orange-500/40
-                            focus:bg-white/[0.08]
+                            focus:bg-white/8
                             focus:ring-4
                             focus:ring-orange-500/10
                         "
@@ -471,6 +472,49 @@ export default function IdentityStep({
             </div>
 
 
+            {/* CURRENT BUILD */}
+            
+            <div>
+                <label
+                    className="
+                        mb-3
+                        block
+                        text-sm
+                        font-medium
+                        text-zinc-300
+                    "
+                >
+                    Current Build
+                </label>
+
+                <input
+                    type="text"
+                    placeholder="What are you building right now?"
+                    value={currentBuild}
+                    onChange={(e) =>
+                        setCurrentBuild(e.target.value)
+                    }
+                    className="
+                        h-16
+                        w-full
+                        rounded-2xl
+                        border
+                        border-white/10
+                        bg-white/5
+                        px-5
+                        text-white
+                        outline-none
+                        transition-all
+                        placeholder:text-zinc-500
+                        focus:border-orange-500/40
+                        focus:bg-white/8
+                        focus:ring-4
+                        focus:ring-orange-500/10
+                    "
+                />
+            </div>
+
+
             {/* BUTTON */}
 
             <div className="pt-4">
@@ -489,7 +533,7 @@ export default function IdentityStep({
                         gap-3
                         overflow-hidden
                         rounded-2xl
-                        bg-gradient-to-r
+                        bg-linear-to-r
                         from-red-500
                         via-orange-500
                         to-red-600

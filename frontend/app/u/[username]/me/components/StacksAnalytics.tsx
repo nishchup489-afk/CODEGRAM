@@ -160,7 +160,7 @@ export default function StacksAnalytics({ profile }: Props) {
     return (
         <section className="space-y-6 font-mono">
             {/* HERO: score + rank + progression in one focal block */}
-            <div className="relative overflow-hidden rounded-3xl border border-orange-500/25 bg-gradient-to-br from-orange-500/15 via-orange-500/[0.04] to-transparent p-6 sm:p-8">
+            <div className="relative overflow-hidden rounded-3xl border border-orange-500/25 bg-linear-to-br from-orange-500/15 via-orange-500/4 to-transparent p-6 sm:p-8">
                 <div
                     className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-orange-500/20 blur-3xl"
                     aria-hidden
@@ -202,7 +202,7 @@ export default function StacksAnalytics({ profile }: Props) {
 
                         <div className="h-2.5 overflow-hidden rounded-full bg-zinc-800">
                             <div
-                                className="h-full rounded-full bg-gradient-to-r from-orange-600 to-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.7)] transition-[width] duration-1000 ease-out"
+                                className="h-full rounded-full bg-linear-to-r from-orange-600 to-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.7)] transition-[width] duration-1000 ease-out"
                                 style={{ width: mounted ? `${progress}%` : "0%" }}
                             />
                         </div>

@@ -101,6 +101,11 @@ async def update_user_profile_data(
     user.avatar_url = data.avatar_url
 
     user.banner_url = data.banner_url
+    user.instagram_url = data.instagram_url
+
+    user.location = data.location
+
+    user.current_build = data.current_build
 
     user.github_url = data.github_url
 

@@ -4,62 +4,63 @@ interface ProgressBarProps {
     step: number
 }
 
+const steps = [
+    'Identity',
+    'Visuals',
+    'Socials',
+    'Location',
+    'Guide',
+]
+
+function getStepDescription(step: number) {
+    if (step === 1) return 'Create your identity'
+    if (step === 2) return 'Customize your visuals'
+    if (step === 3) return 'Connect your developer graph'
+    if (step === 4) return 'Set your builder location'
+    return 'Learn how DevManiac works'
+}
+
 export default function ProgressBar({
     step,
 }: ProgressBarProps) {
 
+    const progress = `${(step / steps.length) * 100}%`
+
     return (
-
         <div className="space-y-4">
-
-            {/* TOP LABELS */}
 
             <div
                 className="
                     flex
                     items-center
                     justify-between
-                    text-xs
+                    gap-3
+                    overflow-x-auto
+                    scrollbar-hide
+                    text-[10px]
+                    sm:text-xs
                     font-medium
                     uppercase
-                    tracking-[0.18em]
+                    tracking-[0.16em]
                 "
             >
+                {steps.map((label, index) => {
+                    const currentStep = index + 1
 
-                <div
-                    className={
-                        step >= 1
-                            ? 'text-orange-400'
-                            : 'text-zinc-600'
-                    }
-                >
-                    Identity
-                </div>
-
-                <div
-                    className={
-                        step >= 2
-                            ? 'text-orange-400'
-                            : 'text-zinc-600'
-                    }
-                >
-                    Visuals
-                </div>
-
-                <div
-                    className={
-                        step >= 3
-                            ? 'text-orange-400'
-                            : 'text-zinc-600'
-                    }
-                >
-                    Socials
-                </div>
-
+                    return (
+                        <div
+                            key={label}
+                            className={
+                                step >= currentStep
+                                    ? 'shrink-0 text-orange-400'
+                                    : 'shrink-0 text-zinc-600'
+                            }
+                        >
+                            {label}
+                        </div>
+                    )
+                })}
             </div>
-
-
-            {/* BAR */}
 
             <div
                 className="
@@ -69,43 +70,32 @@ export default function ProgressBar({
                     rounded-full
                     border
                     border-white/10
-                    bg-white/[0.04]
+                    bg-white/4
                     backdrop-blur-xl
                 "
             >
-
-                {/* ACTIVE FILL */}
-
                 <div
-                    className={`
+                    className="
                         absolute
                         left-0
                         top-0
                         h-full
                         rounded-full
-                        bg-gradient-to-r
+                        bg-linear-to-r
                         from-red-500
                         via-orange-400
                         to-red-600
                         transition-all
                         duration-500
                         ease-out
-
-                        ${
-                            step === 1
-                                ? 'w-1/3'
-                                : step === 2
-                                ? 'w-2/3'
-                                : 'w-full'
-                        }
-                    `}
+                    "
+                    style={{
+                        width: progress,
+                    }}
                 />
 
-
-                {/* GLOW */}
-
                 <div
-                    className={`
+                    className="
                         absolute
                         top-0
                         h-full
@@ -114,46 +104,31 @@ export default function ProgressBar({
                         bg-orange-400/40
                         transition-all
                         duration-500
-
-                        ${
-                            step === 1
-                                ? 'left-[20%]'
-                                : step === 2
-                                ? 'left-[55%]'
-                                : 'left-[88%]'
-                        }
-                    `}
+                    "
+                    style={{
+                        left: `calc(${progress} - 48px)`,
+                    }}
                 />
-
             </div>
-
-
-            {/* STEP TEXT */}
 
             <div
                 className="
                     flex
                     items-center
                     justify-between
-                    text-sm
+                    gap-4
+                    text-xs
+                    sm:text-sm
                     text-zinc-500
                 "
             >
-
                 <p>
-                    Step {step} of 3
+                    Step {step} of 5
                 </p>
 
-                <p>
-                    {
-                        step === 1
-                            ? 'Create your identity'
-                            : step === 2
-                            ? 'Customize your visuals'
-                            : 'Connect your developer graph'
-                    }
+                <p className="text-right">
+                    {getStepDescription(step)}
                 </p>
-
             </div>
 
         </div>

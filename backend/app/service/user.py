@@ -1,5 +1,6 @@
 import uuid
 
+from fastapi import HTTPException , status
 from sqlalchemy import select
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -72,7 +73,6 @@ async def sync_user(
 
 
 
-
 async def complete_onboarding(
     db: AsyncSession,
     data: UserOnboarding,
@@ -84,40 +84,48 @@ async def complete_onboarding(
         )
     )
 
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    clean_username = data.username.strip()
+    username_lower = clean_username.lower()
 
     username_exists = await db.scalar(
         select(User).where(
-            User.username_lower == data.username.lower()
+            User.username_lower == username_lower
         )
     )
 
     if username_exists and username_exists.id != existing_user.id:
-        return {
-            "message": "Username already taken"
-        }
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username already taken",
+        )
 
-    existing_user.username = data.username
+    existing_user.username = clean_username
+    existing_user.username_lower = username_lower
 
-    existing_user.username_lower = data.username.lower()
-
-    existing_user.display_name = data.display_name
+    existing_user.display_name = data.display_name.strip()
 
     existing_user.bio = data.bio
-
     existing_user.avatar_url = data.avatar_url
-
     existing_user.banner_url = data.banner_url
 
     existing_user.github_url = data.github_url
-
     existing_user.linkedin_url = data.linkedin_url
-
     existing_user.portfolio_url = data.portfolio_url
+    existing_user.instagram_url = data.instagram_url
+
+    existing_user.location = data.location
+    existing_user.current_build = data.current_build
 
     existing_user.onboarding_completed = True
 
     await db.commit()
-
     await db.refresh(existing_user)
 
     return existing_user
+
