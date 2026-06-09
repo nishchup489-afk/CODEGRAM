@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 
 import { useState } from "react"
-
+import BuyMeCoffee from "@/app/components/BuyMeCoffee";
 
 type StackStat = {
     name: string
@@ -460,6 +460,19 @@ export default function RightSidebar({
                             </div>
                         )}
                     </div>
+
+                    {/* BUY ME A COFFEE */}
+
+                        <div>
+                            <BuyMeCoffee
+                                variant="card"
+                                username="nish489"
+                                qrImageSrc="/coffeeqr.jpg"
+                                title="Fuel the build"
+                                description="If DevManiac or my work helped you, support the journey with a coffee."
+                                showOfficialButton={false}
+                            />
+                        </div>
 
                     {/* BOTTOM FEEDBACK + SUPPORT */}
 
