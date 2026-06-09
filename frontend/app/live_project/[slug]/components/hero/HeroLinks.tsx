@@ -6,34 +6,48 @@ import {
     Play,
 } from "lucide-react"
 
-
-
 interface HeroLinksProps {
-
     github_url: string | null
 
     live_url?: string | null
 
     demo_video_url?: string | null
-
 }
 
+function normalizeExternalUrl(
+    url?: string | null
+) {
+    if (!url) return ""
 
+    const trimmedUrl = url.trim()
+
+    if (!trimmedUrl) return ""
+
+    if (
+        trimmedUrl.startsWith("http://") ||
+        trimmedUrl.startsWith("https://")
+    ) {
+        return trimmedUrl
+    }
+
+    return `https://${trimmedUrl}`
+}
 
 export default function HeroLinks({
-
     github_url,
-
     live_url,
-
     demo_video_url,
-
 }: HeroLinksProps) {
+    const githubHref =
+        normalizeExternalUrl(github_url)
 
+    const liveHref =
+        normalizeExternalUrl(live_url)
 
+    const demoVideoHref =
+        normalizeExternalUrl(demo_video_url)
 
     return (
-
         <div
             className="
                 flex
@@ -42,59 +56,71 @@ export default function HeroLinks({
                 gap-3
             "
         >
-
             {/* GITHUB */}
 
-            {github_url ? (
-                
-            <a
-                href={github_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="
-                    group
-                    flex
-                    items-center
-                    gap-2
-                    rounded-2xl
-                    border
-                    border-white/10
-                    bg-white/3
-                    px-4
-                    py-3
-                    text-sm
-                    font-medium
-                    text-zinc-300
-                    transition-all
-                    hover:border-orange-500/30
-                    hover:bg-orange-500/10
-                    hover:text-orange-300
-                "
-            >
-
-                <Github
-                    size={17}
+            {githubHref ? (
+                <a
+                    href={githubHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="
-                        transition-transform
-                        group-hover:rotate-6
+                        group
+                        flex
+                        items-center
+                        gap-2
+                        rounded-2xl
+                        border
+                        border-white/10
+                        bg-white/3
+                        px-4
+                        py-3
+                        text-sm
+                        font-medium
+                        text-zinc-300
+                        transition-all
+                        hover:border-orange-500/30
+                        hover:bg-orange-500/10
+                        hover:text-orange-300
                     "
-                />
+                >
+                    <Github
+                        size={17}
+                        className="
+                            transition-transform
+                            group-hover:rotate-6
+                        "
+                    />
 
-                Repository
+                    Repository
+                </a>
+            ) : (
+                <div
+                    className="
+                        flex
+                        items-center
+                        gap-2
+                        rounded-2xl
+                        border
+                        border-white/10
+                        bg-white/2
+                        px-4
+                        py-3
+                        text-sm
+                        font-medium
+                        text-zinc-600
+                    "
+                >
+                    <Github size={17} />
 
-            </a>
-            ) : 
-            ( <div> No Repository </div> )}
-
-
-
+                    No Repository
+                </div>
+            )}
 
             {/* LIVE */}
 
-            {live_url ? (
-
+            {liveHref ? (
                 <a
-                    href={live_url}
+                    href={liveHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="
@@ -117,7 +143,6 @@ export default function HeroLinks({
                         hover:bg-emerald-500/15
                     "
                 >
-
                     <ExternalLink
                         size={17}
                         className="
@@ -128,11 +153,8 @@ export default function HeroLinks({
                     />
 
                     Live Demo
-
                 </a>
-
             ) : (
-
                 <div
                     className="
                         flex
@@ -149,23 +171,17 @@ export default function HeroLinks({
                         text-zinc-600
                     "
                 >
-
                     <ExternalLink size={17} />
 
                     No Live URL
-
                 </div>
-
             )}
-
-
 
             {/* VIDEO */}
 
-            {demo_video_url ? (
-
+            {demoVideoHref ? (
                 <a
-                    href={demo_video_url}
+                    href={demoVideoHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="
@@ -188,7 +204,6 @@ export default function HeroLinks({
                         hover:bg-red-500/15
                     "
                 >
-
                     <Play
                         size={17}
                         className="
@@ -198,11 +213,8 @@ export default function HeroLinks({
                     />
 
                     Watch Demo
-
                 </a>
-
             ) : (
-
                 <div
                     className="
                         flex
@@ -219,16 +231,11 @@ export default function HeroLinks({
                         text-zinc-600
                     "
                 >
-
                     <Play size={17} />
 
                     No Demo Video
-
                 </div>
-
             )}
-
         </div>
-
     )
 }

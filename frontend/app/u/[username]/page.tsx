@@ -259,7 +259,7 @@ export default function Dashboard() {
 
                         <div className="flex flex-wrap gap-3">
                             <Link
-                                href="/create-project"
+                                href={`/u/${currentUser.username}/create/project`}
                                 className="inline-flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
                             >
                                 <Plus className="h-4 w-4" />
@@ -267,7 +267,7 @@ export default function Dashboard() {
                             </Link>
 
                             <Link
-                                href="/live-project/create"
+                                href="/live_project/create"
                                 className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm font-semibold text-white transition hover:border-orange-500/50"
                             >
                                 <Rocket className="h-4 w-4 text-orange-400" />
@@ -275,7 +275,7 @@ export default function Dashboard() {
                             </Link>
 
                             <Link
-                                href={`/u/${currentUser.username}`}
+                                href={`/u/${currentUser.username}/me`}
                                 className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm font-semibold text-white transition hover:border-orange-500/50"
                             >
                                 View Profile
@@ -359,7 +359,7 @@ export default function Dashboard() {
                                     (project) => (
                                         <Link
                                             key={project.id}
-                                            href={`/live-projects/${project.slug}`}
+                                            href={`/live_project/${project.slug}`}
                                             className="group block rounded-3xl border border-zinc-800 bg-black/40 p-4 transition hover:-translate-y-0.5 hover:border-orange-500/40 hover:bg-zinc-900/60"
                                         >
                                             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -560,7 +560,7 @@ export default function Dashboard() {
                             <EmptyState
                                 title="No projects yet"
                                 description="Publish your first completed project."
-                                href="/create-project"
+                                href="/create/project"
                                 action="Create project"
                             />
                         ) : (

@@ -243,3 +243,10 @@ class GetProjectBookmark(BaseModel):
     model_config = ConfigDict(
         from_attributes=True
     )
+
+
+class ProjectBookmarkStatus(BaseModel):
+
+    project_id: UUID
+
+    is_bookmarked: bool

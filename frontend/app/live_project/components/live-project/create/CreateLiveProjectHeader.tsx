@@ -21,7 +21,7 @@ export default function CreateLiveProjectHeader() {
                 {/* LEFT */}
 
                 <button
-                    onClick={() => router.push(`/u/${currentUser?.username}/live-projects`)}
+                    onClick={() => router.push(`/u/${currentUser?.username}/live_projects`)}
                     className="text-zinc-400 transition hover:text-white"
                 >
 

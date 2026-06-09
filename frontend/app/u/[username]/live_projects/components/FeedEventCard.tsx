@@ -12,8 +12,8 @@ import {
 
 import type { FeedEvent }
 from "@/app/lib/type/feed"
-
-
+import { useRouter } from "next/navigation"
+import useCurrentUser from "@/app/lib/currentUser"
 
 type Props = {
 
@@ -28,6 +28,10 @@ export default function FeedEventCard({
     event,
 
 }: Props) {
+
+    const router = useRouter()
+
+    const { currentUser } = useCurrentUser()
 
 
 
@@ -158,6 +162,8 @@ console.log(event.live_project?.slug)
                             items-start
                             gap-4
                         "
+
+                        onClick={() => router.push(`/u/${event.user.username}/me`)}
                     >
 
                         {/* avatar */}

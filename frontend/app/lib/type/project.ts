@@ -65,6 +65,7 @@ export type GetProject = {
 
 
 export type ProjectAuthor = {
+    id: string | undefined
 
     username: string
 

@@ -15,14 +15,10 @@ from app.service.bookmark import (
 )
 
 
-
 router = APIRouter(
-
     prefix="/bookmarks",
-
     tags=["Bookmarks"],
 )
-
 
 
 @router.get(
@@ -30,15 +26,11 @@ router = APIRouter(
     response_model=list[GetProject],
 )
 async def get_bookmarked_projects(
-
     clerk_user_id: str = Query(...),
-
     db: AsyncSession = Depends(get_db),
 ):
 
     return await get_my_bookmarks(
-
         db=db,
-
         clerk_user_id=clerk_user_id,
     )

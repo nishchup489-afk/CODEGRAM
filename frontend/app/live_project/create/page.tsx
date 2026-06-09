@@ -99,7 +99,7 @@ export default function CreateLiveProjectPage() {
 
             const response = await api.post(
 
-                `/live-projects?clerk_user_id=${user?.id}`,
+                `/live-project?clerk_user_id=${user?.id}`,
 
                 {
 

@@ -57,10 +57,11 @@ const emptyProject: GetLiveProject = {
 export default function GetLiveProjectPage() {
     const params = useParams()
     const slug = params.slug as string
-    const { currentUser } = useCurrentUser();
+
     const router = useRouter()
 
     const { user, isLoaded } = useUser()
+    const { currentUser } = useCurrentUser()
 
     const [project, setProject] =
         useState<GetLiveProject>(emptyProject)
@@ -77,6 +78,13 @@ export default function GetLiveProjectPage() {
     const [error, setError] =
         useState("")
 
+    const isOwner =
+        Boolean(
+            currentUser?.id &&
+            project.user_id &&
+            currentUser.id === project.user_id
+        )
+
     useEffect(() => {
         if (!slug) return
 
@@ -87,16 +95,22 @@ export default function GetLiveProjectPage() {
 
                 const [projectRes, journalsRes] =
                     await Promise.all([
-                        api.get(`/live-projects/${slug}`),
-                        api.get(`/live-projects/${slug}/journals`),
+                        api.get(
+                            `/live-projects/${slug}`
+                        ),
+                        api.get(
+                            `/live-projects/${slug}/journals`
+                        ),
                     ])
 
                 setProject(projectRes.data)
                 setJournals(journalsRes.data)
-
             } catch (err) {
                 console.error(err)
-                setError("There was a problem fetching live project data")
+
+                setError(
+                    "There was a problem fetching live project data"
+                )
             } finally {
                 setLoading(false)
             }
@@ -105,8 +119,38 @@ export default function GetLiveProjectPage() {
         getLiveProjectData()
     }, [slug])
 
-    async function publishEntry(data: {
+    async function updateLiveProject(
+        data: Partial<GetLiveProject>
+    ) {
+        if (!isLoaded || !user?.id) {
+            throw new Error(
+                "User is not loaded or not authenticated"
+            )
+        }
 
+        if (!isOwner) {
+            throw new Error(
+                "Only the project owner can update this live project"
+            )
+        }
+
+        const res = await api.patch(
+            `/live-projects/${slug}?clerk_user_id=${user.id}`,
+            data
+        )
+
+        const updatedProject =
+            res.data as GetLiveProject
+
+        setProject((prev) => ({
+            ...prev,
+            ...updatedProject,
+        }))
+
+        return updatedProject
+    }
+
+    async function publishEntry(data: {
         day_number: number
 
         content: string
@@ -120,7 +164,6 @@ export default function GetLiveProjectPage() {
         code_snippets: string[]
 
         problem_solutions: any[]
-
     }) {
         if (!isLoaded || !user?.id) return
 
@@ -130,7 +173,8 @@ export default function GetLiveProjectPage() {
                 data
             )
 
-            const newEntry = res.data as GetLiveProjectJournal
+            const newEntry =
+                res.data as GetLiveProjectJournal
 
             setJournals((prev) => [
                 newEntry,
@@ -139,14 +183,14 @@ export default function GetLiveProjectPage() {
 
             setProject((prev) => ({
                 ...prev,
-                journal_count: prev.journal_count + 1,
+                journal_count:
+                    prev.journal_count + 1,
                 progress_percentage:
                     newEntry.progress_percentage ??
                     prev.progress_percentage,
             }))
 
             setComposerOpen(false)
-
         } catch (err) {
             console.error(err)
         }
@@ -154,7 +198,16 @@ export default function GetLiveProjectPage() {
 
     if (loading) {
         return (
-            <main className="flex min-h-screen items-center justify-center bg-black text-zinc-400">
+            <main
+                className="
+                    flex
+                    min-h-screen
+                    items-center
+                    justify-center
+                    bg-black
+                    text-zinc-400
+                "
+            >
                 Loading live project...
             </main>
         )
@@ -162,17 +215,50 @@ export default function GetLiveProjectPage() {
 
     if (error) {
         return (
-            <main className="flex min-h-screen items-center justify-center bg-black px-4 text-center text-red-400">
+            <main
+                className="
+                    flex
+                    min-h-screen
+                    items-center
+                    justify-center
+                    bg-black
+                    px-4
+                    text-center
+                    text-red-400
+                "
+            >
                 {error}
             </main>
         )
     }
 
     return (
-        <main className="min-h-screen bg-black px-4 py-6">
-            <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+        <main
+            className="
+                min-h-screen
+                bg-black
+                px-4
+                py-6
+            "
+        >
+            <div
+                className="
+                    mx-auto
+                    flex
+                    w-full
+                    max-w-4xl
+                    flex-col
+                    gap-5
+                "
+            >
                 <button
-                    onClick={() => router.push(`/u/${currentUser?.username}/live_projects`)}
+                    onClick={() =>
+                        router.push(
+                            currentUser?.username
+                                ? `/u/${currentUser.username}/live-project`
+                                : "/"
+                        )
+                    }
                     className="
                         group
                         mb-2
@@ -195,25 +281,28 @@ export default function GetLiveProjectPage() {
                         hover:text-orange-300
                     "
                 >
+                    <ArrowLeft
+                        size={16}
+                        className="
+                            transition-transform
+                            group-hover:-translate-x-1
+                        "
+                    />
 
-    <ArrowLeft
-        size={16}
-        className="
-            transition-transform
-            group-hover:-translate-x-1
-        "
-    />
+                    Back
+                </button>
 
-    Back
-
-</button>
-                <LiveProjectHero project={project} />
+                <LiveProjectHero
+                    project={project}
+                    isOwner={isOwner}
+                    onUpdate={updateLiveProject}
+                />
 
                 <LiveProjectSetupPanel
                     project={project}
                     setProject={setProject}
-                    isOwner={currentUser?.id === project.user_id}
-                    openEditModal={() => {}}
+                    isOwner={isOwner}
+                    onUpdate={updateLiveProject}
                 />
 
                 <LatestCommitCard
@@ -224,9 +313,11 @@ export default function GetLiveProjectPage() {
                     project={project}
                     journals={journals}
                     composerOpen={composerOpen}
-                    setComposerOpen={setComposerOpen}
+                    setComposerOpen={
+                        setComposerOpen
+                    }
                     onPublish={publishEntry}
-                    isOwner={currentUser?.id === project.user_id}
+                    isOwner={isOwner}
                 />
             </div>
         </main>

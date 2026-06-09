@@ -249,13 +249,13 @@ class User(Base):
     live_projects = relationship(
         "LiveProject" , 
         back_populates="user" , 
-        cascade="all , delete-orphan"
+        cascade="all, delete-orphan"
     )
 
     live_project_journals = relationship(
         "LiveProjectJournal" , 
         back_populates="user" , 
-        cascade="all , delete-orphan"
+        cascade="all, delete-orphan"
     )
 
     live_project_journal_likes = relationship(
@@ -287,7 +287,23 @@ class User(Base):
         "Feedback",
         foreign_keys="Feedback.user_id",
         back_populates="user",
+
     )
+
+    following_relations = relationship(
+        "Follow",
+        foreign_keys="Follow.follower_id",
+        back_populates="follower",
+        cascade="all, delete-orphan",
+        )
+
+    follower_relations = relationship(
+        "Follow",
+        foreign_keys="Follow.following_id",
+        back_populates="following",
+        cascade="all, delete-orphan",
+    )
+
 
 
 
@@ -296,9 +312,6 @@ class User(Base):
 # =========================================================
 
 class Follow(Base):
-
-
-    
 
     __tablename__ = "follows"
 
@@ -310,14 +323,22 @@ class Follow(Base):
 
     follower_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("users.id"),
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
         nullable=False,
+        index=True,
     )
 
     following_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("users.id"),
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
         nullable=False,
+        index=True,
     )
 
     created_at = Column(
@@ -326,6 +347,25 @@ class Follow(Base):
         nullable=False,
     )
 
+    follower = relationship(
+        "User",
+        foreign_keys=[follower_id],
+        back_populates="following_relations",
+    )
+
+    following = relationship(
+        "User",
+        foreign_keys=[following_id],
+        back_populates="follower_relations",
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "follower_id",
+            "following_id",
+            name="uq_follower_following",
+        ),
+    )
 
 
 

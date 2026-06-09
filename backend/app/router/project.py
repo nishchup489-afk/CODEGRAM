@@ -27,6 +27,7 @@ from app.schema.project import (
     AddComment,
     UpdateComment,
     AddVote,
+    ProjectBookmarkStatus,
 )
 
 from app.service.project import (
@@ -44,6 +45,7 @@ from app.service.project import (
     delete_project_comment,
     get_project_comments,
     vote_on_comment,
+    
 )
 from app.models.user import User
 from app.core.auth import get_current_user_optional
@@ -412,7 +414,7 @@ async def vote_comment(
 
 @router.post(
     "/{slug}/bookmark",
-    response_model=GetProjectBookmark,
+    response_model=ProjectBookmarkStatus,
 )
 async def bookmark_project(
     slug: str,
@@ -440,14 +442,13 @@ async def bookmark_project(
     )
 
 
-
 # =========================================================
 # REMOVE BOOKMARK
 # =========================================================
 
 @router.delete(
     "/{slug}/bookmark",
-    status_code=204,
+    response_model=ProjectBookmarkStatus,
 )
 async def unbookmark_project(
     slug: str,
@@ -468,7 +469,7 @@ async def unbookmark_project(
             detail="User not found",
         )
 
-    await remove_project_bookmark(
+    return await remove_project_bookmark(
         db=db,
         slug=slug,
         user_id=user.id,

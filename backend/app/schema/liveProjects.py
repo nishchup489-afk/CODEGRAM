@@ -72,49 +72,60 @@ class UpdateLiveProject(BaseModel):
 class GetLiveProject(BaseModel):
 
     id: UUID
+
     user_id: UUID
 
     user: PublicUser
 
-    days_count : int
-
     title: str
+
     slug: str
 
     goal: str
 
-    description: str | None
+    description: str | None = None
 
-    current_status: str | None
-    current_goal: str | None
+    github_url: str | None = None
 
-    progress_percentage: int
+    live_url: str | None = None
 
-    status: str
+    demo_video_url: str | None = None
 
-    category: str | None
+    thumbnail_url: str | None = None
 
-    github_url: str | None
-    live_url: str | None
+    gallery_urls: list[str] = []
 
-    demo_video_url: str | None
-    thumbnail_url: str | None
+    tech_stack: list[str] = []
 
-    gallery_urls: list[str]
+    progress_percentage: int = 0
 
-    tech_stack: list[str]
+    current_status: str | None = None
 
-    is_public: bool
-    is_featured: bool
+    current_goal: str | None = None
 
-    views_count: int
-    journal_count: int
+    status: str = "active"
+
+    category: str | None = None
+
+    is_public: bool = True
+
+    is_featured: bool = False
+
+    views_count: int = 0
+
+    journal_count: int = 0
+
+    days_count: int = 0
+
+    completed_at: datetime | None = None
 
     created_at: datetime
-    updated_at: datetime
-    completed_at: datetime | None
 
-    model_config = ConfigDict(from_attributes=True)
+    updated_at: datetime
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
 
 
 # =========================================================

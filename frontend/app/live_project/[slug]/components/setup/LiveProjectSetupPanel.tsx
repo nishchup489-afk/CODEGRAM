@@ -8,20 +8,16 @@ import {
     Pause,
     X,
     Rocket,
+    Save,
 } from "lucide-react"
 
-import RevealWrapper
-from "../animations/RevealWrapper"
+import RevealWrapper from "../animations/RevealWrapper"
 
 import type {
     GetLiveProject,
 } from "@/app/lib/type/liveproject"
 
-
-
 interface LiveProjectSetupPanelProps {
-
-
     project: GetLiveProject
 
     setProject: React.Dispatch<
@@ -30,14 +26,23 @@ interface LiveProjectSetupPanelProps {
 
     isOwner: boolean
 
-    openEditModal: () => void
-
+    onUpdate: (
+        data: Partial<GetLiveProject>
+    ) => Promise<GetLiveProject | void>
 }
 
+type LiveProjectStatus =
+    | "active"
+    | "paused"
+    | "completed"
+    | "abandoned"
 
-
-const STATUS_OPTIONS = [
-
+const STATUS_OPTIONS: {
+    value: LiveProjectStatus
+    label: string
+    icon: React.ElementType
+    color: string
+}[] = [
     {
         value: "active",
         label: "Active",
@@ -69,66 +74,67 @@ const STATUS_OPTIONS = [
         color:
             "border-red-500/20 bg-red-500/10 text-red-300",
     },
-
 ]
 
-
-
 export default function LiveProjectSetupPanel({
-
     project,
-
     setProject,
-
     isOwner,
-
-    openEditModal,
-
+    onUpdate,
 }: LiveProjectSetupPanelProps) {
-
-
+    const [editing, setEditing] =
+        useState(false)
 
     const [saving, setSaving] =
         useState(false)
 
+    const [draftStatus, setDraftStatus] =
+        useState<LiveProjectStatus>(
+            project.status as LiveProjectStatus
+        )
 
+    const startEditing = () => {
+        setDraftStatus(
+            project.status as LiveProjectStatus
+        )
+        setEditing(true)
+    }
 
-    const updateStatus = async (
-        statusValue:
-            | "active"
-            | "paused"
-            | "completed"
-            | "abandoned"
-    ) => {
+    const cancelEditing = () => {
+        setDraftStatus(
+            project.status as LiveProjectStatus
+        )
+        setEditing(false)
+    }
 
+    const saveStatus = async () => {
         try {
-
             setSaving(true)
 
             setProject((prev) => ({
+                ...prev,
+                status: draftStatus,
+            }))
 
-                    ...prev,
+            await onUpdate({
+                status: draftStatus,
+            })
 
-                    status: statusValue,
+            setEditing(false)
+        } catch (err) {
+            console.error(err)
 
-                }))
-
-        }
-
-        finally {
-
+            setProject((prev) => ({
+                ...prev,
+                status: project.status,
+            }))
+        } finally {
             setSaving(false)
-
         }
-
     }
 
-
-
     return (
-
         <RevealWrapper delay={0.1}>
-
             <section
                 className="
                     overflow-hidden
@@ -138,11 +144,7 @@ export default function LiveProjectSetupPanel({
                     bg-[#0b0b0b]
                 "
             >
-
                 <div className="p-6">
-
-                    {/* HEADER */}
-
                     <div
                         className="
                             flex
@@ -151,9 +153,7 @@ export default function LiveProjectSetupPanel({
                             gap-4
                         "
                     >
-
                         <div>
-
                             <p
                                 className="
                                     text-xs
@@ -177,17 +177,11 @@ export default function LiveProjectSetupPanel({
                             >
                                 Build Controls
                             </h2>
-
                         </div>
 
-
-
-                        {isOwner && (
-
+                        {isOwner && !editing && (
                             <button
-                                onClick={
-                                    openEditModal
-                                }
+                                onClick={startEditing}
                                 className="
                                     flex
                                     items-center
@@ -207,23 +201,74 @@ export default function LiveProjectSetupPanel({
                                     hover:text-orange-300
                                 "
                             >
-
                                 <Pencil size={16} />
-
                                 Edit
-
                             </button>
-
                         )}
 
+                        {isOwner && editing && (
+                            <div
+                                className="
+                                    flex
+                                    gap-2
+                                "
+                            >
+                                <button
+                                    onClick={saveStatus}
+                                    disabled={saving}
+                                    className="
+                                        flex
+                                        items-center
+                                        gap-2
+                                        rounded-2xl
+                                        bg-orange-500
+                                        px-4
+                                        py-3
+                                        text-sm
+                                        font-semibold
+                                        text-black
+                                        transition
+                                        hover:bg-orange-400
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-60
+                                    "
+                                >
+                                    <Save size={16} />
+                                    {saving
+                                        ? "Saving..."
+                                        : "Save"}
+                                </button>
+
+                                <button
+                                    onClick={cancelEditing}
+                                    disabled={saving}
+                                    className="
+                                        flex
+                                        items-center
+                                        gap-2
+                                        rounded-2xl
+                                        border
+                                        border-white/10
+                                        bg-white/5
+                                        px-4
+                                        py-3
+                                        text-sm
+                                        font-medium
+                                        text-zinc-300
+                                        transition
+                                        hover:bg-white/10
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-60
+                                    "
+                                >
+                                    <X size={16} />
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
                     </div>
 
-
-
-                    {/* STATUS */}
-
                     <div className="mt-8">
-
                         <p
                             className="
                                 mb-4
@@ -235,8 +280,6 @@ export default function LiveProjectSetupPanel({
                             Project Status
                         </p>
 
-
-
                         <div
                             className="
                                 grid
@@ -244,33 +287,34 @@ export default function LiveProjectSetupPanel({
                                 gap-3
                             "
                         >
-
                             {STATUS_OPTIONS.map(
                                 (status) => {
-
                                     const Icon =
                                         status.icon
 
                                     const active =
-                                        project.status ===
-                                        status.value
+                                        editing
+                                            ? draftStatus ===
+                                              status.value
+                                            : project.status ===
+                                              status.value
+
+                                    const disabled =
+                                        !isOwner ||
+                                        !editing ||
+                                        saving
 
                                     return (
-
                                         <button
                                             key={
                                                 status.value
                                             }
                                             disabled={
-                                                saving
+                                                disabled
                                             }
                                             onClick={() =>
-                                                updateStatus(
-                                                    status.value as
-                                                        | "active"
-                                                        | "paused"
-                                                        | "completed"
-                                                        | "abandoned"
+                                                setDraftStatus(
+                                                    status.value
                                                 )
                                             }
                                             className={`
@@ -290,12 +334,21 @@ export default function LiveProjectSetupPanel({
                                                             border-white/10
                                                             bg-white/3
                                                             text-zinc-400
-                                                            hover:border-white/20
+                                                            ${
+                                                                editing &&
+                                                                isOwner
+                                                                    ? "hover:border-white/20"
+                                                                    : ""
+                                                            }
                                                         `
+                                                }
+                                                ${
+                                                    disabled
+                                                        ? "cursor-not-allowed opacity-70"
+                                                        : "cursor-pointer"
                                                 }
                                             `}
                                         >
-
                                             <div
                                                 className="
                                                     flex
@@ -307,17 +360,12 @@ export default function LiveProjectSetupPanel({
                                                     bg-black/20
                                                 "
                                             >
-
                                                 <Icon
                                                     size={18}
                                                 />
-
                                             </div>
 
-
-
                                             <div>
-
                                                 <p
                                                     className="
                                                         text-sm
@@ -329,25 +377,50 @@ export default function LiveProjectSetupPanel({
                                                     }
                                                 </p>
 
+                                                {active && (
+                                                    <p
+                                                        className="
+                                                            mt-1
+                                                            text-xs
+                                                            opacity-70
+                                                        "
+                                                    >
+                                                        Current status
+                                                    </p>
+                                                )}
                                             </div>
-
                                         </button>
-
                                     )
-
                                 }
                             )}
-
                         </div>
 
+                        {!editing && isOwner && (
+                            <p
+                                className="
+                                    mt-4
+                                    text-xs
+                                    text-zinc-500
+                                "
+                            >
+                                Click Edit to change project status.
+                            </p>
+                        )}
+
+                        {!isOwner && (
+                            <p
+                                className="
+                                    mt-4
+                                    text-xs
+                                    text-zinc-500
+                                "
+                            >
+                                Only the project owner can change status.
+                            </p>
+                        )}
                     </div>
 
-
-
-                    {/* PROGRESS */}
-
                     <div className="mt-8">
-
                         <div
                             className="
                                 mb-3
@@ -356,7 +429,6 @@ export default function LiveProjectSetupPanel({
                                 justify-between
                             "
                         >
-
                             <p
                                 className="
                                     text-sm
@@ -379,10 +451,7 @@ export default function LiveProjectSetupPanel({
                                 }
                                 %
                             </p>
-
                         </div>
-
-
 
                         <div
                             className="
@@ -392,7 +461,6 @@ export default function LiveProjectSetupPanel({
                                 bg-white/5
                             "
                         >
-
                             <div
                                 className="
                                     h-full
@@ -403,23 +471,13 @@ export default function LiveProjectSetupPanel({
                                     transition-all
                                 "
                                 style={{
-
-                                    width:
-                                        `${project.progress_percentage}%`,
-
+                                    width: `${project.progress_percentage}%`,
                                 }}
                             />
-
                         </div>
-
                     </div>
-
                 </div>
-
             </section>
-
         </RevealWrapper>
-
     )
-
 }

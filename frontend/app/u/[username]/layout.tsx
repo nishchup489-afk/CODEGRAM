@@ -14,7 +14,8 @@ import {
     User,
     Settings,
     Search,
-} from "lucide-react";
+    Rocket,
+} from "lucide-react"
 
 import LeftSidebar from "./components/LeftSideBar";
 import RightSidebar from "./components/RightSideBar";
@@ -93,43 +94,44 @@ export default function DashboardLayout({
     const safeUsername =
         currentUser.username || "loading";
 
-    const navItems = [
-        {
-            name: "Feed",
-            href: `/u/${safeUsername}`,
-            icon: Home,
-        },
 
-        {
-            name: "Explore",
-            href: `/u/${safeUsername}/projects`,
-            icon: Compass,
-        },
+const navItems = [
+    {
+        name: "Dashboard",
+        href: `/u/${safeUsername}`,
+        icon: Home,
+    },
 
-        {
-            name: "Live Projects",
-            href: `/u/${safeUsername}/live_projects`,
-            icon: Bell,
-        },
+    {
+        name: "Explore",
+        href: `/u/${safeUsername}/projects`,
+        icon: Compass,
+    },
 
-        {
-            name: "Bookmarks",
-            href: `/u/${safeUsername}/bookmarks`,
-            icon: Bookmark,
-        },
+    {
+        name: "Live Projects",
+        href: `/u/${safeUsername}/live_projects`,
+        icon: Rocket,
+    },
 
-        {
-            name: "Profile",
-            href: `/u/${safeUsername}/me`,
-            icon: User,
-        },
+    {
+        name: "Bookmarks",
+        href: `/u/${safeUsername}/bookmarks`,
+        icon: Bookmark,
+    },
 
-        {
-            name: "Settings",
-            href: `/settings`,
-            icon: Settings,
-        },
-    ];
+    {
+        name: "Profile",
+        href: `/u/${safeUsername}/me`,
+        icon: User,
+    },
+
+    {
+        name: "Settings",
+        href: `/settings`,
+        icon: Settings,
+    },
+]
 
     return (
         <div className="flex min-h-screen bg-[#050505] text-white">
@@ -260,7 +262,7 @@ export default function DashboardLayout({
 
             <FloatingCreateButton
                 onClick={() =>
-                    router.push("/create-project")
+                    router.push("/create/project")
                 }
             />
         </div>
