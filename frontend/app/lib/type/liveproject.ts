@@ -18,61 +18,50 @@ export interface LiveProjectProblemSolution {
 
 
 
-export interface PublicUser {
+export type LiveProjectJournalEntryType =
+    | "progress"
+    | "milestone"
+    | "bugfix"
+    | "deployment"
+    | "architecture"
+    | "announcement"
+    | "failure";
 
-    id: string
+export type PublicUser = {
+    id?: string;
+    username: string;
+    display_name: string;
+    avatar_url: string | null;
+};
 
-    clerk_user_id: string
+export type GetLiveProjectJournal = {
+    id: string;
+    live_project_id: string;
+    user_id: string;
 
-    username: string
+    day_number: number;
+    entry_type: LiveProjectJournalEntryType | string;
 
-    display_name: string | null
+    title?: string | null;
+    content: string;
 
-    avatar_url: string | null
+    code_snippet?: string | null;
+    images?: string[];
 
-}
+    problem?: string | null;
+    solution?: string | null;
 
+    reactions_count?: number;
+    comments_count?: number;
 
+    parent_id?: string | null;
 
-export interface GetLiveProjectJournal {
+    created_at: string;
+    updated_at: string;
 
-    id: string
-
-    live_project_id: string
-
-    user_id: string
-
-    day_number: number
-
-    entry_type:
-        | "progress"
-        | "milestone"
-        | "bugfix"
-        | "deployment"
-        | "architecture"
-        | "announcement"
-        | "failure"
-
-    content: string
-
-    media_urls: string[]
-
-    code_snippets: string[]
-
-    problem_solutions:
-        LiveProjectProblemSolution[]
-
-    progress_percentage: number | null
-
-    likes_count: number
-
-    comments_count: number
-
-    created_at: string
-
-    updated_at: string
-
-}
+    user?: PublicUser;
+    author?: PublicUser;
+};
 
 
 

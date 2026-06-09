@@ -1,426 +1,180 @@
-"use client"
+"use client";
 
 import {
-    AlertTriangle,
-    CheckCircle2,
+    CalendarDays,
     Code2,
-    TrendingUp,
-} from "lucide-react"
+    ImageIcon,
+    MessageCircle,
+    Rocket,
+} from "lucide-react";
 
-import {
+import type {
     GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject"
+} from "@/app/lib/type/liveproject";
 
 interface JournalEntryCardProps {
+    journal: GetLiveProjectJournal;
+}
 
-    journal: GetLiveProjectJournal
-
+function formatDate(date: string) {
+    try {
+        return new Date(date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    } catch {
+        return date;
+    }
 }
 
 export default function JournalEntryCard({
-
     journal,
-
 }: JournalEntryCardProps) {
-
     return (
-
         <article
             className="
+                group
+                relative
                 overflow-hidden
-                rounded-4xl
+                rounded-3xl
                 border
                 border-white/10
-                bg-[#0f0f13]
+                bg-white/[0.035]
+                p-5
+                shadow-[0_0_40px_rgba(0,0,0,0.25)]
+                backdrop-blur-xl
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:border-orange-500/30
+                hover:bg-white/5.5
+                hover:shadow-[0_0_55px_rgba(249,115,22,0.10)]
             "
         >
+            <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-orange-500/10 blur-3xl opacity-0 transition duration-300 group-hover:opacity-100" />
 
-            <div className="p-6">
+            <div className="relative z-10">
+                {/* TOP META */}
 
-                {/* HEADER */}
-
-                <div
-                    className="
-                        mb-6
-                        flex
-                        flex-wrap
-                        items-center
-                        justify-between
-                        gap-4
-                    "
-                >
-
-                    <div className="flex items-center gap-3">
-
-                        <div
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                        <span
                             className="
+                                inline-flex
+                                items-center
+                                gap-2
                                 rounded-full
                                 border
                                 border-orange-500/20
                                 bg-orange-500/10
-                                px-4
-                                py-2
+                                px-3
+                                py-1
                                 text-xs
                                 font-bold
-                                tracking-wide
-                                text-orange-300
+                                text-orange-200
                             "
                         >
+                            <Rocket size={13} />
+                            Day {journal.day_number}
+                        </span>
 
-                            DAY {journal.day_number}
-
-                        </div>
-
-
-                        <div
+                        <span
                             className="
                                 rounded-full
                                 border
-                                border-zinc-700
-                                bg-zinc-900
-                                px-4
-                                py-2
+                                border-white/10
+                                bg-white/4
+                                px-3
+                                py-1
                                 text-xs
-                                font-medium
+                                font-semibold
                                 capitalize
-                                text-zinc-400
+                                text-zinc-300
                             "
                         >
-
                             {journal.entry_type}
-
-                        </div>
-
+                        </span>
                     </div>
 
-
-
-                    <div
-                        className="
-                            flex
-                            items-center
-                            gap-2
-                            rounded-full
-                            border
-                            border-emerald-500/20
-                            bg-emerald-500/10
-                            px-4
-                            py-2
-                            text-xs
-                            font-bold
-                            text-emerald-300
-                        "
-                    >
-
-                        <TrendingUp size={14} />
-
-                        {
-                            journal.progress_percentage
-                            ??
-                            0
-                        }%
-
+                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                        <CalendarDays size={13} />
+                        {formatDate(journal.created_at)}
                     </div>
-
                 </div>
 
+                {/* TITLE */}
 
+                {journal.title && (
+                    <h3 className="text-lg font-black tracking-[-0.03em] text-white">
+                        {journal.title}
+                    </h3>
+                )}
 
                 {/* CONTENT */}
 
-                <div
-                    className="
-                        whitespace-pre-wrap
-                        text-[15px]
-                        leading-8
-                        text-zinc-300
-                    "
-                >
-
+                <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-zinc-300">
                     {journal.content}
+                </p>
 
-                </div>
+                {/* CODE SNIPPET */}
 
-
-
-                {/* PROBLEM SOLUTION */}
-
-                {
-                    journal.problem_solutions &&
-                    journal.problem_solutions.length > 0 && (
-
-                        <div className="mt-8 space-y-5">
-
-                            {
-                                journal.problem_solutions.map(
-
-                                    (
-                                        item: any,
-                                        index: number
-                                    ) => (
-
-                                        <div
-                                            key={index}
-                                            className="
-                                                overflow-hidden
-                                                rounded-3xl
-                                                border
-                                                border-zinc-800
-                                            "
-                                        >
-
-                                            {/* PROBLEM */}
-
-                                            <div
-                                                className="
-                                                    border-b
-                                                    border-red-500/10
-                                                    bg-red-500/3
-                                                    p-5
-                                                "
-                                            >
-
-                                                <div
-                                                    className="
-                                                        mb-3
-                                                        flex
-                                                        items-center
-                                                        gap-2
-                                                    "
-                                                >
-
-                                                    <AlertTriangle
-                                                        size={18}
-                                                        className="text-red-400"
-                                                    />
-
-                                                    <h3
-                                                        className="
-                                                            font-semibold
-                                                            text-red-300
-                                                        "
-                                                    >
-
-                                                        Problem
-
-                                                    </h3>
-
-                                                </div>
-
-                                                <p
-                                                    className="
-                                                        text-sm
-                                                        leading-7
-                                                        text-zinc-300
-                                                    "
-                                                >
-
-                                                    {item.problem}
-
-                                                </p>
-
-                                            </div>
-
-
-
-                                            {/* SOLUTION */}
-
-                                            <div
-                                                className="
-                                                    bg-emerald-500/3
-                                                    p-5
-                                                "
-                                            >
-
-                                                <div
-                                                    className="
-                                                        mb-3
-                                                        flex
-                                                        items-center
-                                                        gap-2
-                                                    "
-                                                >
-
-                                                    <CheckCircle2
-                                                        size={18}
-                                                        className="text-emerald-400"
-                                                    />
-
-                                                    <h3
-                                                        className="
-                                                            font-semibold
-                                                            text-emerald-300
-                                                        "
-                                                    >
-
-                                                        Solution
-
-                                                    </h3>
-
-                                                </div>
-
-                                                <p
-                                                    className="
-                                                        text-sm
-                                                        leading-7
-                                                        text-zinc-300
-                                                    "
-                                                >
-
-                                                    {item.solution}
-
-                                                </p>
-
-                                            </div>
-
-                                        </div>
-
-                                    )
-
-                                )
-                            }
-
+                {journal.code_snippet && (
+                    <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/50">
+                        <div className="flex items-center gap-2 border-b border-white/10 bg-white/3 px-4 py-3 text-xs font-bold text-zinc-400">
+                            <Code2 size={14} />
+                            Code snippet
                         </div>
 
-                    )
-                }
+                        <pre className="overflow-x-auto p-4 text-xs leading-6 text-zinc-300">
+                            <code>{journal.code_snippet}</code>
+                        </pre>
+                    </div>
+                )}
 
+                {/* IMAGES */}
 
-
-                {/* CODE SNIPPETS */}
-
-                {
-                    journal.code_snippets &&
-                    journal.code_snippets.length > 0 && (
-
-                        <div className="mt-8 space-y-4">
-
-                            {
-                                journal.code_snippets.map(
-
-                                    (
-                                        snippet: string,
-                                        index: number
-                                    ) => (
-
-                                        <div
-                                            key={index}
-                                            className="
-                                                overflow-hidden
-                                                rounded-3xl
-                                                border
-                                                border-zinc-800
-                                                bg-black
-                                            "
-                                        >
-
-                                            <div
-                                                className="
-                                                    flex
-                                                    items-center
-                                                    gap-2
-                                                    border-b
-                                                    border-zinc-800
-                                                    bg-zinc-950
-                                                    px-5
-                                                    py-3
-                                                    text-xs
-                                                    text-zinc-500
-                                                "
-                                            >
-
-                                                <Code2 size={14} />
-
-                                                Code Snippet
-
-                                            </div>
-
-                                            <pre
-                                                className="
-                                                    overflow-x-auto
-                                                    p-5
-                                                    text-sm
-                                                    leading-7
-                                                    text-zinc-300
-                                                "
-                                            >
-
-                                                <code>
-                                                    {snippet}
-                                                </code>
-
-                                            </pre>
-
-                                        </div>
-
-                                    )
-
-                                )
-                            }
-
-                        </div>
-
-                    )
-                }
-
-
+                {journal.images && journal.images.length > 0 && (
+                    <div className="mt-5 grid grid-cols-2 gap-3">
+                        {journal.images.map((imageUrl, index) => (
+                            <div
+                                key={`${imageUrl}-${index}`}
+                                className="
+                                    relative
+                                    overflow-hidden
+                                    rounded-2xl
+                                    border
+                                    border-white/10
+                                    bg-white/3
+                                "
+                            >
+                                <img
+                                    src={imageUrl}
+                                    alt={`Journal image ${index + 1}`}
+                                    className="h-40 w-full object-cover"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 {/* FOOTER */}
 
-                <div
-                    className="
-                        mt-8
-                        flex
-                        flex-wrap
-                        items-center
-                        justify-between
-                        gap-4
-                        border-t
-                        border-zinc-800
-                        pt-5
-                        text-xs
-                        text-zinc-500
-                    "
-                >
+                <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-white/10 pt-4 text-xs text-zinc-500">
+                    {journal.images && journal.images.length > 0 && (
+                        <span className="inline-flex items-center gap-1.5">
+                            <ImageIcon size={13} />
+                            {journal.images.length} image
+                            {journal.images.length > 1 ? "s" : ""}
+                        </span>
+                    )}
 
-                    <span>
-
-                        {
-                            new Date(
-                                journal.created_at
-                            ).toLocaleString()
-                        }
-
+                    <span className="inline-flex items-center gap-1.5">
+                        <MessageCircle size={13} />
+                        {journal.comments_count ?? 0} comments
                     </span>
-
-
-
-                    <div className="flex items-center gap-4">
-
-                        <span>
-                            {
-                                journal.likes_count
-                                ??
-                                0
-                            } likes
-                        </span>
-
-                        <span>
-                            {
-                                journal.comments_count
-                                ??
-                                0
-                            } comments
-                        </span>
-
-                    </div>
-
                 </div>
-
             </div>
-
         </article>
-
-    )
-
+    );
 }

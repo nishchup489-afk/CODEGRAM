@@ -1,52 +1,37 @@
-"use client"
+"use client";
 
-import { Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react";
 
-import RevealWrapper
-from "../animations/RevealWrapper"
-
-import JournalEntryCard
-from "./JournalEntryCard"
+import RevealWrapper from "../animations/RevealWrapper";
+import JournalEntryCard from "./JournalEntryCard";
 
 import type {
-    GetLiveProjectJournal
-} from "../../types/liveProject"
-
-
+    GetLiveProjectJournal,
+} from "@/app/lib/type/liveproject";
 
 interface JournalTimelineProps {
-
-    journals: GetLiveProjectJournal[]
-
+    journals: GetLiveProjectJournal[];
 }
 
-
-
 export default function JournalTimeline({
-
     journals,
-
 }: JournalTimelineProps) {
-
-
+    if (!journals.length) {
+        return (
+            <div className="rounded-3xl border border-white/10 bg-white/3 p-6 text-sm text-zinc-400">
+                No journal logs yet. Start shipping and write the first one.
+            </div>
+        );
+    }
 
     return (
-
-        <div
-            className="
-                relative
-                flex
-                flex-col
-                gap-8
-            "
-        >
-
+        <div className="relative flex flex-col gap-8">
             {/* TIMELINE LINE */}
 
             <div
                 className="
                     absolute
-                    left-5.75
+                    left-6
                     top-0
                     hidden
                     h-full
@@ -59,23 +44,12 @@ export default function JournalTimeline({
                 "
             />
 
-
-
-            {journals.map((entry, index) => (
-
+            {journals.map((journal, index) => (
                 <RevealWrapper
-                    key={entry.id}
+                    key={journal.id}
                     delay={index * 0.04}
                 >
-
-                    <div
-                        className="
-                            relative
-                            flex
-                            gap-6
-                        "
-                    >
-
+                    <div className="relative flex gap-6">
                         {/* NODE */}
 
                         <div
@@ -85,6 +59,7 @@ export default function JournalTimeline({
                                 hidden
                                 h-12
                                 w-12
+                                shrink-0
                                 items-center
                                 justify-center
                                 rounded-full
@@ -97,9 +72,6 @@ export default function JournalTimeline({
                                 md:flex
                             "
                         >
-
-                            {/* PULSE */}
-
                             <div
                                 className="
                                     absolute
@@ -110,34 +82,20 @@ export default function JournalTimeline({
                                 "
                             />
 
-
-
                             <Sparkles
                                 size={18}
                                 className="relative z-10"
                             />
-
                         </div>
 
+                        {/* CARD */}
 
-
-                        {/* ENTRY */}
-
-                        <div className="flex-1">
-
-                            <JournalEntryCard
-                                entry={entry}
-                            />
-
+                        <div className="min-w-0 flex-1">
+                            <JournalEntryCard journal={journal} />
                         </div>
-
                     </div>
-
                 </RevealWrapper>
-
             ))}
-
         </div>
-
-    )
+    );
 }
