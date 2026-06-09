@@ -25,6 +25,7 @@ import {
     Sparkles,
     Users,
     X,
+    Megaphone,
 } from 'lucide-react'
 import { currentUser } from '@clerk/nextjs/server'
 import useCurrentUser from '../lib/currentUser'
@@ -67,6 +68,12 @@ const ADMIN_NAVIGATION = [
         href: '/admin/changelog',
         icon: Newspaper,
         match: ['/admin/changelog'],
+    },
+    {
+        name: 'App Notices',
+        href: '/admin/app-notice',
+        icon: Megaphone,
+        match: ['/admin/app-notice'],
     },
 ]
 

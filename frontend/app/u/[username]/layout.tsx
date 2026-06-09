@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useUser } from "@clerk/nextjs";
-
+import AppNoticeManager from "@/app/components/AppNoticeManager";
 import {
     Home,
     Compass,
@@ -245,22 +245,26 @@ const navItems = [
 
             {/* MOBILE BOTTOM NAV */}
 
-            <MobileBottomNav
-                navItems={navItems}
-                avatarUrl={
-                    loading
-                        ? null
-                        : currentUser.avatar_url
-                }
-            />
+                <MobileBottomNav
+                    navItems={navItems}
+                    avatarUrl={
+                        loading
+                            ? null
+                            : currentUser.avatar_url
+                    }
+                />
 
-            {/* FLOATING CREATE BUTTON */}
+                {/* FLOATING CREATE BUTTON */}
 
-            <FloatingCreateButton
-                onClick={() =>
-                    router.push("/create/project")
-                }
-            />
+                <FloatingCreateButton
+                    onClick={() =>
+                        router.push("/create/project")
+                    }
+                />
+
+                {/* APP NOTICE POPUP */}
+
+                <AppNoticeManager />
         </div>
     );
 }

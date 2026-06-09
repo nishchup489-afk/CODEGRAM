@@ -22,6 +22,9 @@ from app.schema.admin import (
     AdminUpdateSupportTicket,
     AdminUpdateUser,
     AdminUserItem,
+    AdminAppNoticeItem,
+    AdminCreateAppNotice,
+    AdminUpdateAppNotice,
 )
 
 
@@ -270,4 +273,72 @@ async def delete_admin_changelog(
 
     return await service.delete_changelog(
         changelog_id=changelog_id,
+    )
+
+# =========================================================
+# APP NOTICES
+# =========================================================
+
+@router.get(
+    "/app-notices",
+    response_model=list[AdminAppNoticeItem],
+)
+async def list_admin_app_notices(
+    limit: int = Query(default=50, le=100),
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.list_app_notices(
+        limit=limit,
+    )
+
+
+@router.post(
+    "/app-notices",
+    response_model=AdminAppNoticeItem,
+)
+async def create_admin_app_notice(
+    payload: AdminCreateAppNotice,
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.create_app_notice(
+        payload=payload,
+    )
+
+
+@router.patch(
+    "/app-notices/{notice_id}",
+    response_model=AdminAppNoticeItem,
+)
+async def update_admin_app_notice(
+    notice_id: UUID,
+    payload: AdminUpdateAppNotice,
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.update_app_notice(
+        notice_id=notice_id,
+        payload=payload,
+    )
+
+
+@router.delete(
+    "/app-notices/{notice_id}",
+)
+async def delete_admin_app_notice(
+    notice_id: UUID,
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.delete_app_notice(
+        notice_id=notice_id,
     )

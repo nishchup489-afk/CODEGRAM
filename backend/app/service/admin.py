@@ -9,7 +9,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.models.project import Project
 from app.models.changelog import Changelog
+from app.models.app_notice import AppNotice
 
+from app.schema.admin import (
+    AdminUpdateFeedback,
+    AdminUpdateProject,
+    AdminUpdateSupportTicket,
+    AdminUpdateUser,
+
+    AdminCreateAppNotice,
+    AdminUpdateAppNotice,
+)
 from app.models.feedback import (
     Feedback,
     FeedbackStatus,
@@ -499,4 +509,104 @@ class AdminService:
 
         return {
             "message": "Changelog deleted successfully"
+        }
+    
+
+    # =========================================================
+    # APP NOTICES
+    # =========================================================
+
+    async def list_app_notices(
+        self,
+        limit: int = 50,
+    ):
+        result = await self.db.execute(
+            select(AppNotice)
+            .order_by(
+                AppNotice.priority.desc(),
+                AppNotice.created_at.desc(),
+            )
+            .limit(limit)
+        )
+
+        return result.scalars().all()
+
+
+    async def create_app_notice(
+        self,
+        payload: AdminCreateAppNotice,
+    ):
+        notice = AppNotice(
+            title=payload.title,
+            message=payload.message,
+            notice_type=payload.notice_type,
+            cta_label=payload.cta_label,
+            cta_href=payload.cta_href,
+            is_active=payload.is_active,
+            show_once=payload.show_once,
+            priority=payload.priority,
+            starts_at=payload.starts_at,
+            expires_at=payload.expires_at,
+        )
+
+        self.db.add(notice)
+
+        await self.db.commit()
+
+        await self.db.refresh(notice)
+
+        return notice
+
+
+    async def update_app_notice(
+        self,
+        notice_id: UUID,
+        payload: AdminUpdateAppNotice,
+    ):
+        notice = await self.db.get(
+            AppNotice,
+            notice_id,
+        )
+
+        if not notice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="App notice not found",
+            )
+
+        update_data = payload.model_dump(
+            exclude_unset=True
+        )
+
+        for key, value in update_data.items():
+            setattr(notice, key, value)
+
+        await self.db.commit()
+
+        await self.db.refresh(notice)
+
+        return notice
+
+
+    async def delete_app_notice(
+        self,
+        notice_id: UUID,
+    ):
+        notice = await self.db.get(
+            AppNotice,
+            notice_id,
+        )
+
+        if not notice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="App notice not found",
+            )
+
+        await self.db.delete(notice)
+
+        await self.db.commit()
+
+        return {
+            "message": "App notice deleted successfully"
         }

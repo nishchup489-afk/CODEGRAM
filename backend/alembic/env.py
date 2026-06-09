@@ -21,6 +21,7 @@ from app.models.feedback import Feedback
 from app.models.idea import Idea 
 from app.models.support import SupportTicket
 from app.models.changelog import Changelog
+from app.models.app_notice import AppNotice
 
 
 load_dotenv()

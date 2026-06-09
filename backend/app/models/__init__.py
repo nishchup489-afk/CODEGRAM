@@ -15,3 +15,5 @@ from app.models.LiveProject import (
     LiveProjectJournalLike,
     LiveProjectJournalComment,
 )
+
+from app.models.app_notice import AppNotice

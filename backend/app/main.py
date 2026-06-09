@@ -16,6 +16,7 @@ from app.api.v1 import admin
 from app.router.follow import router as follow_router
 from app.router.search import router as search_router
 from app.router.changelog import router as changelog_router
+from app.router.app_notice import router as app_notice_router
 
 app = FastAPI()
 
@@ -34,6 +35,7 @@ app.include_router(admin.router)
 app.include_router(follow_router)
 app.include_router(search_router)
 app.include_router(changelog_router)
+app.include_router(app_notice_router)
 
 
 origins = [

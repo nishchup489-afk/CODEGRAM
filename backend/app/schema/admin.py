@@ -291,3 +291,107 @@ class AdminChangelogItem(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
     )
+
+
+AppNoticeType = Literal[
+    "info",
+    "success",
+    "warning",
+    "danger",
+    "maintenance",
+    "update",
+]
+
+
+class AdminCreateAppNotice(BaseModel):
+    title: str = Field(
+        min_length=3,
+        max_length=160,
+    )
+
+    message: str = Field(
+        min_length=5,
+    )
+
+    notice_type: AppNoticeType = "info"
+
+    cta_label: str | None = Field(
+        default=None,
+        max_length=80,
+    )
+
+    cta_href: str | None = None
+
+    is_active: bool = True
+
+    show_once: bool = True
+
+    priority: int = 0
+
+    starts_at: datetime | None = None
+
+    expires_at: datetime | None = None
+
+
+class AdminUpdateAppNotice(BaseModel):
+    title: str | None = Field(
+        default=None,
+        min_length=3,
+        max_length=160,
+    )
+
+    message: str | None = Field(
+        default=None,
+        min_length=5,
+    )
+
+    notice_type: AppNoticeType | None = None
+
+    cta_label: str | None = Field(
+        default=None,
+        max_length=80,
+    )
+
+    cta_href: str | None = None
+
+    is_active: bool | None = None
+
+    show_once: bool | None = None
+
+    priority: int | None = None
+
+    starts_at: datetime | None = None
+
+    expires_at: datetime | None = None
+
+
+class AdminAppNoticeItem(BaseModel):
+    id: UUID
+
+    title: str
+
+    message: str
+
+    notice_type: str
+
+    cta_label: str | None
+
+    cta_href: str | None
+
+    is_active: bool
+
+    show_once: bool
+
+    priority: int
+
+    starts_at: datetime | None
+
+    expires_at: datetime | None
+
+    created_at: datetime
+
+    updated_at: datetime
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
