@@ -10,10 +10,13 @@ from app.core.admin import require_admin
 from app.service.admin import AdminService
 
 from app.schema.admin import (
+    AdminChangelogItem,
+    AdminCreateChangelog,
     AdminDashboardResponse,
     AdminFeedbackItem,
     AdminProjectItem,
     AdminSupportTicketItem,
+    AdminUpdateChangelog,
     AdminUpdateFeedback,
     AdminUpdateProject,
     AdminUpdateSupportTicket,
@@ -198,4 +201,73 @@ async def update_admin_project(
     return await service.update_project(
         project_id=project_id,
         payload=payload,
+    )
+
+
+# =========================================================
+# CHANGELOGS
+# =========================================================
+
+@router.get(
+    "/changelogs",
+    response_model=list[AdminChangelogItem],
+)
+async def list_admin_changelogs(
+    limit: int = Query(default=50, le=100),
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.list_changelogs(
+        limit=limit,
+    )
+
+
+@router.post(
+    "/changelogs",
+    response_model=AdminChangelogItem,
+)
+async def create_admin_changelog(
+    payload: AdminCreateChangelog,
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.create_changelog(
+        payload=payload,
+    )
+
+
+@router.patch(
+    "/changelogs/{changelog_id}",
+    response_model=AdminChangelogItem,
+)
+async def update_admin_changelog(
+    changelog_id: UUID,
+    payload: AdminUpdateChangelog,
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.update_changelog(
+        changelog_id=changelog_id,
+        payload=payload,
+    )
+
+
+@router.delete(
+    "/changelogs/{changelog_id}",
+)
+async def delete_admin_changelog(
+    changelog_id: UUID,
+    admin_clerk_user_id: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    service = AdminService(db)
+
+    return await service.delete_changelog(
+        changelog_id=changelog_id,
     )

@@ -15,6 +15,7 @@ from app.api.v1.feedback import router as feedback_router
 from app.api.v1 import admin
 from app.router.follow import router as follow_router
 from app.router.search import router as search_router
+from app.router.changelog import router as changelog_router
 
 app = FastAPI()
 
@@ -29,11 +30,11 @@ app.include_router(feed_event_router)
 app.include_router(main_dashboard_router)
 app.include_router(support_router)
 app.include_router(feedback_router)
-app.include_router(
-    admin.router
-)
+app.include_router(admin.router)
 app.include_router(follow_router)
 app.include_router(search_router)
+app.include_router(changelog_router)
+
 
 origins = [
     "http://localhost:3000",  

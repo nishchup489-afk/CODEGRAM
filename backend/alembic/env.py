@@ -20,6 +20,7 @@ from app.models.project import Project , ProjectStar
 from app.models.feedback import Feedback
 from app.models.idea import Idea 
 from app.models.support import SupportTicket
+from app.models.changelog import Changelog
 
 
 load_dotenv()

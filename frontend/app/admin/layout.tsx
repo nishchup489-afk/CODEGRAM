@@ -20,11 +20,14 @@ import {
     Lock,
     Menu,
     MessageSquareMore,
+    Newspaper,
     ShieldCheck,
     Sparkles,
     Users,
     X,
 } from 'lucide-react'
+import { currentUser } from '@clerk/nextjs/server'
+import useCurrentUser from '../lib/currentUser'
 
 
 const ADMIN_NAVIGATION = [
@@ -59,7 +62,15 @@ const ADMIN_NAVIGATION = [
         icon: FolderKanban,
         match: ['/admin/projects'],
     },
+    {
+        name: 'Changelog',
+        href: '/admin/changelog',
+        icon: Newspaper,
+        match: ['/admin/changelog'],
+    },
 ]
+
+
 
 
 export default function AdminLayout({
@@ -100,6 +111,8 @@ export default function AdminLayout({
         )
     }
 
+    const { currentUser: c } = useCurrentUser();
+
     if (!isLoaded) {
         return (
             <div className='flex min-h-screen items-center justify-center bg-[#050505] px-4 text-white'>
@@ -136,7 +149,7 @@ export default function AdminLayout({
                     </p>
 
                     <Link
-                        href='/'
+                        href={`/u/${c?.username}`}
                         className='mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#E8560A] px-5 py-3 text-sm font-black text-white transition hover:bg-[#ff6a1a]'
                     >
                         Go back home
@@ -218,7 +231,7 @@ export default function AdminLayout({
                         {/* HEADER */}
                         <div className='border-b border-[#1F1F1F] p-5'>
                             <Link
-                                href='/'
+                                href={`/u/${c?.username}`}
                                 className='mb-5 inline-flex items-center gap-2 rounded-full bg-[#151515] px-4 py-2 text-sm font-black text-[#D1D5DB] transition hover:bg-[#E8560A]/20 hover:text-white'
                             >
                                 <ArrowLeft size={16} />

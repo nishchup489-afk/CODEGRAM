@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -7,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.project import Project
+from app.models.changelog import Changelog
 
 from app.models.feedback import (
     Feedback,
@@ -25,8 +27,31 @@ from app.schema.admin import (
     AdminUpdateProject,
     AdminUpdateSupportTicket,
     AdminUpdateUser,
+
+    AdminCreateChangelog , 
+    AdminUpdateChangelog
 )
 
+
+
+def make_slug(value: str) -> str:
+    slug = value.lower().strip()
+
+    cleaned = []
+
+    previous_dash = False
+
+    for char in slug:
+        if char.isalnum():
+            cleaned.append(char)
+            previous_dash = False
+
+        elif char in [" ", "-", "_"]:
+            if not previous_dash:
+                cleaned.append("-")
+                previous_dash = True
+
+    return "".join(cleaned).strip("-")
 
 class AdminService:
     def __init__(self, db: AsyncSession):
@@ -298,3 +323,180 @@ class AdminService:
         await self.db.refresh(project)
 
         return project
+    
+
+    # =========================================================
+    # CHANGELOGS
+    # =========================================================
+
+    async def ensure_unique_changelog_slug(
+        self,
+        base_slug: str,
+        current_id: UUID | None = None,
+    ) -> str:
+        slug = base_slug
+        counter = 1
+
+        while True:
+            query = select(Changelog).where(
+                Changelog.slug == slug
+            )
+
+            if current_id is not None:
+                query = query.where(
+                    Changelog.id != current_id
+                )
+
+            result = await self.db.execute(query)
+
+            existing = result.scalar_one_or_none()
+
+            if existing is None:
+                return slug
+
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+
+    async def list_changelogs(
+        self,
+        limit: int = 50,
+    ):
+        result = await self.db.execute(
+            select(Changelog)
+            .order_by(
+                Changelog.created_at.desc()
+            )
+            .limit(limit)
+        )
+
+        return result.scalars().all()
+
+
+    async def create_changelog(
+        self,
+        payload: AdminCreateChangelog,
+    ):
+        base_slug = make_slug(
+            payload.slug or payload.title
+        )
+
+        if not base_slug:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid changelog slug",
+            )
+
+        final_slug = await self.ensure_unique_changelog_slug(
+            base_slug=base_slug,
+        )
+
+        published_at = None
+
+        if payload.is_published:
+            published_at = datetime.now(timezone.utc)
+
+        changelog = Changelog(
+            title=payload.title,
+            slug=final_slug,
+            version=payload.version,
+            summary=payload.summary,
+            content=payload.content,
+            changelog_type=payload.changelog_type,
+            tags=payload.tags,
+            is_published=payload.is_published,
+            published_at=published_at,
+        )
+
+        self.db.add(changelog)
+
+        await self.db.commit()
+
+        await self.db.refresh(changelog)
+
+        return changelog
+
+
+    async def update_changelog(
+        self,
+        changelog_id: UUID,
+        payload: AdminUpdateChangelog,
+    ):
+        changelog = await self.db.get(
+            Changelog,
+            changelog_id,
+        )
+
+        if not changelog:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Changelog not found",
+            )
+
+        update_data = payload.model_dump(
+            exclude_unset=True
+        )
+
+        if "slug" in update_data and update_data["slug"]:
+            base_slug = make_slug(
+                update_data["slug"]
+            )
+
+            if not base_slug:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid changelog slug",
+                )
+
+            update_data["slug"] = await self.ensure_unique_changelog_slug(
+                base_slug=base_slug,
+                current_id=changelog.id,
+            )
+
+        was_unpublished = changelog.is_published is False
+
+        for key, value in update_data.items():
+            setattr(changelog, key, value)
+
+        if (
+            "is_published" in update_data
+            and update_data["is_published"] is True
+            and was_unpublished
+        ):
+            changelog.published_at = datetime.now(timezone.utc)
+
+        if (
+            "is_published" in update_data
+            and update_data["is_published"] is False
+        ):
+            changelog.published_at = None
+
+        await self.db.commit()
+
+        await self.db.refresh(changelog)
+
+        return changelog
+
+
+    async def delete_changelog(
+        self,
+        changelog_id: UUID,
+    ):
+        changelog = await self.db.get(
+            Changelog,
+            changelog_id,
+        )
+
+        if not changelog:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Changelog not found",
+            )
+
+        await self.db.delete(changelog)
+
+        await self.db.commit()
+
+        return {
+            "message": "Changelog deleted successfully"
+        }

@@ -579,28 +579,28 @@ function BasicSupportBot() {
 }
 
 function OtherSupportSection() {
-    const links = [
-        {
-            label: 'Documentation',
-            href: '/docs',
-            external: false,
-        },
-        {
-            label: 'Status page',
-            href: '/status',
-            external: false,
-        },
-        {
-            label: 'Changelog',
-            href: '/changelog',
-            external: false,
-        },
-        {
-            label: 'Community Discord',
-            href: 'https://discord.gg/devmaniac',
-            external: true,
-        },
-    ]
+const links = [
+    {
+        label: 'Documentation',
+        href: 'https://docs.devmaniac.com',
+        external: true,
+    },
+    {
+        label: 'Status page',
+        href: 'https://status.devmaniac.com',
+        external: true,
+    },
+    {
+        label: 'Changelog',
+        href: '/changelog',
+        external: false,
+    },
+    {
+        label: 'Community Discord',
+        href: 'https://discord.gg/devmaniac',
+        external: true,
+    },
+]
 
     return (
         <section className='space-y-4'>
