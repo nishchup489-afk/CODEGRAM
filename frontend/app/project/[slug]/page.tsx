@@ -64,57 +64,62 @@ export default function GetSingleProject() {
 
 
 
-    const [projectData, setProjectData] =
-        useState<GetProject>({
+const [projectData, setProjectData] =
+    useState<GetProject>({
+
+        id: "",
+
+        user_id: "",
+
+        title: "",
+
+        slug: "",
+
+        description: "",
+
+        github_url: "",
+
+        live_url: null,
+
+        thumbnail_url: null,
+
+        demo_video_url: null,
+
+        gallery_urls: [],
+
+        tech_stack: [],
+
+        stars_count: 0,
+
+        views_count: 0,
+
+        comments_count: 0,
+
+        is_featured: false,
+
+        created_at: "",
+
+        updated_at: "",
+
+        is_bookmarked: false,
+
+        user: {
 
             id: "",
 
-            user_id: "",
+            username: "",
 
-            title: "",
+            display_name: "",
 
-            slug: "",
+            avatar_url: null,
 
-            description: "",
+            location: null,
 
-            github_url: "",
+        },
 
-            live_url: null,
+        is_starred: false,
 
-            thumbnail_url: null,
-
-            demo_video_url: null,
-
-            gallery_urls: [],
-
-            tech_stack: [],
-
-            stars_count: 0,
-
-            views_count: 0,
-
-            comments_count: 0,
-
-            is_featured: false,
-
-            created_at: "",
-
-            updated_at: "",
-
-            is_bookmarked : false , 
-
-            user: {
-
-                username: "",
-
-                avatar_url: null,
-
-                location: null,
-            },
-
-            is_starred: false,
-
-        })
+    })
 
     const [commentData, setCommentData] =
     useState<CommentData>({

@@ -371,7 +371,7 @@ export default function PrivacyPage() {
                             </Link>
 
                             <Link
-                                href='/feedback'
+                                href='/settings/feedback'
                                 className='inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2D2D2D] bg-[#0A0A0A] px-5 py-3 text-sm font-bold text-[#F9FAFB] transition hover:border-[#E8560A]/50'
                             >
                                 Send feedback

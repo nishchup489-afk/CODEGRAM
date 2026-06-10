@@ -75,7 +75,7 @@ const SETTINGS_NAVIGATION = [
                 icon: MessageSquareMore,
                 match: [
                     '/settings/feedback',
-                    '/feedback',
+                    '/settings/feedback',
                 ],
             },
             {

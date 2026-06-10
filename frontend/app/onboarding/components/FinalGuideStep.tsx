@@ -135,7 +135,7 @@ export default function FinalGuideStep({
                 </div>
 
                 <Link
-                    href="/feedback"
+                    href="/settings/feedback"
                     target="_blank"
                     className="
                         group
@@ -164,7 +164,7 @@ export default function FinalGuideStep({
                 </Link>
 
                 <Link
-                    href="/support"
+                    href="/settings/support"
                     target="_blank"
                     className="
                         group

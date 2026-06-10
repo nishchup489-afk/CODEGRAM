@@ -313,7 +313,7 @@ export default function GitHubSettingsPage() {
                                 )}
 
                                 <Link
-                                    href='/feedback'
+                                    href='/settings/feedback'
                                     className='inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2D2D2D] bg-[#0A0A0A]/70 px-5 py-3 text-sm font-semibold text-[#F9FAFB] transition hover:border-[#E8560A]/50'
                                 >
                                     Suggest GitHub feature

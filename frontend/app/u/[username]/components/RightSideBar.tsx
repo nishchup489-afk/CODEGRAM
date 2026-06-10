@@ -502,7 +502,7 @@ export default function RightSidebar({
 
                             <div className="space-y-2">
                                 <Link
-                                    href="/feedback"
+                                    href="/settings/feedback"
                                     className="
                                         group
                                         flex
@@ -551,7 +551,7 @@ export default function RightSidebar({
                                 </Link>
 
                                 <Link
-                                    href="/support"
+                                    href="/settings/support"
                                     className="
                                         group
                                         flex
