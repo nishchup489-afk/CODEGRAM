@@ -2,13 +2,22 @@
 
 import { useState } from "react"
 
+import { useUser } from "@clerk/nextjs"
+
+import api from "@/app/lib/api"
 
 import type {
     GetLiveProjectJournal,
     JournalEntryType,
-} from "../types/liveProject"
+    LiveProjectCodeSnippet,
+    LiveProjectProblemSolution,
+} from "@/app/lib/type/liveproject"
+
+
 
 interface UseJournalComposerProps {
+
+    slug: string
 
     currentDay: number
 
@@ -24,6 +33,8 @@ interface UseJournalComposerProps {
 
 export default function useJournalComposer({
 
+    slug,
+
     currentDay,
 
     baseProgress,
@@ -31,6 +42,11 @@ export default function useJournalComposer({
     onPublish,
 
 }: UseJournalComposerProps) {
+
+
+
+    const { user } = useUser()
+
 
 
     const [entryType, setEntryType] =
@@ -55,30 +71,39 @@ export default function useJournalComposer({
 
 
 
-    const [codeSnippets,
-        setCodeSnippets] =
-        useState([
+    const [
+        codeSnippets,
+        setCodeSnippets,
+    ] =
+        useState<LiveProjectCodeSnippet[]>([
             {
                 language: "",
                 code: "",
-            }
+            },
         ])
 
 
 
-    const [problemSolutions,
-        setProblemSolutions] =
-        useState([
+    const [
+        problemSolutions,
+        setProblemSolutions,
+    ] =
+        useState<LiveProjectProblemSolution[]>([
             {
                 problem: "",
                 solution: "",
-            }
+            },
         ])
 
 
 
     const [loading, setLoading] =
         useState(false)
+
+
+
+    const [error, setError] =
+        useState("")
 
 
 
@@ -96,15 +121,17 @@ export default function useJournalComposer({
             {
                 language: "",
                 code: "",
-            }
+            },
         ])
 
         setProblemSolutions([
             {
                 problem: "",
                 solution: "",
-            }
+            },
         ])
+
+        setError("")
 
     }
 
@@ -119,7 +146,7 @@ export default function useJournalComposer({
             {
                 language: "",
                 code: "",
-            }
+            },
 
         ])
 
@@ -132,9 +159,7 @@ export default function useJournalComposer({
     ) {
 
         setCodeSnippets((prev) =>
-            prev.filter(
-                (_, i) => i !== index
-            )
+            prev.filter((_, i) => i !== index)
         )
 
     }
@@ -143,17 +168,14 @@ export default function useJournalComposer({
 
     function updateCodeSnippet(
         index: number,
-        field:
-            | "language"
-            | "code",
+        field: "language" | "code",
         value: string
     ) {
 
         setCodeSnippets((prev) =>
             prev.map((snippet, i) => {
 
-                if (i !== index)
-                    return snippet
+                if (i !== index) return snippet
 
                 return {
                     ...snippet,
@@ -176,7 +198,7 @@ export default function useJournalComposer({
             {
                 problem: "",
                 solution: "",
-            }
+            },
 
         ])
 
@@ -189,9 +211,7 @@ export default function useJournalComposer({
     ) {
 
         setProblemSolutions((prev) =>
-            prev.filter(
-                (_, i) => i !== index
-            )
+            prev.filter((_, i) => i !== index)
         )
 
     }
@@ -200,17 +220,14 @@ export default function useJournalComposer({
 
     function updateProblemSolution(
         index: number,
-        field:
-            | "problem"
-            | "solution",
+        field: "problem" | "solution",
         value: string
     ) {
 
         setProblemSolutions((prev) =>
             prev.map((item, i) => {
 
-                if (i !== index)
-                    return item
+                if (i !== index) return item
 
                 return {
                     ...item,
@@ -227,8 +244,11 @@ export default function useJournalComposer({
     function addMediaUrl() {
 
         setMediaUrls((prev) => [
+
             ...prev,
+
             "",
+
         ])
 
     }
@@ -243,8 +263,7 @@ export default function useJournalComposer({
         setMediaUrls((prev) =>
             prev.map((url, i) => {
 
-                if (i !== index)
-                    return url
+                if (i !== index) return url
 
                 return value
 
@@ -260,9 +279,7 @@ export default function useJournalComposer({
     ) {
 
         setMediaUrls((prev) =>
-            prev.filter(
-                (_, i) => i !== index
-            )
+            prev.filter((_, i) => i !== index)
         )
 
     }
@@ -273,19 +290,23 @@ export default function useJournalComposer({
 
         if (!content.trim()) return
 
+        if (!user?.id) {
 
+            setError(
+                "You must be signed in to publish a journal entry."
+            )
+
+            return
+
+        }
 
         try {
 
             setLoading(true)
 
+            setError("")
 
-
-            const payload:
-                GetLiveProjectJournal = {
-
-                id:
-                    crypto.randomUUID(),
+            const payload = {
 
                 day_number:
                     currentDay,
@@ -293,10 +314,16 @@ export default function useJournalComposer({
                 entry_type:
                     entryType,
 
-                content,
+                content:
+                    content.trim(),
 
                 progress_percentage:
                     progress,
+
+                media_urls:
+                    mediaUrls.filter(
+                        (url) => url.trim() !== ""
+                    ),
 
                 code_snippets:
                     codeSnippets.filter(
@@ -307,29 +334,25 @@ export default function useJournalComposer({
                 problem_solutions:
                     problemSolutions.filter(
                         (item) =>
-                            item.problem.trim() !== ""
+                            item.problem.trim() !== "" ||
+                            item.solution.trim() !== ""
                     ),
-
-                media_urls:
-                    mediaUrls.filter(
-                        (url) =>
-                            url.trim() !== ""
-                    ),
-
-                likes_count: 0,
-
-                comments_count: 0,
-
-                created_at:
-                    new Date().toISOString(),
 
             }
 
+            const res =
+                await api.post<GetLiveProjectJournal>(
+                    `/live-projects/${slug}/journals`,
+                    payload,
+                    {
+                        params: {
+                            clerk_user_id:
+                                user.id,
+                        },
+                    }
+                )
 
-
-            onPublish?.(payload)
-
-
+            onPublish?.(res.data)
 
             resetComposer()
 
@@ -340,6 +363,10 @@ export default function useJournalComposer({
             console.error(
                 "Failed to publish journal entry:",
                 error
+            )
+
+            setError(
+                "Failed to publish journal entry."
             )
 
         }
@@ -358,43 +385,31 @@ export default function useJournalComposer({
 
         loading,
 
-
+        error,
 
         entryType,
         setEntryType,
 
-
-
         content,
         setContent,
 
-
-
         progress,
         setProgress,
-
-
 
         mediaUrls,
         addMediaUrl,
         updateMediaUrl,
         removeMediaUrl,
 
-
-
         codeSnippets,
         addCodeSnippet,
         updateCodeSnippet,
         removeCodeSnippet,
 
-
-
         problemSolutions,
         addProblemSolution,
         updateProblemSolution,
         removeProblemSolution,
-
-
 
         publishEntry,
         resetComposer,

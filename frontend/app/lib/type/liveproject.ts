@@ -35,34 +35,44 @@ export type PublicUser = {
 };
 
 export type GetLiveProjectJournal = {
-    id: string;
-    live_project_id: string;
-    user_id: string;
 
-    day_number: number;
-    entry_type: LiveProjectJournalEntryType | string;
+    id: string
 
-    title?: string | null;
-    content: string;
+    live_project_id: string
 
-    code_snippet?: string | null;
-    images?: string[];
+    user_id: string
 
-    problem?: string | null;
-    solution?: string | null;
+    day_number: number
 
-    reactions_count?: number;
-    comments_count?: number;
+    entry_type: LiveProjectJournalEntryType
 
-    parent_id?: string | null;
+    title?: string | null
 
-    created_at: string;
-    updated_at: string;
+    content: string
 
-    user?: PublicUser;
-    author?: PublicUser;
-};
+    progress_percentage: number | null
 
+    code_snippets: LiveProjectCodeSnippet[]
+
+    problem_solutions: LiveProjectProblemSolution[]
+
+    media_urls: string[]
+
+    likes_count: number
+
+    comments_count: number
+
+    parent_id?: string | null
+
+    created_at: string
+
+    updated_at: string
+
+    user?: PublicUser
+
+    author?: PublicUser
+
+}
 
 
 export interface GetLiveProject {
@@ -215,21 +225,13 @@ export interface CreateJournalEntry {
 
     content: string
 
-    entry_type:
-        | "progress"
-        | "milestone"
-        | "bugfix"
-        | "deployment"
-        | "architecture"
-        | "announcement"
-        | "failure"
+    entry_type: LiveProjectJournalEntryType
 
     media_urls?: string[]
 
-    code_snippets?: string[]
+    code_snippets?: LiveProjectCodeSnippet[]
 
-    problem_solutions?:
-        LiveProjectProblemSolution[]
+    problem_solutions?: LiveProjectProblemSolution[]
 
     progress_percentage?: number | null
 
@@ -241,25 +243,18 @@ export interface UpdateJournalEntry {
 
     content?: string
 
-    entry_type?:
-        | "progress"
-        | "milestone"
-        | "bugfix"
-        | "deployment"
-        | "architecture"
-        | "announcement"
-        | "failure"
+    entry_type?: LiveProjectJournalEntryType
 
     media_urls?: string[]
 
-    code_snippets?: string[]
+    code_snippets?: LiveProjectCodeSnippet[]
 
-    problem_solutions?:
-        LiveProjectProblemSolution[]
+    problem_solutions?: LiveProjectProblemSolution[]
 
     progress_percentage?: number | null
 
 }
+
 
 
 

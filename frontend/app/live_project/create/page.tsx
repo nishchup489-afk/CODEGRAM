@@ -89,45 +89,65 @@ export default function CreateLiveProjectPage() {
 
     const handleSubmit = async () => {
 
+        if (!user?.id) {
+
+            setError("You must be signed in to create a live project.")
+
+            return
+
+        }
+
+        if (!title.trim()) {
+
+            setError("Project title is required.")
+
+            return
+
+        }
+
+        if (!goal.trim()) {
+
+            setError("Project goal is required.")
+
+            return
+
+        }
+
         try {
 
             setSubmitting(true)
 
             setError("")
 
-
-
             const response = await api.post(
-
-                `/live-project?clerk_user_id=${user?.id}`,
-
+                "/live-projects",
                 {
-
-                    title,
+                    title: title.trim(),
 
                     slug: generatedSlug,
 
-                    goal,
+                    goal: goal.trim(),
 
-                    category,
+                    category: category || null,
 
-                    github_url: githubUrl,
+                    github_url: githubUrl || null,
 
                     tech_stack: techStack,
 
-                    live_url: liveUrl,
+                    live_url: liveUrl || null,
 
-                    demo_video_url: demoVideoUrl,
+                    demo_video_url: demoVideoUrl || null,
 
-                    thumbnail_url: thumbnailUrl,
+                    thumbnail_url: thumbnailUrl || null,
 
                     is_public: isPublic,
-
+                },
+                {
+                    params: {
+                        clerk_user_id: user.id,
+                    },
                 }
-
             )
-
-            console.log("CREATE RESPONSE:", response.data)
 
             router.push(
                 `/live_project/${response.data.slug}`
@@ -138,8 +158,7 @@ export default function CreateLiveProjectPage() {
             console.error(err)
 
             setError(
-                err?.response?.data?.detail
-                ||
+                err?.response?.data?.detail ||
                 "Failed to create project"
             )
 

@@ -24,7 +24,6 @@ const emptyProject: GetLiveProject = {
     user_id: "",
     user: {
         id: "",
-        clerk_user_id: "",
         username: "",
         display_name: "",
         avatar_url: "",
@@ -255,7 +254,7 @@ export default function GetLiveProjectPage() {
                     onClick={() =>
                         router.push(
                             currentUser?.username
-                                ? `/u/${currentUser.username}/live-project`
+                                ? `/u/${currentUser.username}/live_projects`
                                 : "/"
                         )
                     }

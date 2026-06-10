@@ -339,7 +339,7 @@ export default function Dashboard() {
                             </div>
 
                             <Link
-                                href="/live-project/create"
+                                href="/live_project/create"
                                 className="text-sm text-orange-400 hover:text-orange-300"
                             >
                                 New build
@@ -350,7 +350,7 @@ export default function Dashboard() {
                             <EmptyState
                                 title="No live builds yet"
                                 description="Start a live project and document the journey."
-                                href="/live-project/create"
+                                href="/live_project/create"
                                 action="Start building"
                             />
                         ) : (

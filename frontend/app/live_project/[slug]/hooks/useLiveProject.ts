@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react"
 
+import api from "@/app/lib/api"
+
 import type {
     GetLiveProject,
     GetLiveProjectJournal,
-} from "../types/liveProject"
+} from "@/app/lib/type/liveproject"
 
 
 
@@ -51,208 +53,43 @@ export default function useLiveProject({
 
     async function fetchProject() {
 
+        if (!slug) return
+
         try {
 
             setLoading(true)
 
             setError("")
 
+            const [projectRes, journalsRes] =
+                await Promise.all([
 
+                    api.get<GetLiveProject>(
+                        `/live-projects/${slug}`
+                    ),
 
-            /*
-                Replace later with real API call
-            */
+                    api.get<GetLiveProjectJournal[]>(
+                        `/live-projects/${slug}/journals`
+                    ),
 
+                ])
 
+            setProject(projectRes.data)
 
-            await new Promise((resolve) =>
-                setTimeout(resolve, 1200)
-            )
-
-
-
-            const mockProject:
-                GetLiveProject = {
-
-                id:
-                    crypto.randomUUID(),
-
-                title:
-                    "DevManiac Live Console",
-
-                slug,
-
-                goal:
-                    "Building the next generation developer social platform with live project journals.",
-
-                description:
-                    "A real-time developer build journey system inspired by commits, devlogs, and public engineering progress tracking.",
-
-                github_url:
-                    "https://github.com/DevManiac/project",
-
-                live_url:
-                    "https://DevManiac.dev",
-
-                demo_video_url:
-                    "",
-
-                progress_percentage:
-                    34,
-
-                current_goal:
-                    "Finish live journal timeline architecture",
-
-                current_status:
-                    "Refactoring frontend systems",
-
-                status:
-                    "active",
-
-                is_public: true,
-
-                views_count: 2834,
-
-                journal_count: 4,
-
-                tech_stack: [
-
-                    "Next.js",
-
-                    "FastAPI",
-
-                    "PostgreSQL",
-
-                    "TypeScript",
-
-                    "TailwindCSS",
-
-                    "GSAP",
-
-                ],
-
-                created_at:
-                    new Date(
-                        Date.now() -
-                        1000 *
-                        60 *
-                        60 *
-                        24 *
-                        12
-                    ).toISOString(),
-
-            }
-
-
-
-            const mockJournals:
-                GetLiveProjectJournal[] = [
-
-                {
-                    id:
-                        crypto.randomUUID(),
-
-                    day_number: 1,
-
-                    entry_type:
-                        "architecture",
-
-                    content:
-                        "Started architecting the live journal system. The goal is to transform project building into a public developer journey instead of static portfolios.",
-
-                    progress_percentage:
-                        8,
-
-                    code_snippets: [
-                        {
-                            language:
-                                "tsx",
-
-                            code:
-`export default function Journal() {
-    return <div>Live Build</div>
-}`,
-                        }
-                    ],
-
-                    problem_solutions: [
-                        {
-                            problem:
-                                "The page became a giant monolithic component.",
-
-                            solution:
-                                "Split the entire feature into isolated systems and reusable components.",
-                        }
-                    ],
-
-                    media_urls: [],
-
-                    likes_count: 12,
-
-                    comments_count: 3,
-
-                    created_at:
-                        new Date(
-                            Date.now() -
-                            1000 *
-                            60 *
-                            60 *
-                            24 *
-                            10
-                        ).toISOString(),
-
-                },
-
-                {
-                    id:
-                        crypto.randomUUID(),
-
-                    day_number: 4,
-
-                    entry_type:
-                        "progress",
-
-                    content:
-                        "Built animated loading/error states using GSAP. The experience now feels like an actual futuristic build console.",
-
-                    progress_percentage:
-                        18,
-
-                    code_snippets: [],
-
-                    problem_solutions: [],
-
-                    media_urls: [],
-
-                    likes_count: 25,
-
-                    comments_count: 7,
-
-                    created_at:
-                        new Date(
-                            Date.now() -
-                            1000 *
-                            60 *
-                            60 *
-                            24 *
-                            6
-                        ).toISOString(),
-
-                },
-
-            ]
-
-
-
-            setProject(mockProject)
-
-            setJournals(mockJournals)
+            setJournals(journalsRes.data)
 
         }
 
         catch (error) {
 
-            console.error(error)
+            console.error(
+                "Failed to fetch live project:",
+                error
+            )
+
+            setProject(null)
+
+            setJournals([])
 
             setError(
                 "Failed to load live project."
@@ -271,8 +108,6 @@ export default function useLiveProject({
 
 
     useEffect(() => {
-
-        if (!slug) return
 
         fetchProject()
 
@@ -303,7 +138,8 @@ export default function useLiveProject({
                 ...prev,
 
                 progress_percentage:
-                    entry.progress_percentage,
+                    entry.progress_percentage ??
+                    prev.progress_percentage,
 
                 journal_count:
                     prev.journal_count + 1,
@@ -344,23 +180,15 @@ export default function useLiveProject({
 
         journals,
 
-
-
         loading,
 
         error,
 
-
-
         fetchProject,
-
-
 
         setProject,
 
         updateProject,
-
-
 
         setJournals,
 
