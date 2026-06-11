@@ -455,29 +455,12 @@ class LiveProjectJournalComment(Base):
     __tablename__ = "live_project_journal_comments"
 
     __table_args__ = (
-
-        Index(
-            "ix_live_project_journal_comments_journal_id",
-            "journal_id",
-        ),
-
-        Index(
-            "ix_live_project_journal_comments_parent_id",
-            "parent_id",
-        ),
-
-        Index(
-            "ix_live_project_journal_comments_user_id",
-            "user_id",
-        ),
-
-        Index(
-            "ix_live_project_journal_comments_journal_created_at",
-            "journal_id",
-            "created_at",
-        ),
-
-    )
+    Index(
+        "ix_live_project_journal_comments_journal_created_at",
+        "journal_id",
+        "created_at",
+    ),
+)
 
     id = Column(
         UUID(as_uuid=True),
