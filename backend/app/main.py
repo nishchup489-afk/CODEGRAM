@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
 
+import app.models
+
 from app.router.user import router as user_router
 from app.router.dashboard_layout import router as dashboard_router
 from app.router.profile import router as profile_router
@@ -21,10 +23,6 @@ from app.router.changelog import router as changelog_router
 from app.router.app_notice import router as app_notice_router
 
 
-app = FastAPI(
-    title="DevManiac API",
-    version="1.0.0",
-)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +30,13 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
     yield
+
+
+app = FastAPI(
+    title="DevManiac API",
+    version="1.0.0",
+)
+
 
 
 origins = [
