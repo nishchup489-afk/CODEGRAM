@@ -402,23 +402,11 @@ class LiveProjectJournalLike(Base):
     __tablename__ = "live_project_journal_likes"
 
     __table_args__ = (
-
         UniqueConstraint(
             "user_id",
             "journal_id",
             name="unique_live_project_journal_like",
         ),
-
-        Index(
-            "ix_live_project_journal_likes_journal_id",
-            "journal_id",
-        ),
-
-        Index(
-            "ix_live_project_journal_likes_user_id",
-            "user_id",
-        ),
-
     )
 
     id = Column(
