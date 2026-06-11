@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="DevManiac API",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 
