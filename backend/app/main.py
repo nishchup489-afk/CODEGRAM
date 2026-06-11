@@ -1,5 +1,8 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.database import engine, Base
 
 from app.router.user import router as user_router
 from app.router.dashboard_layout import router as dashboard_router
@@ -22,6 +25,13 @@ app = FastAPI(
     title="DevManiac API",
     version="1.0.0",
 )
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    yield
 
 
 origins = [
