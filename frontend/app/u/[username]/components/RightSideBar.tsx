@@ -462,8 +462,7 @@ export default function RightSidebar({
                     </div>
 
                     {/* BUY ME A COFFEE */}
-
-                        <div>
+                        <div className="w-full min-w-0 overflow-hidden">
                             <BuyMeCoffee
                                 variant="card"
                                 username="nish489"
