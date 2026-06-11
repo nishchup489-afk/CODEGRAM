@@ -389,45 +389,34 @@ function LegendaryCard({
 
                 <div className="relative z-10 grid gap-8 sm:grid-cols-[200px_1fr] sm:items-center">
                     {/* ── the hamster ── */}
-                  <div ref={hamsterRef} className="bmc-hamster-wrap relative mx-auto w-44 sm:w-full">
-                    <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-black/30">
-                        <Image
-                            src={hamsterSrc}
-                            alt="A very sad hamster clutching a tiny cup of coffee"
-                            fill
-                            sizes="(max-width: 640px) 176px, 100vw"
-                            className="bmc-hamster-img object-contain p-2"
-                        />
+                    <div ref={hamsterRef} className="bmc-hamster-wrap relative mx-auto w-36 max-w-full sm:w-40">
+                        <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-black/30">
+                            <Image
+                                src={hamsterSrc}
+                                alt="A very sad hamster clutching a tiny cup of coffee"
+                                fill
+                                sizes="160px"
+                                className="bmc-hamster-img object-contain p-1"
+                            />
 
-                        {/* the tear — position tuned to the left eye */}
-                        <span
-                            aria-hidden
-                            className="bmc-tear absolute left-[33%] top-[44%] h-3 w-1.5 rounded-full bg-sky-200/90 opacity-0 blur-[0.5px]"
-                        />
+                            <span
+                                aria-hidden
+                                className="bmc-tear absolute left-[33%] top-[44%] h-3 w-1.5 rounded-full bg-sky-200/90 opacity-0 blur-[0.5px]"
+                            />
 
-                        {/* steam over the cup */}
-                        <span
-                            aria-hidden
-                            className="bmc-steam absolute bottom-[24%] left-[36%] h-5 w-1 rounded-full bg-white/60 opacity-0 blur-[2px]"
-                        />
-                        <span
-                            aria-hidden
-                            className="bmc-steam absolute bottom-[26%] left-[41%] h-6 w-1 rounded-full bg-white/50 opacity-0 blur-[2px]"
-                        />
-                        <span
-                            aria-hidden
-                            className="bmc-steam absolute bottom-[24%] left-[46%] h-4 w-1 rounded-full bg-white/60 opacity-0 blur-[2px]"
-                        />
+                            <span aria-hidden className="bmc-steam absolute bottom-[24%] left-[36%] h-5 w-1 rounded-full bg-white/60 opacity-0 blur-[2px]" />
+                            <span aria-hidden className="bmc-steam absolute bottom-[26%] left-[41%] h-6 w-1 rounded-full bg-white/50 opacity-0 blur-[2px]" />
+                            <span aria-hidden className="bmc-steam absolute bottom-[24%] left-[46%] h-4 w-1 rounded-full bg-white/60 opacity-0 blur-[2px]" />
+                        </div>
+
+                        <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+                            dev.exe — pre-coffee state
+                        </p>
+
+                        <span className="bmc-thanks pointer-events-none absolute -top-3 right-0 rounded-full bg-[#E8560A] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-black opacity-0">
+                            you did this ♥
+                        </span>
                     </div>
-
-                    <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-                        dev.exe — pre-coffee state
-                    </p>
-
-                    <span className="bmc-thanks pointer-events-none absolute -top-3 right-0 rounded-full bg-[#E8560A] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-black opacity-0">
-                        you did this ♥
-                    </span>
-                </div>
 
                     {/* ── the pitch ── */}
                     <div>
