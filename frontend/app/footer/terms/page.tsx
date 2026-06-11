@@ -24,7 +24,7 @@ import type { ReactNode } from "react";
 
 const LAST_UPDATED = "May 28, 2026";
 const ENTITY = "[DevManiac / Your Legal Entity Name]";
-const CONTACT_EMAIL = "[legal@DevManiac.dev]"; // [TODO : add real email]
+const CONTACT_EMAIL = "[devmaniacsupport@gmail.com]"; // [TODO : add real email]
 const DMCA_EMAIL = "[dmca@DevManiac.dev]";
 const GOVERNING_STATE = "the State of New York, USA";
 const VENUE = "the state and federal courts located in [New York County], New York";
