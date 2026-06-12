@@ -25,6 +25,7 @@ import LeftSidebar from "./components/LeftSideBar";
 import RightSidebar from "./components/RightSideBar";
 import MobileBottomNav from "./components/MobileBottomNav";
 import FloatingCreateButton from "./components/FloatingCreateButton";
+import CreatePickerModal from "./components/CreatePickerModal";
 
 type CurrentUser = {
     avatar_url: string | null;
@@ -54,6 +55,7 @@ export default function DashboardLayout({
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [showCreateModal, setShowCreateModal] = useState(false)
 
     const [currentUser, setCurrentUser] = useState<CurrentUser>({
         avatar_url: null,
@@ -129,7 +131,7 @@ export default function DashboardLayout({
 
         {
             name: "Settings",
-            href: `/settings`,
+            href: `/u/${safeUsername}/settings`,
             icon: Settings,
         },
     ];
@@ -171,7 +173,7 @@ export default function DashboardLayout({
                         <div className="flex items-center gap-3">
                             <button
                                 type="button"
-                                onClick={() => router.push("/search")}
+                                onClick={() => router.push(`/u/${currentUser.username}/search`)}
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Search size={18} />
@@ -179,7 +181,7 @@ export default function DashboardLayout({
 
                             <button
                                 type="button"
-                                onClick={() => router.push("/settings")}
+                                onClick={() => router.push(`/u/${currentUser.username}/settings`)}
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Settings size={18} />
@@ -187,7 +189,7 @@ export default function DashboardLayout({
 
                             <button
                                 type="button"
-                                onClick={() => router.push("/notifications")}
+                                onClick={() => router.push(`/u/${currentUser.username}/settings`)}
                                 className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Bell size={18} />
@@ -196,6 +198,36 @@ export default function DashboardLayout({
                     </div>
                 </div>
 
+                {showCreateModal && (
+                    <CreatePickerModal
+                        onClose={() => setShowCreateModal(false)}
+                        onSelect={(type) => {
+                            setShowCreateModal(false);
+
+                            const username = currentUser.username;
+
+                            if (!username || username === "loading") {
+                                console.warn("Username not ready yet");
+                                return;
+                            }
+
+                            if (type === "post") {
+                                router.push(`/create/post`);
+                                return;
+                            }
+
+                            if (type === "project") {
+                                router.push(`/u/${username}/create/project`);
+                                return;
+                            }
+
+                            if (type === "live") {
+                                router.push(`/u/${username}/create/live_project`);
+                                return;
+                            }
+                        }}
+                    />
+                )}
                 {/* ERROR */}
 
                 {error && (
@@ -270,9 +302,7 @@ export default function DashboardLayout({
             {/* FLOATING CREATE BUTTON */}
 
             <FloatingCreateButton
-                onClick={() =>
-                    router.push("/create/project")
-                }
+                onClick={() => setShowCreateModal(true)}
             />
 
             {/* APP NOTICE POPUP */}
