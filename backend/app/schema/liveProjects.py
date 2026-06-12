@@ -261,19 +261,20 @@ class GetLiveProjectJournalLike(BaseModel):
 # =========================================================
 
 class FeedLiveProject(BaseModel):
-
     id: UUID
-
     title: str
-
     slug: str
 
+    description: str | None = None
+    current_status: str | None = None
+    progress_percentage: int | None = None
+    status: str | None = None
+    tech_stack: list[str] = Field(default_factory=list)
     thumbnail_url: str | None = None
 
     model_config = ConfigDict(
         from_attributes=True
     )
-
 
 # =========================================================
 # FEED EVENTS

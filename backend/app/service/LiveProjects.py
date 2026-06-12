@@ -1051,31 +1051,15 @@ async def create_feed_event(
 async def get_feed_events(
     db: AsyncSession,
 ):
-
-    events = await db.scalars(
-
+    result = await db.scalars(
         select(FeedEvent)
-
         .options(
-
             selectinload(FeedEvent.user),
-
-            selectinload(
-                FeedEvent.live_project
-            ),
-
+            selectinload(FeedEvent.live_project),
         )
-
-        .where(
-            FeedEvent.is_public == True
-        )
-
-        .order_by(
-            FeedEvent.created_at.desc()
-        )
-
+        .where(FeedEvent.is_public == True)
+        .order_by(FeedEvent.created_at.desc())
         .limit(50)
-
     )
 
-    return events.all()
+    return result.all()
