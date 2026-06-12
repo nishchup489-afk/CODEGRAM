@@ -117,6 +117,7 @@ async def create_new_project(
         project_slug = await generate_unique_slug(
             db,
             project_title,
+            Project,
         )
 
         project = Project(
