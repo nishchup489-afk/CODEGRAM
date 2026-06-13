@@ -612,14 +612,67 @@ async def update_existing_project(
         )
 
     for field, value in update_data.items():
-
         setattr(project, field, value)
 
     await db.commit()
-    await db.refresh(project)
 
-    return project
+    updated_project = await db.scalar(
+        select(Project)
+        .options(selectinload(Project.user))
+        .where(Project.id == project.id)
+    )
 
+    if not updated_project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found after update",
+        )
+
+    return updated_project
+
+
+async def delete_existing_project(
+    db: AsyncSession,
+    slug: str,
+    clerk_user_id: str,
+):
+    user = await db.scalar(
+        select(User).where(
+            User.clerk_user_id == clerk_user_id
+        )
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    project = await db.scalar(
+        select(Project).where(
+            Project.slug == slug
+        )
+    )
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    if project.user_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You are not allowed to delete this project",
+        )
+
+    await db.delete(project)
+    await db.commit()
+
+    return {
+        "message": "Project deleted successfully",
+        "slug": slug,
+    }
 
 # =========================================================
 # STAR A PROJECT

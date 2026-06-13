@@ -16,6 +16,7 @@ import {
     Flag,
     UserPlus,
     UserCheck,
+     Trash2,
 } from "lucide-react"
 
 import api from "@/app/lib/api"
@@ -50,6 +51,7 @@ function normalizeExternalUrl(
 
     return `https://${trimmedUrl}`
 }
+
 
 export default function ProjectsFeed() {
     const router = useRouter()
@@ -97,6 +99,33 @@ export default function ProjectsFeed() {
 
     const lastTapRef =
         useRef<Record<string, number>>({})
+
+    const deleteProject = async (project: GetProject) => {
+            if (!isLoaded || !user?.id) return
+
+            const confirmed = window.confirm(
+                `Delete "${project.title}"? This cannot be undone.`
+            )
+
+            if (!confirmed) return
+
+            try {
+                await api.delete(`/projects/${project.slug}`, {
+                    params: {
+                        clerk_user_id: user.id,
+                    },
+                })
+
+                setProjects((prev) =>
+                    prev.filter((item) => item.id !== project.id)
+                )
+
+                setOpenMenuId(null)
+            } catch (err) {
+                console.error("DELETE PROJECT FAILED:", err)
+                alert("Failed to delete project.")
+            }
+        }
 
     useEffect(() => {
         const fetchAllProjects = async () => {
@@ -706,14 +735,7 @@ const toggleSave = async (
                             ref={(el) => {
                                 cardRefs.current[p.id] = el
                             }}
-                            onClick={() => {
-                                if (!p.slug) {
-                                    console.error("Missing project slug:", p)
-                                    return
-                                }
-
-                                router.push(`/project/${p.slug}`)
-                            }}
+                           
                             className="
                                 cursor-pointer
                                 overflow-visible
@@ -832,15 +854,12 @@ const toggleSave = async (
                                     <div className="relative">
                                         <button
                                             type="button"
-                                            onClick={() =>
-                                                setOpenMenuId(
-                                                    (prev) =>
-                                                        prev ===
-                                                        p.id
-                                                            ? null
-                                                            : p.id
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setOpenMenuId((prev) =>
+                                                    prev === p.id ? null : p.id
                                                 )
-                                            }
+                                            }}
                                             className="
                                                 rounded-full
                                                 p-2
@@ -925,6 +944,33 @@ const toggleSave = async (
 
                                                     Report user
                                                 </button>
+                                                {isOwnProject && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            deleteProject(p)
+                                                        }}
+                                                        className="
+                                                            flex
+                                                            w-full
+                                                            items-center
+                                                            gap-3
+                                                            px-4
+                                                            py-3
+                                                            text-left
+                                                            text-sm
+                                                            font-semibold
+                                                            text-red-400
+                                                            transition
+                                                            hover:bg-red-500/20
+                                                            hover:text-red-100
+                                                        "
+                                                    >
+                                                        <Trash2 size={16} />
+                                                        Delete project
+                                                    </button>
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -944,11 +990,19 @@ const toggleSave = async (
                                         overflow-hidden
                                         bg-zinc-900
                                     "
-                                    onClick={() =>
-                                        handleImageTap(
-                                            p.id
-                                        )
-                                    }
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+
+                                        handleImageTap(p.id)
+
+                                        if (!p.slug) {
+                                            console.error("Missing project slug:", p)
+                                            return
+                                        }
+
+                                        router.push(`/project/${p.slug}`)
+                                    }}
+                                                                        
                                 >
                                     <img
                                         src={

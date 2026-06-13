@@ -33,6 +33,7 @@ from app.schema.project import (
 from app.service.project import (
     add_project_bookmark,
     create_new_project,
+    delete_existing_project,
     get_existing_project,
     get_projects,
     get_users_all_profile,
@@ -45,6 +46,7 @@ from app.service.project import (
     delete_project_comment,
     get_project_comments,
     vote_on_comment,
+    
     
 )
 from app.models.user import User
@@ -195,6 +197,26 @@ async def fetch_projects(
         current_user=current_user,
     )
 
+
+# =========================================================
+# DELETE PROJECT
+# =========================================================
+
+@router.delete(
+    "/{slug}",
+)
+async def delete_project(
+    slug: str,
+    clerk_user_id: str = Query(...),
+    db: AsyncSession = Depends(get_db),
+):
+    return await delete_existing_project(
+        db=db,
+        slug=slug,
+        clerk_user_id=clerk_user_id,
+    )
+
+
 # =========================================================
 # UPDATE PROJECT
 # =========================================================
@@ -209,12 +231,23 @@ async def update_project(
     clerk_user_id: str = Query(...),
     db: AsyncSession = Depends(get_db),
 ):
+    user = await db.scalar(
+        select(User).where(
+            User.clerk_user_id == clerk_user_id
+        )
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
 
     return await update_existing_project(
         db=db,
         slug=slug,
         data=data,
-        clerk_user_id=clerk_user_id,
+        user_id=user.id,
     )
 
 

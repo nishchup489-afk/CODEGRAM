@@ -9,6 +9,18 @@ import { ExternalLink } from "lucide-react"
 import type { CurrentUser } from "@/app/lib/type/currentUser"
 
 
+type BuilderCardUser = {
+    id: string
+    username: string
+    display_name: string
+    avatar_url: string | null
+}
+
+type Props = {
+    user: BuilderCardUser
+}
+
+
 
 export default function MobileBuilderCard({
     currentUser,
