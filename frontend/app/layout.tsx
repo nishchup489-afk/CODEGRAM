@@ -3,7 +3,7 @@ import { Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Script from "next/script";
-
+import { Analytics } from "@vercel/analytics/next"
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
