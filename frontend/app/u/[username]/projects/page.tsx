@@ -619,6 +619,7 @@ const toggleSave = async (
 
     return (
         <div
+            
             className="
                 flex
                 min-h-screen
@@ -629,6 +630,7 @@ const toggleSave = async (
                 py-6
                 sm:py-10
             "
+
         >
             <div
                 className="
@@ -702,10 +704,18 @@ const toggleSave = async (
                         <div
                             key={p.id}
                             ref={(el) => {
-                                cardRefs.current[p.id] =
-                                    el
+                                cardRefs.current[p.id] = el
+                            }}
+                            onClick={() => {
+                                if (!p.slug) {
+                                    console.error("Missing project slug:", p)
+                                    return
+                                }
+
+                                router.push(`/project/${p.slug}`)
                             }}
                             className="
+                                cursor-pointer
                                 overflow-visible
                                 rounded-3xl
                                 border
