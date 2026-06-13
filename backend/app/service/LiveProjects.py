@@ -145,7 +145,6 @@ async def create_live_project(
     clerk_user_id: str,
     data: CreateLiveProject,
 ):
-
     user = await get_user_by_clerk_id(
         db=db,
         clerk_user_id=clerk_user_id,
@@ -157,7 +156,6 @@ async def create_live_project(
         model=LiveProject,
         user_id=user.id,
     )
-
 
     verified_github_url = data.github_url
     detected_stack = data.tech_stack
@@ -184,52 +182,37 @@ async def create_live_project(
         gallery_urls=data.gallery_urls,
         tech_stack=detected_stack,
         is_public=data.is_public,
-        is_draft= data.is_draft
+        is_draft=data.is_draft,
     )
 
     db.add(new_live_project)
-    db.flush()
+
+    await db.flush()
 
     await create_feed_event(
-
         db=db,
-
         user_id=user.id,
-
         live_project_id=new_live_project.id,
-
         event_type="live_project_created",
-
         content=f"Started building {new_live_project.title}",
-
         event_metadata={
-
             "goal": new_live_project.goal,
-
-            "tech_stack":
-                new_live_project.tech_stack,
-
+            "tech_stack": new_live_project.tech_stack or [],
         },
-
     )
 
     await db.commit()
 
     new_live_project = await db.scalar(
         select(LiveProject)
-        .options(
-            selectinload(LiveProject.user)
-        )
-        .where(
-            LiveProject.id == new_live_project.id
-        )
+        .options(selectinload(LiveProject.user))
+        .where(LiveProject.id == new_live_project.id)
     )
 
-    new_live_project.days_count = 1
+    if new_live_project:
+        new_live_project.days_count = 1
 
     return new_live_project
-
-
 # =========================================================
 # GET SINGLE LIVE PROJECT
 # =========================================================

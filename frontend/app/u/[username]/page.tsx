@@ -345,7 +345,6 @@ export default function Dashboard() {
                                 New build
                             </Link>
                         </div>
-
                         {dashboard.active_live_projects.length === 0 ? (
                             <EmptyState
                                 title="No live builds yet"
@@ -355,11 +354,21 @@ export default function Dashboard() {
                             />
                         ) : (
                             <div className="space-y-4">
-                                {dashboard.active_live_projects.map(
-                                    (project) => (
+                                {dashboard.active_live_projects.map((project) => {
+                                    const href = project.slug
+                                        ? `/live_project/${project.slug}`
+                                        : "#"
+
+                                    return (
                                         <Link
                                             key={project.id}
-                                            href={`/live_project/${project.slug}`}
+                                            href={href}
+                                            onClick={(e) => {
+                                                if (!project.slug) {
+                                                    e.preventDefault()
+                                                    console.error("Missing live project slug:", project)
+                                                }
+                                            }}
                                             className="group block rounded-3xl border border-zinc-800 bg-black/40 p-4 transition hover:-translate-y-0.5 hover:border-orange-500/40 hover:bg-zinc-900/60"
                                         >
                                             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -375,21 +384,18 @@ export default function Dashboard() {
                                                     </div>
 
                                                     <p className="mt-2 max-w-xl text-sm text-zinc-500">
-                                                        {project.current_goal ||
-                                                            project.goal}
+                                                        {project.current_goal || project.goal}
                                                     </p>
 
                                                     <div className="mt-3 flex flex-wrap gap-2">
-                                                        {project.tech_stack
-                                                            .slice(0, 5)
-                                                            .map((stack) => (
-                                                                <span
-                                                                    key={stack}
-                                                                    className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-400"
-                                                                >
-                                                                    {stack}
-                                                                </span>
-                                                            ))}
+                                                        {project.tech_stack.slice(0, 5).map((stack) => (
+                                                            <span
+                                                                key={stack}
+                                                                className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-400"
+                                                            >
+                                                                {stack}
+                                                            </span>
+                                                        ))}
                                                     </div>
                                                 </div>
 
@@ -399,10 +405,7 @@ export default function Dashboard() {
                                                     </p>
 
                                                     <p className="text-2xl font-bold text-orange-400">
-                                                        {
-                                                            project.progress_percentage
-                                                        }
-                                                        %
+                                                        {project.progress_percentage}%
                                                     </p>
                                                 </div>
                                             </div>
@@ -412,10 +415,7 @@ export default function Dashboard() {
                                                     className="h-full rounded-full bg-orange-500"
                                                     style={{
                                                         width: `${Math.min(
-                                                            Math.max(
-                                                                project.progress_percentage,
-                                                                0
-                                                            ),
+                                                            Math.max(project.progress_percentage, 0),
                                                             100
                                                         )}%`,
                                                     }}
@@ -424,35 +424,26 @@ export default function Dashboard() {
 
                                             <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-zinc-500">
                                                 <span>
-                                                    👁{" "}
-                                                    {formatNumber(
-                                                        project.views_count
-                                                    )}{" "}
-                                                    views
+                                                    👁 {formatNumber(project.views_count)} views
                                                 </span>
 
                                                 <span>
-                                                    📓{" "}
-                                                    {formatNumber(
-                                                        project.journal_count
-                                                    )}{" "}
-                                                    journals
+                                                    📓 {formatNumber(project.journal_count)} journals
                                                 </span>
 
                                                 <span>
                                                     Updated{" "}
                                                     {formatDate(
-                                                        project.updated_at ||
-                                                            project.created_at
+                                                        project.updated_at || project.created_at
                                                     )}
                                                 </span>
                                             </div>
                                         </Link>
                                     )
-                                )}
+                                })}
                             </div>
                         )}
-                    </div>
+                        </div>
 
                     <div className="space-y-6">
                         <div className="rounded-4xl border border-zinc-800 bg-zinc-950/80 p-5">

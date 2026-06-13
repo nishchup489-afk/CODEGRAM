@@ -131,7 +131,7 @@ export default function DashboardLayout({
 
         {
             name: "Settings",
-            href: `/u/${safeUsername}/settings`,
+            href: `/settings`,
             icon: Settings,
         },
     ];

@@ -137,6 +137,8 @@ console.log(event.live_project?.slug)
                 hover:border-orange-500/20
                 hover:bg-orange-500/2
             "
+
+            onClick={() => router.push(`/live_project/${event.live_project?.slug}`)}
         >
 
             <div
@@ -461,37 +463,40 @@ console.log(event.live_project?.slug)
 
                     
 
-                    {event.live_project?.slug ? (
-                        <Link
-                            href={`/live_project/${event.live_project.slug}`}
-                            className="
-                                rounded-2xl
-                                bg-orange-500
-                                px-4
-                                py-3
-                                text-sm
-                                font-bold
-                                text-black
-                            "
-                        >
-                            View Build
-                        </Link>
-                    ) : (
-                        <button
-                            disabled
-                            className="
-                                rounded-2xl
-                                bg-zinc-800
-                                px-4
-                                py-3
-                                text-sm
-                                font-bold
-                                text-zinc-500
-                            "
-                        >
-                            Missing Slug
-                        </button>
-                    )}
+                {event.live_project?.slug ? 
+                        (
+                            <Link
+                                href={`/live_project/${event.live_project.slug}`}
+                                className="
+                                    rounded-2xl
+                                    bg-orange-500
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    font-bold
+                                    text-black
+                                "
+                            >
+                                View Build
+                            </Link>
+                        ) : (
+                            <button
+                                disabled
+                                className="
+                                    rounded-2xl
+                                    bg-zinc-800
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    font-bold
+                                    text-zinc-500
+                                "
+                            >
+                                Missing Slug
+                            </button>
+                        )}
+
+        
 
                 </div>
 
