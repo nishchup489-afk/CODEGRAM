@@ -32,44 +32,62 @@ async def sync_user(
     db: AsyncSession,
     data: UserSync,
 ):
-
+    # 1. First try to find user by Clerk ID
     existing_user = await db.scalar(
         select(User).where(
             User.clerk_user_id == data.clerk_user_id
         )
     )
 
-    # USER ALREADY EXISTS
     if existing_user:
+        # Keep latest Clerk data fresh
+        existing_user.email = data.email
+        existing_user.display_name = data.display_name
+        existing_user.avatar_url = data.avatar_url
+
+        await db.commit()
+        await db.refresh(existing_user)
+
         return existing_user
-    
+
+    # 2. If Clerk ID not found, check by email
+    # This prevents duplicate email crash:
+    # duplicate key value violates unique constraint "ix_users_email"
+    email_user = await db.scalar(
+        select(User).where(
+            User.email == data.email
+        )
+    )
+
+    if email_user:
+        # Link old DB user to the new Clerk user ID
+        email_user.clerk_user_id = data.clerk_user_id
+        email_user.display_name = data.display_name or email_user.display_name
+        email_user.avatar_url = data.avatar_url or email_user.avatar_url
+
+        await db.commit()
+        await db.refresh(email_user)
+
+        return email_user
+
+    # 3. Create new user only when BOTH clerk_user_id and email are new
     generated_username = f"user_{uuid.uuid4().hex[:8]}"
 
-    # CREATE MINIMAL USER
     new_user = User(
-
         clerk_user_id=data.clerk_user_id,
-
         email=data.email,
-
         display_name=data.display_name,
-
         avatar_url=data.avatar_url,
-
         username=generated_username,
-
         username_lower=generated_username.lower(),
     )
 
     db.add(new_user)
 
     await db.commit()
-
     await db.refresh(new_user)
 
     return new_user
-
-
 
 
 
