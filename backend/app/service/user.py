@@ -40,10 +40,15 @@ async def sync_user(
     )
 
     if existing_user:
-        # Keep latest Clerk data fresh
+        # Keep safe Clerk data fresh
         existing_user.email = data.email
         existing_user.display_name = data.display_name
-        existing_user.avatar_url = data.avatar_url
+
+        # IMPORTANT:
+        # Do NOT overwrite existing avatar on every login.
+        # Clerk/Gmail avatar should only be used if DB has no avatar yet.
+        if not existing_user.avatar_url:
+            existing_user.avatar_url = data.avatar_url
 
         await db.commit()
         await db.refresh(existing_user)
@@ -51,8 +56,6 @@ async def sync_user(
         return existing_user
 
     # 2. If Clerk ID not found, check by email
-    # This prevents duplicate email crash:
-    # duplicate key value violates unique constraint "ix_users_email"
     email_user = await db.scalar(
         select(User).where(
             User.email == data.email
@@ -62,8 +65,14 @@ async def sync_user(
     if email_user:
         # Link old DB user to the new Clerk user ID
         email_user.clerk_user_id = data.clerk_user_id
-        email_user.display_name = data.display_name or email_user.display_name
-        email_user.avatar_url = data.avatar_url or email_user.avatar_url
+
+        if data.display_name:
+            email_user.display_name = data.display_name
+
+        # Same rule here:
+        # only set Clerk avatar if user has no avatar yet
+        if not email_user.avatar_url:
+            email_user.avatar_url = data.avatar_url
 
         await db.commit()
         await db.refresh(email_user)
@@ -77,7 +86,7 @@ async def sync_user(
         clerk_user_id=data.clerk_user_id,
         email=data.email,
         display_name=data.display_name,
-        avatar_url=data.avatar_url,
+        avatar_url=data.avatar_url,  # initial default avatar only
         username=generated_username,
         username_lower=generated_username.lower(),
     )
@@ -88,8 +97,6 @@ async def sync_user(
     await db.refresh(new_user)
 
     return new_user
-
-
 
 async def complete_onboarding(
     db: AsyncSession,
