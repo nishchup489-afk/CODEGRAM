@@ -173,7 +173,7 @@ export default function DashboardLayout({
                         <div className="flex items-center gap-3">
                             <button
                                 type="button"
-                                onClick={() => router.push(`/u/${currentUser.username}/search`)}
+                                onClick={() => router.push(`/search`)}
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Search size={18} />
@@ -181,7 +181,7 @@ export default function DashboardLayout({
 
                             <button
                                 type="button"
-                                onClick={() => router.push(`/u/${currentUser.username}/settings`)}
+                                onClick={() => router.push(`/settings`)}
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Settings size={18} />
@@ -189,7 +189,7 @@ export default function DashboardLayout({
 
                             <button
                                 type="button"
-                                onClick={() => router.push(`/u/${currentUser.username}/settings`)}
+                                onClick={() => router.push(`/settings`)}
                                 className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition hover:bg-white/10"
                             >
                                 <Bell size={18} />
