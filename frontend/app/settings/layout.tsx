@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type React from 'react'
 
 import Link from 'next/link'
+import { useClerk } from '@clerk/nextjs'
 
 import {
     usePathname,
@@ -22,6 +23,7 @@ import {
     Menu,
     X,
     Sparkles,
+    LogOut,
 } from 'lucide-react'
 
 import useCurrentUser from '../lib/currentUser'
@@ -95,6 +97,7 @@ export default function SettingsLayout({
 }) {
     const pathname = usePathname()
     const router = useRouter()
+    const { signOut } = useClerk()
 
     const { currentUser } = useCurrentUser()
 
@@ -290,22 +293,35 @@ export default function SettingsLayout({
                         </nav>
 
                         {/* FOOTER CARD */}
-                        <div className='border-t border-[#1F1F1F] p-4'>
-                            <div className='rounded-[1.7rem] border border-[#2D2D2D] bg-[#111113] p-4'>
-                                <div className='mb-3 flex items-center gap-2'>
-                                    <div className='h-2.5 w-2.5 rounded-full bg-[#E8560A] shadow-[0_0_16px_rgba(232,86,10,0.8)]' />
+                        {/* FOOTER CARD */}
+                            <div className='border-t border-[#1F1F1F] p-4'>
+                                <div className='rounded-[1.7rem] border border-[#2D2D2D] bg-[#111113] p-4'>
+                                    <div className='mb-3 flex items-center gap-2'>
+                                        <div className='h-2.5 w-2.5 rounded-full bg-[#E8560A] shadow-[0_0_16px_rgba(232,86,10,0.8)]' />
 
-                                    <p className='text-sm font-black text-white'>
-                                        DevManiac
+                                        <p className='text-sm font-black text-white'>
+                                            DevManiac
+                                        </p>
+                                    </div>
+
+                                    <p className='text-xs leading-5 text-[#71717A]'>
+                                        Developer proof social platform built for
+                                        builders.
                                     </p>
                                 </div>
 
-                                <p className='text-xs leading-5 text-[#71717A]'>
-                                    Developer proof social platform built for
-                                    builders.
-                                </p>
+                                <button
+                                    type='button'
+                                    onClick={async () => {
+                                        await signOut()
+                                        router.push('/')
+                                    }}
+                                    className='mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-black text-red-300 transition hover:border-red-500/40 hover:bg-red-500/20 hover:text-red-200'
+                                >
+                                    <LogOut size={16} />
+                                    Log out
+                                </button>
                             </div>
-                        </div>
                     </div>
                 </aside>
 
