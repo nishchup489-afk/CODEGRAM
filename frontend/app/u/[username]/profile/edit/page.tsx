@@ -858,41 +858,33 @@ function ImageModal({
 
 
 
-    const handleFileUpload = async (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+const handleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+) => {
+    try {
+        const file = e.target.files?.[0]
 
-        try {
+        if (!file) return
 
-            const file =
-                e.target.files?.[0]
+        setUploading(true)
 
-            if (!file) return
+        const uploadResult = await uploadToCloudinary(file)
 
+        const uploadedUrl = uploadResult.secure_url
 
-
-            setUploading(true)
-
-
-
-            const uploadedUrl =
-                await uploadToCloudinary(file)
-
-
-
-            setUrl(uploadedUrl)
-
-        } catch (err) {
-
-            console.error(err)
-
-        } finally {
-
-            setUploading(false)
-
+        if (!uploadedUrl) {
+            throw new Error(
+                "Cloudinary upload succeeded but secure_url was missing"
+            )
         }
 
+        setUrl(uploadedUrl)
+    } catch (err) {
+        console.error(err)
+    } finally {
+        setUploading(false)
     }
+}
 
 
 
