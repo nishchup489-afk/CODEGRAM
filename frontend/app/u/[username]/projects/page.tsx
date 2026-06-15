@@ -524,92 +524,96 @@ const toggleSave = async (
         )
     }
 
-    const toggleFollow = async (
-        username: string
-    ) => {
-        if (!isLoaded || !user?.id) return
+const toggleFollow = async (
+    username: string
+) => {
+    if (!isLoaded) return
 
-        if (!username) return
-
-        const isFollowing =
-            followingByUsername[username] ?? false
-
-        try {
-            setFollowLoadingByUsername((prev) => ({
-                ...prev,
-                [username]: true,
-            }))
-
-            setFollowingByUsername((prev) => ({
-                ...prev,
-                [username]: !isFollowing,
-            }))
-
-            if (isFollowing) {
-                await api.delete(
-                    `/users/${username}/follow`,
-                    {
-                        params: {
-                            clerk_user_id: user.id,
-                        },
-                    }
-                )
-
-                setFollowingByUsername((prev) => ({
-                    ...prev,
-                    [username]: false,
-                }))
-
-                return
-            }
-
-            await api.post(
-                `/users/${username}/follow`,
-                {},
-                {
-                    params: {
-                        clerk_user_id: user.id,
-                    },
-                }
-            )
-
-            setFollowingByUsername((prev) => ({
-                ...prev,
-                [username]: true,
-            }))
-        } catch (err: any) {
-            if (err.response?.status === 409) {
-                setFollowingByUsername((prev) => ({
-                    ...prev,
-                    [username]: true,
-                }))
-
-                return
-            }
-
-            if (err.response?.status === 404) {
-                setFollowingByUsername((prev) => ({
-                    ...prev,
-                    [username]: false,
-                }))
-
-                return
-            }
-
-            setFollowingByUsername((prev) => ({
-                ...prev,
-                [username]: isFollowing,
-            }))
-
-            console.error(err)
-        } finally {
-            setFollowLoadingByUsername((prev) => ({
-                ...prev,
-                [username]: false,
-            }))
-        }
+    if (!currentUser?.clerk_user_id) {
+        console.error(
+            "Missing currentUser.clerk_user_id"
+        )
+        return
     }
 
+    if (!username) {
+        console.error("Missing target username")
+        return
+    }
+
+    if (username === currentUser.username) {
+        console.warn("Cannot follow yourself")
+        return
+    }
+
+    const wasFollowing =
+        followingByUsername[username] ?? false
+
+    setFollowLoadingByUsername((prev) => ({
+        ...prev,
+        [username]: true,
+    }))
+
+    // optimistic UI
+    setFollowingByUsername((prev) => ({
+        ...prev,
+        [username]: !wasFollowing,
+    }))
+
+    try {
+        const res = wasFollowing
+            ? await api.delete(
+                  `/users/${username}/follow`,
+                  {
+                      params: {
+                          clerk_user_id:
+                              currentUser.clerk_user_id,
+                      },
+                  }
+              )
+            : await api.post(
+                  `/users/${username}/follow`,
+                  {},
+                  {
+                      params: {
+                          clerk_user_id:
+                              currentUser.clerk_user_id,
+                      },
+                  }
+              )
+
+        setFollowingByUsername((prev) => ({
+            ...prev,
+            [username]: Boolean(
+                res.data.is_following
+            ),
+        }))
+    } catch (err: any) {
+        console.error("FOLLOW FAILED:", {
+            message: err?.message,
+            status: err?.response?.status,
+            data: err?.response?.data,
+            url: err?.config?.url,
+            params: err?.config?.params,
+        })
+
+        // rollback optimistic UI
+        setFollowingByUsername((prev) => ({
+            ...prev,
+            [username]: wasFollowing,
+        }))
+
+        alert(
+            err?.response?.data?.detail ||
+                "Follow action failed."
+        )
+    } finally {
+        setFollowLoadingByUsername((prev) => ({
+            ...prev,
+            [username]: false,
+        }))
+    }
+}
     if (mainLoading) {
         return (
             <div
@@ -785,11 +789,10 @@ const toggleSave = async (
                                             disabled={
                                                 followLoading
                                             }
-                                            onClick={() =>
-                                                toggleFollow(
-                                                    authorUsername
-                                                )
-                                            }
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                toggleFollow(authorUsername)
+                                            }}
                                             className={`
                                                 flex
                                                 items-center
