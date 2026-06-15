@@ -58,34 +58,32 @@ export default function VisualStep({
     // AVATAR UPLOAD
     // =========================================
 
-    const handleAvatarUpload = async (
+const handleAvatarUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+) => {
+    try {
+        const file = e.target.files?.[0]
 
-        e: React.ChangeEvent<HTMLInputElement>
+        if (!file) return
 
-    ) => {
+        setAvatarUploading(true)
 
-        try {
+        const uploadResult =
+            await uploadToCloudinary(file)
 
-            setAvatarUploading(true)
-
-            const file = e.target.files?.[0]
-
-            if (!file) return
-
-            const uploadedUrl =
-                await uploadToCloudinary(file)
-
-            setAvatarUrl(uploadedUrl)
-
-        } catch (error) {
-
-            console.error(error)
-
-        } finally {
-
-            setAvatarUploading(false)
+        if (!uploadResult.secure_url) {
+            throw new Error(
+                "Cloudinary secure_url missing"
+            )
         }
+
+        setAvatarUrl(uploadResult.secure_url)
+    } catch (error) {
+        console.error("Avatar upload failed:", error)
+    } finally {
+        setAvatarUploading(false)
     }
+}
 
 
 
@@ -94,34 +92,31 @@ export default function VisualStep({
     // =========================================
 
     const handleBannerUpload = async (
-
         e: React.ChangeEvent<HTMLInputElement>
-
     ) => {
-
         try {
-
-            setBannerUploading(true)
-
             const file = e.target.files?.[0]
 
             if (!file) return
 
-            const uploadedUrl =
+            setBannerUploading(true)
+
+            const uploadResult =
                 await uploadToCloudinary(file)
 
-            setBannerUrl(uploadedUrl)
+            if (!uploadResult.secure_url) {
+                throw new Error(
+                    "Cloudinary secure_url missing"
+                )
+            }
 
+            setBannerUrl(uploadResult.secure_url)
         } catch (error) {
-
-            console.error(error)
-
+            console.error("Banner upload failed:", error)
         } finally {
-
             setBannerUploading(false)
         }
-    }
-
+}
 
 
     return (
