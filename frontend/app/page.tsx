@@ -20,8 +20,8 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import logo from "@/public/codegram_logo_full.png";
-import dashboardPreview from "@/public/codegram_dashboard.png";
+import main_logo from "@/public/main_logo.jpg";
+import dashboardPreview from "@/public/new_dashboard.png";
 
 /* ─────────────────────────────────────────────
    DATA
@@ -120,9 +120,9 @@ const testimonials = [
 ];
 
 const stats = [
-  { num: "1,200+", label: "active builders" },
-  { num: "4,800+", label: "projects created" },
-  { num: "28,000+", label: "build logs posted" },
+  { num: "20+", label: "active builders" },
+  { num: "10+", label: "projects created" },
+  { num: "10+", label: "build logs posted" },
   { num: "73%", label: "avg completion rate" },
 ];
 
@@ -273,7 +273,7 @@ export default function Page() {
             <div className="nav-item flex items-center gap-10">
               <Link href="/" className="shrink-0">
                 <Image
-                  src={logo}
+                  src={main_logo}
                   alt="DevManiac"
                   width={180}
                   height={48}
@@ -379,7 +379,7 @@ export default function Page() {
               <p className="text-sm text-zinc-500">
                 Joined by{" "}
                 <span className="font-medium text-zinc-300">
-                  1,200+ developers
+                  20+ developers
                 </span>{" "}
                 building in public this week
               </p>
@@ -649,7 +649,7 @@ export default function Page() {
       <footer className="border-t border-white/5 py-10">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-6 text-sm text-zinc-500 md:flex-row lg:px-8">
           <Image
-            src={logo}
+            src={main_logo}
             alt="DevManiac"
             width={150}
             height={40}

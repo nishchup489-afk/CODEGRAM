@@ -585,6 +585,30 @@ export default function Page() {
                 },
               }}
             />
+            <div
+              style={{
+                marginTop: 18,
+                textAlign: 'center',
+                fontSize: 14,
+                color: '#8b8b95',
+              }}
+            >
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => router.push('/sign-in')}
+                style={{
+                  color: '#E8560A',
+                  fontWeight: 600,
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                Sign in
+              </button>
+            </div>
             
 
      <div className="mt-6">
