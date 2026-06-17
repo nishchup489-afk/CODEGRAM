@@ -15,6 +15,7 @@ import {
   Code2,
   GitBranch,
   Terminal,
+  BookOpen,
 } from "lucide-react";
 
 import gsap from "gsap";
@@ -133,9 +134,6 @@ const avatars = [
   { i: "AK", bg: "#7C3AED" },
 ];
 
-/* ─────────────────────────────────────────────
-   PAGE
-───────────────────────────────────────────── */
 
 export default function Page() {
   const pageRef = useRef<HTMLElement | null>(null);
@@ -357,6 +355,15 @@ export default function Page() {
                 className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/[0.07]"
               >
                 See how it works
+              </a>
+              <a
+                href="https://docs.devmaniac.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#E8560A]/30 bg-[#E8560A]/10 px-6 py-3 text-sm font-semibold text-[#ff8a3d] transition hover:-translate-y-0.5 hover:border-[#E8560A]/50 hover:bg-[#E8560A]/15"
+              >
+                <BookOpen size={16} />
+                Visit docs
               </a>
             </div>
 

@@ -1,10 +1,6 @@
 # ==========================================
 # ROOT
 # ==========================================
-.env
-.env.local
-.env.production
-.env.development
 
 *.log
 *.tmp
@@ -74,3 +70,5 @@ media/
 # ==========================================
 ehthumbs.db
 Desktop.ini
+config.bat
+node_modules
