@@ -37,9 +37,8 @@ class LiveProject(Base):
     __table_args__ = (
 
         UniqueConstraint(
-            "user_id",
             "slug",
-            name="unique_user_live_project_slug",
+            name="unique_live_project_slug",
         ),
 
         CheckConstraint(

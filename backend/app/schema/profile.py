@@ -1,14 +1,10 @@
-from pydantic import BaseModel, ConfigDict 
-import uuid
+from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 
-class get_profile_data(BaseModel):
-    id : uuid.UUID
-
-    clerk_user_id: str
+class PublicProfileResponse(BaseModel):
+    id: UUID
     username: str
     display_name: str | None
-    email: str
     bio: str | None
     avatar_url: str | None
     banner_url: str | None
@@ -27,8 +23,17 @@ class get_profile_data(BaseModel):
     current_build: str | None = None
 
     joined_date: str | None = None
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PrivateProfileResponse(PublicProfileResponse):
+    clerk_user_id: str
+    email: str
+
+
+# Compatibility alias for internal call sites; public routes must explicitly use
+# PublicProfileResponse so provider identifiers are never serialized by mistake.
+get_profile_data = PrivateProfileResponse
 
 
 class update_profile_data(BaseModel):

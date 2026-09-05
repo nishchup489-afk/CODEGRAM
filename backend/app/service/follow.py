@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 
-from sqlalchemy import select
+from sqlalchemy import delete, func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User, Follow
@@ -9,27 +10,6 @@ from app.models.user import User, Follow
 # =========================================================
 # HELPERS
 # =========================================================
-
-async def get_user_by_clerk_id(
-    db: AsyncSession,
-    clerk_user_id: str,
-):
-    result = await db.execute(
-        select(User).where(
-            User.clerk_user_id == clerk_user_id
-        )
-    )
-
-    user = result.scalar_one_or_none()
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="Current user not found",
-        )
-
-    return user
-
 
 async def get_user_by_username(
     db: AsyncSession,
@@ -73,14 +53,9 @@ async def get_existing_follow(
 
 async def follow_user(
     db: AsyncSession,
-    clerk_user_id: str,
+    current_user: User,
     username: str,
 ):
-    current_user = await get_user_by_clerk_id(
-        db=db,
-        clerk_user_id=clerk_user_id,
-    )
-
     target_user = await get_user_by_username(
         db=db,
         username=username,
@@ -92,39 +67,48 @@ async def follow_user(
             detail="You cannot follow yourself",
         )
 
-    existing_follow = await get_existing_follow(
-        db=db,
-        follower_id=current_user.id,
-        following_id=target_user.id,
+    # Lock both counter owners in a deterministic order. This serializes all
+    # follow changes that share either user and avoids reciprocal-follow
+    # deadlocks.
+    locked_users = await db.scalars(
+        select(User)
+        .where(User.id.in_((current_user.id, target_user.id)))
+        .order_by(User.id)
+        .with_for_update()
+    )
+    users_by_id = {user.id: user for user in locked_users.all()}
+    current_user = users_by_id[current_user.id]
+    target_user = users_by_id[target_user.id]
+
+    follow_id = await db.scalar(
+        pg_insert(Follow)
+        .values(
+            follower_id=current_user.id,
+            following_id=target_user.id,
+        )
+        .on_conflict_do_nothing(constraint="uq_follower_following")
+        .returning(Follow.id)
     )
 
-    if existing_follow:
+    if follow_id is None:
+        await db.rollback()
         raise HTTPException(
             status_code=409,
             detail="You are already following this user",
         )
 
-    follow = Follow(
-        follower_id=current_user.id,
-        following_id=target_user.id,
+    current_user.following_count = await db.scalar(
+        select(func.count(Follow.id)).where(
+            Follow.follower_id == current_user.id
+        )
     )
-
-    db.add(follow)
-
-    current_user.following_count = max(
-        0,
-        (current_user.following_count or 0) - 1,
-    )
-
-    target_user.followers_count = max(
-        0,
-        (target_user.followers_count or 0) - 1,
+    target_user.followers_count = await db.scalar(
+        select(func.count(Follow.id)).where(
+            Follow.following_id == target_user.id
+        )
     )
 
     await db.commit()
-    await db.refresh(follow)
-    await db.refresh(current_user)
-    await db.refresh(target_user)
 
     return {
         "is_following": True,
@@ -139,14 +123,9 @@ async def follow_user(
 
 async def unfollow_user(
     db: AsyncSession,
-    clerk_user_id: str,
+    current_user: User,
     username: str,
 ):
-    current_user = await get_user_by_clerk_id(
-        db=db,
-        clerk_user_id=clerk_user_id,
-    )
-
     target_user = await get_user_by_username(
         db=db,
         username=username,
@@ -158,33 +137,44 @@ async def unfollow_user(
             detail="You cannot unfollow yourself",
         )
 
-    existing_follow = await get_existing_follow(
-        db=db,
-        follower_id=current_user.id,
-        following_id=target_user.id,
+    locked_users = await db.scalars(
+        select(User)
+        .where(User.id.in_((current_user.id, target_user.id)))
+        .order_by(User.id)
+        .with_for_update()
+    )
+    users_by_id = {user.id: user for user in locked_users.all()}
+    current_user = users_by_id[current_user.id]
+    target_user = users_by_id[target_user.id]
+
+    removed_follow_id = await db.scalar(
+        delete(Follow)
+        .where(
+            Follow.follower_id == current_user.id,
+            Follow.following_id == target_user.id,
+        )
+        .returning(Follow.id)
     )
 
-    if not existing_follow:
+    if removed_follow_id is None:
+        await db.rollback()
         raise HTTPException(
             status_code=404,
             detail="You are not following this user",
         )
 
-    await db.delete(existing_follow)
-
-    current_user.following_count = max(
-        0,
-        current_user.following_count - 1,
+    current_user.following_count = await db.scalar(
+        select(func.count(Follow.id)).where(
+            Follow.follower_id == current_user.id
+        )
     )
-
-    target_user.followers_count = max(
-        0,
-        target_user.followers_count - 1,
+    target_user.followers_count = await db.scalar(
+        select(func.count(Follow.id)).where(
+            Follow.following_id == target_user.id
+        )
     )
 
     await db.commit()
-    await db.refresh(current_user)
-    await db.refresh(target_user)
 
     return {
         "is_following": False,
@@ -199,14 +189,9 @@ async def unfollow_user(
 
 async def check_follow_status(
     db: AsyncSession,
-    clerk_user_id: str,
+    current_user: User,
     username: str,
 ):
-    current_user = await get_user_by_clerk_id(
-        db=db,
-        clerk_user_id=clerk_user_id,
-    )
-
     target_user = await get_user_by_username(
         db=db,
         username=username,

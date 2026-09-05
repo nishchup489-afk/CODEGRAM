@@ -8,6 +8,7 @@ from fastapi import (
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.admin import require_admin
 from app.core.database import get_db
 
 from app.schema.changelog import (
@@ -34,7 +35,7 @@ router = APIRouter(
 
 # =========================================================
 # CREATE CHANGELOG
-# Admin-only later
+# Admin-only compatibility endpoint.
 # =========================================================
 
 @router.post(
@@ -43,6 +44,7 @@ router = APIRouter(
 )
 async def create_changelog_route(
     data: CreateChangelog,
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     return await create_changelog(
@@ -102,7 +104,7 @@ async def get_single_changelog_route(
 
 # =========================================================
 # GET ALL CHANGELOGS FOR ADMIN
-# Admin-only later
+# Admin-only compatibility endpoint.
 # =========================================================
 
 @router.get(
@@ -119,6 +121,7 @@ async def get_admin_changelogs_route(
         default=0,
         ge=0,
     ),
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     result = await get_changelogs(
@@ -133,7 +136,7 @@ async def get_admin_changelogs_route(
 
 # =========================================================
 # UPDATE CHANGELOG
-# Admin-only later
+# Admin-only compatibility endpoint.
 # =========================================================
 
 @router.patch(
@@ -143,6 +146,7 @@ async def get_admin_changelogs_route(
 async def update_changelog_route(
     changelog_id: UUID,
     data: UpdateChangelog,
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     return await update_changelog(
@@ -154,7 +158,7 @@ async def update_changelog_route(
 
 # =========================================================
 # DELETE CHANGELOG
-# Admin-only later
+# Admin-only compatibility endpoint.
 # =========================================================
 
 @router.delete(
@@ -162,6 +166,7 @@ async def update_changelog_route(
 )
 async def delete_changelog_route(
     changelog_id: UUID,
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     return await delete_changelog(

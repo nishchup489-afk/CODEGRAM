@@ -28,13 +28,11 @@ from app.schema.project import (
 )
 
 from app.service.project import (
-    add_project_bookmark,
     create_new_project,
     delete_existing_project,
     get_existing_project,
     get_projects,
     get_users_all_profile,
-    remove_project_bookmark,
     update_existing_project,
     add_project_star,
     remove_project_star,
@@ -46,6 +44,7 @@ from app.service.project import (
     
     
 )
+from app.service.bookmark import add_project_bookmark, remove_project_bookmark
 from app.models.user import User
 from app.core.auth import get_current_user, get_current_user_optional
 from app.schema.ProfileAnalytics import UserFullProfileResponse
@@ -108,11 +107,13 @@ async def get_project(
 )
 async def get_full_profile(
     username: str,
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ):
     return await get_users_all_profile(
         db=db,
         username=username,
+        viewer_user_id=current_user.id if current_user else None,
     )
 
 

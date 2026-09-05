@@ -41,6 +41,36 @@ async def test_spoofed_query_identity_cannot_access_admin(api_client):
     assert response.status_code == 401
 
 
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [
+        ("GET", "/support/admin/tickets"),
+        ("PATCH", "/support/admin/tickets/00000000-0000-0000-0000-000000000001"),
+        ("GET", "/feedback/admin"),
+        ("GET", "/feedback/admin/00000000-0000-0000-0000-000000000001"),
+        ("PATCH", "/feedback/admin/00000000-0000-0000-0000-000000000001"),
+        (
+            "PATCH",
+            "/feedback/admin/00000000-0000-0000-0000-000000000001/archive",
+        ),
+        ("POST", "/changelog"),
+        ("GET", "/changelog/admin/all"),
+        ("PATCH", "/changelog/00000000-0000-0000-0000-000000000001"),
+        ("DELETE", "/changelog/00000000-0000-0000-0000-000000000001"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_legacy_admin_routes_reject_unauthenticated_requests(
+    api_client,
+    method,
+    path,
+):
+    response = await api_client.request(method, path, json={})
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication required"
+
+
 def test_bearer_token_parsing():
     credentials = HTTPAuthorizationCredentials(
         scheme="Bearer",

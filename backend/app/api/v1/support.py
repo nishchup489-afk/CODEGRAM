@@ -10,6 +10,7 @@ from fastapi import (
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.admin import require_admin
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.user import User
@@ -203,7 +204,7 @@ async def resolve_my_ticket(
 # =========================================================
 # ADMIN LIST TICKETS
 # GET /support/admin/tickets
-# Protect later.
+# Retained for compatibility; protected by the same dependency as /admin.
 # =========================================================
 
 @router.get(
@@ -216,6 +217,7 @@ async def admin_list_tickets(
     priority: TicketPriority | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -235,7 +237,7 @@ async def admin_list_tickets(
 # =========================================================
 # ADMIN UPDATE TICKET
 # PATCH /support/admin/tickets/{ticket_id}
-# Protect later.
+# Retained for compatibility; protected by the same dependency as /admin.
 # =========================================================
 
 @router.patch(
@@ -245,6 +247,7 @@ async def admin_list_tickets(
 async def admin_update_ticket(
     ticket_id: UUID,
     payload: SupportTicketAdminUpdate,
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
 

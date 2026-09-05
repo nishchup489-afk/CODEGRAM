@@ -3,7 +3,8 @@ import uuid
 
 from fastapi import HTTPException , status
 
-from sqlalchemy import select
+from sqlalchemy import delete, select, update
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import func
@@ -31,6 +32,7 @@ from app.utility.project_utility import (
     generate_unique_slug,
 )
 from app.models.user import User , UserStackStat
+from app.models.LiveProject import LiveProject
 
 
 
@@ -70,10 +72,13 @@ async def _get_comment_by_id(
     """
 
     comment = await db.scalar(
-        select(ProjectComment).where(
+        select(ProjectComment)
+        .options(selectinload(ProjectComment.user))
+        .where(
             ProjectComment.id == comment_id,
             ProjectComment.deleted_at.is_(None),
         )
+        .with_for_update()
     )
 
     if not comment:
@@ -84,6 +89,41 @@ async def _get_comment_by_id(
         )
 
     return comment
+
+
+def _project_write_response(
+    project: Project,
+    *,
+    is_starred: bool,
+    is_bookmarked: bool,
+) -> dict:
+    """Build the stable GetProject payload returned by project mutations."""
+    return {
+        "id": project.id,
+        "user_id": project.user_id,
+        "title": project.title,
+        "slug": project.slug,
+        "description": project.description,
+        "github_url": project.github_url,
+        "live_url": project.live_url,
+        "thumbnail_url": project.thumbnail_url,
+        "demo_video_url": project.demo_video_url,
+        "gallery_urls": project.gallery_urls or [],
+        "tech_stack": project.tech_stack or [],
+        "stars_count": project.stars_count,
+        "views_count": project.views_count,
+        "comments_count": project.comments_count,
+        "is_featured": project.is_featured,
+        "is_starred": is_starred,
+        "is_bookmarked": is_bookmarked,
+        "created_at": project.created_at,
+        "updated_at": project.updated_at,
+        "user": {
+            "username": project.user.username,
+            "avatar_url": project.user.avatar_url,
+            "location": project.user.location,
+        },
+    }
 
 
 # =========================================================
@@ -543,27 +583,39 @@ async def get_projects(
 async def get_users_all_profile(
         db: AsyncSession , 
         
-        username : str , 
+        username: str,
+        viewer_user_id: uuid.UUID | None = None,
 ):
     user = await db.scalar(
         select(User)
-        .where(
-            User.username == username
-        )
-        .options(
-            selectinload(User.projects),
-            selectinload(User.live_projects), 
-            selectinload(User.stack_stats)
-        )
+        .where(User.username == username)
     )
 
-    if not user : 
+    if not user or (user.is_private and user.id != viewer_user_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="user not found"
         )
 
-    return user
+    live_projects_loader = (
+        selectinload(User.live_projects)
+        if viewer_user_id == user.id
+        else selectinload(
+            User.live_projects.and_(
+                LiveProject.is_public.is_(True),
+                LiveProject.is_draft.is_(False),
+            )
+        )
+    )
+    return await db.scalar(
+        select(User)
+        .where(User.id == user.id)
+        .options(
+            selectinload(User.projects),
+            live_projects_loader,
+            selectinload(User.stack_stats),
+        )
+    )
 
 
 
@@ -683,87 +735,47 @@ async def add_project_star(
     slug: str,
     user_id: uuid.UUID,
 ):
-
-    project = await _get_project_by_slug(
-        db,
-        slug,
+    # A project-row lock serializes all star mutations for this project. The
+    # recount repairs stale stored counters and remains exact under concurrency.
+    project = await db.scalar(
+        select(Project)
+        .options(selectinload(Project.user))
+        .where(Project.slug == slug)
+        .with_for_update()
     )
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
 
-    star = ProjectStar(
-        user_id=user_id,
-        project_id=project.id,
+    star_id = await db.scalar(
+        pg_insert(ProjectStar)
+        .values(user_id=user_id, project_id=project.id)
+        .on_conflict_do_nothing(constraint="unique_project_star")
+        .returning(ProjectStar.id)
     )
-
-    db.add(star)
-
-    try:
-
-        await db.commit()
-
-    except IntegrityError as e:
+    if star_id is None:
         await db.rollback()
-        print(f"IntegrityError: {e.orig}")  # <-- see the real cause
-        raise HTTPException(
-            status_code=409,
-            detail="Project already starred",
-        )
+        raise HTTPException(status_code=409, detail="Project already starred")
 
-    stars_count = await db.scalar(
-        select(func.count(ProjectStar.id))
-        .where(
+    project.stars_count = await db.scalar(
+        select(func.count(ProjectStar.id)).where(
             ProjectStar.project_id == project.id
         )
     )
+    is_bookmarked = (
+        await db.scalar(
+            select(ProjectBookmark.id).where(
+                ProjectBookmark.user_id == user_id,
+                ProjectBookmark.project_id == project.id,
+            )
+        )
+    ) is not None
+    await db.commit()
 
-    return {
-
-    "id": project.id,
-
-    "user_id": project.user_id,
-
-    "title": project.title,
-
-    "slug": project.slug,
-
-    "description": project.description,
-
-    "github_url": project.github_url,
-
-    "live_url": project.live_url,
-
-    "thumbnail_url": project.thumbnail_url,
-
-    "demo_video_url": project.demo_video_url,
-
-    "gallery_urls": project.gallery_urls,
-
-    "tech_stack": project.tech_stack,
-
-    "stars_count": stars_count,
-
-    "views_count": project.views_count,
-
-    "comments_count": project.comments_count,
-
-    "is_featured": project.is_featured,
-
-    "is_starred": True,
-
-    "is_bookmarked": False,
-
-    "created_at": project.created_at,
-
-    "updated_at": project.updated_at,
-
-    "user": {
-
-        "username": project.user.username,
-
-        "avatar_url": project.user.avatar_url,
-
-        "location": project.user.location,
-    }
-}
+    return _project_write_response(
+        project,
+        is_starred=True,
+        is_bookmarked=is_bookmarked,
+    )
 
 
 async def remove_project_star(
@@ -771,96 +783,47 @@ async def remove_project_star(
     slug: str,
     user_id: uuid.UUID,
 ):
-
     project = await db.scalar(
         select(Project)
-        .options(
-            selectinload(Project.user)
-        )
-        .where(
-            Project.slug == slug
-        )
+        .options(selectinload(Project.user))
+        .where(Project.slug == slug)
+        .with_for_update()
     )
-
     if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
 
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found",
-        )
-
-    star = await db.scalar(
-        select(ProjectStar).where(
+    removed_star_id = await db.scalar(
+        delete(ProjectStar)
+        .where(
             ProjectStar.user_id == user_id,
             ProjectStar.project_id == project.id,
         )
+        .returning(ProjectStar.id)
     )
+    if removed_star_id is None:
+        await db.rollback()
+        raise HTTPException(status_code=404, detail="Star not found")
 
-    if not star:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Star not found",
-        )
-
-    await db.delete(star)
-
-    await db.commit()
-
-    stars_count = await db.scalar(
-        select(func.count(ProjectStar.id))
-        .where(
+    project.stars_count = await db.scalar(
+        select(func.count(ProjectStar.id)).where(
             ProjectStar.project_id == project.id
         )
     )
+    is_bookmarked = (
+        await db.scalar(
+            select(ProjectBookmark.id).where(
+                ProjectBookmark.user_id == user_id,
+                ProjectBookmark.project_id == project.id,
+            )
+        )
+    ) is not None
+    await db.commit()
 
-    return {
-
-        "id": project.id,
-
-        "user_id": project.user_id,
-
-        "title": project.title,
-
-        "slug": project.slug,
-
-        "description": project.description,
-
-        "github_url": project.github_url,
-
-        "live_url": project.live_url,
-
-        "thumbnail_url": project.thumbnail_url,
-
-        "demo_video_url": project.demo_video_url,
-
-        "gallery_urls": project.gallery_urls,
-
-        "tech_stack": project.tech_stack,
-
-        "stars_count": stars_count,
-
-        "views_count": project.views_count,
-
-        "comments_count": project.comments_count,
-
-        "is_featured": project.is_featured,
-
-        "is_starred": False,
-
-        "created_at": project.created_at,
-
-        "updated_at": project.updated_at,
-
-        "user": {
-
-            "username": project.user.username,
-
-            "avatar_url": project.user.avatar_url,
-
-            "location": project.user.location,
-        }
-    }
+    return _project_write_response(
+        project,
+        is_starred=False,
+        is_bookmarked=is_bookmarked,
+    )
 # =========================================================
 # ADD COMMENT
 # =========================================================
@@ -913,7 +876,11 @@ async def add_project_comment(
 
     db.add(comment)
 
-    project.comments_count += 1
+    await db.execute(
+        update(Project)
+        .where(Project.id == project.id)
+        .values(comments_count=Project.comments_count + 1)
+    )
 
     await db.commit()
     await db.refresh(comment)
@@ -955,7 +922,6 @@ async def update_project_comment(
     comment.is_edited = True
 
     await db.commit()
-    await db.refresh(comment)
 
     return comment
 
@@ -986,15 +952,13 @@ async def delete_project_comment(
 
     comment.deleted_at = func.now()
 
-    # Decrement the project's counter to match what users see.
-    project = await db.scalar(
-        select(Project).where(
-            Project.id == comment.project_id
-        )
+    # Use an in-database expression so simultaneous deletes cannot lose an
+    # update or drive the stored counter below zero.
+    await db.execute(
+        update(Project)
+        .where(Project.id == comment.project_id)
+        .values(comments_count=func.greatest(Project.comments_count - 1, 0))
     )
-
-    if project and project.comments_count > 0:
-        project.comments_count -= 1
 
     await db.commit()
 
@@ -1105,114 +1069,23 @@ async def vote_on_comment(
             if comment.upvotes_count > 0:
                 comment.upvotes_count -= 1
 
+    # The comment row is locked by _get_comment_by_id, so votes serialize per
+    # comment. Recount from source rows to repair stale derived counters while
+    # preserving toggle semantics.
+    await db.flush()
+    comment.upvotes_count = await db.scalar(
+        select(func.count(ProjectCommentVote.id)).where(
+            ProjectCommentVote.comment_id == comment_id,
+            ProjectCommentVote.vote_type == "up",
+        )
+    )
+    comment.downvotes_count = await db.scalar(
+        select(func.count(ProjectCommentVote.id)).where(
+            ProjectCommentVote.comment_id == comment_id,
+            ProjectCommentVote.vote_type == "down",
+        )
+    )
+
     await db.commit()
-    await db.refresh(comment)
 
     return comment
-
-
-
-# =========================================================
-# ADD PROJECT BOOKMARK
-# =========================================================
-
-async def add_project_bookmark(
-    db: AsyncSession,
-    slug: str,
-    user_id: uuid.UUID,
-):
-
-    project = await db.scalar(
-        select(Project)
-        .options(
-            selectinload(Project.user)
-        )
-        .where(
-            Project.slug == slug
-        )
-    )
-
-    if not project:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found",
-        )
-
-    existing_bookmark = await db.scalar(
-        select(ProjectBookmark).where(
-            ProjectBookmark.user_id == user_id,
-            ProjectBookmark.project_id == project.id,
-        )
-    )
-
-    if existing_bookmark:
-
-        raise HTTPException(
-            status_code=409,
-            detail="Project already bookmarked",
-        )
-
-    bookmark = ProjectBookmark(
-        user_id=user_id,
-        project_id=project.id,
-    )
-
-    db.add(bookmark)
-
-    await db.commit()
-
-    await db.refresh(bookmark)
-
-    return bookmark
-
-
-
-# =========================================================
-# REMOVE PROJECT BOOKMARK
-# =========================================================
-
-async def remove_project_bookmark(
-    db: AsyncSession,
-    slug: str,
-    user_id: uuid.UUID,
-):
-
-    project = await db.scalar(
-        select(Project)
-        .options(
-            selectinload(Project.user)
-        )
-        .where(
-            Project.slug == slug
-        )
-    )
-
-    if not project:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found",
-        )
-
-    bookmark = await db.scalar(
-        select(ProjectBookmark).where(
-            ProjectBookmark.user_id == user_id,
-            ProjectBookmark.project_id == project.id,
-        )
-    )
-
-    if not bookmark:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Bookmark not found",
-        )
-
-    await db.delete(bookmark)
-
-    await db.commit()
-
-    return {
-        "message": "Bookmark removed successfully"
-    }

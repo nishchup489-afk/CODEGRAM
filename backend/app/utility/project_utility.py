@@ -1,7 +1,11 @@
 import os
+import ipaddress
 import re
 import secrets
+import socket
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
+from anyio import to_thread
 from fastapi import HTTPException
 import httpx
 from sqlalchemy import select
@@ -20,6 +24,8 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 # Shared timeout for all outbound calls. Without this a hung
 # remote host hangs the whole request indefinitely.
 HTTP_TIMEOUT = httpx.Timeout(10.0)
+MAX_LIVE_URL_REDIRECTS = 5
+ALLOWED_LIVE_URL_PORTS = {80, 443}
 
 
 def _github_headers():
@@ -168,6 +174,83 @@ async def fetch_github_url(
 # VERIFY LIVE PROJECT URL
 # =========================================================
 
+def _normalize_live_url(live_url: str) -> str:
+    clean_live_url = live_url.strip()
+    if not clean_live_url:
+        raise HTTPException(status_code=400, detail="Live project URL is required")
+
+    if not clean_live_url.startswith(("https://", "http://")):
+        clean_live_url = f"https://{clean_live_url}"
+
+    try:
+        parsed = urlsplit(clean_live_url)
+        port = parsed.port
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid live project URL") from None
+
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise HTTPException(status_code=400, detail="Invalid live project URL")
+    if parsed.username is not None or parsed.password is not None:
+        raise HTTPException(status_code=400, detail="Live project URL cannot contain credentials")
+
+    effective_port = port or (443 if parsed.scheme == "https" else 80)
+    if effective_port not in ALLOWED_LIVE_URL_PORTS:
+        raise HTTPException(status_code=400, detail="Live project URL uses a blocked port")
+
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path or "/", parsed.query, ""))
+
+
+def _resolve_host(hostname: str, port: int) -> set[str]:
+    try:
+        return {str(ipaddress.ip_address(hostname.strip("[]")))}
+    except ValueError:
+        records = socket.getaddrinfo(
+            hostname,
+            port,
+            type=socket.SOCK_STREAM,
+        )
+        return {record[4][0] for record in records}
+
+
+async def _require_public_live_url(url: str) -> None:
+    parsed = urlsplit(url)
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    try:
+        addresses = await to_thread.run_sync(_resolve_host, parsed.hostname, port)
+    except (socket.gaierror, OSError, ValueError):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or unreachable live URL",
+        ) from None
+
+    if not addresses:
+        raise HTTPException(status_code=400, detail="Live project host did not resolve")
+
+    for address in addresses:
+        try:
+            parsed_address = ipaddress.ip_address(address)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Live project host is invalid") from None
+        if not parsed_address.is_global:
+            raise HTTPException(
+                status_code=400,
+                detail="Live project URL targets a non-public address",
+            )
+
+
+async def _send_live_url_probe(
+    client: httpx.AsyncClient,
+    method: str,
+    url: str,
+) -> tuple[int, str | None]:
+    await _require_public_live_url(url)
+    request = client.build_request(method, url)
+    response = await client.send(request, stream=True)
+    try:
+        return response.status_code, response.headers.get("location")
+    finally:
+        await response.aclose()
+
 async def verify_live_url(
     live_url: str | None,
 ):
@@ -176,18 +259,7 @@ async def verify_live_url(
 
         return None
 
-    clean_live_url = live_url.strip()
-
-    # -----------------------------------------------------
-    # ENSURE A SCHEME IS PRESENT
-    # -----------------------------------------------------
-
-    if not (
-        clean_live_url.startswith("https://")
-        or clean_live_url.startswith("http://")
-    ):
-
-        clean_live_url = f"https://{clean_live_url}"
+    clean_live_url = _normalize_live_url(live_url)
 
     # -----------------------------------------------------
     # VERIFY SITE IS REACHABLE
@@ -199,15 +271,47 @@ async def verify_live_url(
     try:
 
         async with httpx.AsyncClient(
-            follow_redirects=True,
+            follow_redirects=False,
             timeout=HTTP_TIMEOUT,
+            trust_env=False,
         ) as client:
+            current_url = clean_live_url
+            method = "HEAD"
+            for _ in range(MAX_LIVE_URL_REDIRECTS + 1):
+                response_status, redirect_location = await _send_live_url_probe(
+                    client,
+                    method,
+                    current_url,
+                )
 
-            response = await client.head(clean_live_url)
+                if response_status == 405 and method == "HEAD":
+                    method = "GET"
+                    response_status, redirect_location = await _send_live_url_probe(
+                        client,
+                        method,
+                        current_url,
+                    )
 
-            if response.status_code == 405:
+                if response_status in {301, 302, 303, 307, 308}:
+                    if not redirect_location:
+                        raise HTTPException(status_code=400, detail="Invalid live URL redirect")
+                    current_url = _normalize_live_url(
+                        urljoin(current_url, redirect_location)
+                    )
+                    method = "HEAD"
+                    continue
 
-                response = await client.get(clean_live_url)
+                if response_status >= 400:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Live project URL is unreachable",
+                    )
+                return clean_live_url
+
+            raise HTTPException(
+                status_code=400,
+                detail="Live project URL has too many redirects",
+            )
 
     except httpx.RequestError:
 
@@ -216,14 +320,7 @@ async def verify_live_url(
             detail="Invalid or unreachable live URL",
         )
 
-    if response.status_code >= 400:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Live project URL is unreachable",
-        )
-
-    return clean_live_url
+    raise HTTPException(status_code=400, detail="Live project URL verification failed")
 
 
 # =========================================================

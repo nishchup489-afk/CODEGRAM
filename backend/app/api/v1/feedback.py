@@ -10,6 +10,7 @@ from fastapi import (
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.admin import require_admin
 from app.core.database import get_db
 from app.core.auth import get_current_user, get_current_user_optional
 from app.models.user import User
@@ -134,7 +135,7 @@ async def get_my_feedback(
 # =========================================================
 # ADMIN LIST FEEDBACK
 # GET /feedback/admin
-# Protect with admin auth later.
+# Retained for compatibility; protected by the same dependency as /admin.
 # =========================================================
 
 @router.get(
@@ -148,6 +149,7 @@ async def admin_list_feedback(
     rating: int | None = Query(default=None, ge=1, le=5),
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -168,7 +170,7 @@ async def admin_list_feedback(
 # =========================================================
 # ADMIN GET SINGLE FEEDBACK
 # GET /feedback/admin/{feedback_id}
-# Protect with admin auth later.
+# Retained for compatibility; protected by the same dependency as /admin.
 # =========================================================
 
 @router.get(
@@ -177,6 +179,7 @@ async def admin_list_feedback(
 )
 async def admin_get_feedback(
     feedback_id: UUID,
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -190,7 +193,7 @@ async def admin_get_feedback(
 # =========================================================
 # ADMIN UPDATE FEEDBACK
 # PATCH /feedback/admin/{feedback_id}
-# Protect with admin auth later.
+# Retained for compatibility; protected by the same dependency as /admin.
 # =========================================================
 
 @router.patch(
@@ -200,7 +203,7 @@ async def admin_get_feedback(
 async def admin_update_feedback(
     feedback_id: UUID,
     payload: FeedbackAdminUpdate,
-    admin_clerk_user_id: str | None = Query(default=None),
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -216,7 +219,7 @@ async def admin_update_feedback(
 # =========================================================
 # ADMIN ARCHIVE FEEDBACK
 # PATCH /feedback/admin/{feedback_id}/archive
-# Protect with admin auth later.
+# Retained for compatibility; protected by the same dependency as /admin.
 # =========================================================
 
 @router.patch(
@@ -225,7 +228,7 @@ async def admin_update_feedback(
 )
 async def admin_archive_feedback(
     feedback_id: UUID,
-    admin_clerk_user_id: str | None = Query(default=None),
+    admin_clerk_user_id: str = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
 

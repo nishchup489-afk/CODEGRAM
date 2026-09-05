@@ -1,5 +1,6 @@
 from uuid import UUID
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -22,6 +23,8 @@ class CreateProject(BaseModel):
 
 class UpdateProject(BaseModel):
 
+    model_config = ConfigDict(extra="forbid")
+
     title: str | None = None
     slug: str | None = None
     description: str | None = None
@@ -31,8 +34,6 @@ class UpdateProject(BaseModel):
     demo_video_url: str | None = None
     gallery_urls: list[str] | None = None
     tech_stack: list[str] | None = None
-    is_featured: bool | None = None
-    stars_count: int | None = None
 
 
 class GetProject(BaseModel):
@@ -162,7 +163,7 @@ class GetComment(CommentOut):
 
 class AddVote(BaseModel):
 
-    vote_type: str                  # "up" or "down"
+    vote_type: Literal["up", "down"]
 
 
 class GetVote(BaseModel):

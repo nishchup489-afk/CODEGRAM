@@ -6,7 +6,7 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, get_current_user_optional
 from app.models.user import User
 
 from app.schema.liveProjects import *
@@ -54,12 +54,14 @@ async def create_new_live_project(
 )
 async def get_latest_commit(
     slug: str,
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await fetch_latest_commit(
         db=db,
         slug=slug,
+        current_user=current_user,
     )
 
 
@@ -76,6 +78,8 @@ async def get_live_project_by_slug(
 
     slug: str,
 
+    current_user: User | None = Depends(get_current_user_optional),
+
     db: AsyncSession = Depends(get_db),
 
 ):
@@ -85,6 +89,8 @@ async def get_live_project_by_slug(
         db=db,
 
         slug=slug,
+
+        current_user=current_user,
 
     )
 
@@ -199,6 +205,8 @@ async def get_project_journals(
 
     slug: str,
 
+    current_user: User | None = Depends(get_current_user_optional),
+
     db: AsyncSession = Depends(get_db),
 
 ):
@@ -208,6 +216,8 @@ async def get_project_journals(
         db=db,
 
         slug=slug,
+
+        current_user=current_user,
 
     )
 
@@ -403,6 +413,8 @@ async def get_journal_comments(
 
     journal_id: UUID,
 
+    current_user: User | None = Depends(get_current_user_optional),
+
     db: AsyncSession = Depends(get_db),
 
 ):
@@ -412,6 +424,8 @@ async def get_journal_comments(
         db=db,
 
         journal_id=journal_id,
+
+        current_user=current_user,
 
     )
 
@@ -479,4 +493,3 @@ async def delete_journal_comment(
         clerk_user_id=current_user.clerk_user_id,
 
     )
-

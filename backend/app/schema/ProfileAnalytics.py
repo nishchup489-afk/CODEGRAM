@@ -51,9 +51,7 @@ class ProfileLiveProjectResponse(BaseModel):
 class UserFullProfileResponse(BaseModel):
     id: UUID
     username: str
-    clerk_user_id: str
     display_name: str | None
-    email: str
     bio: str | None
     avatar_url: str | None
     banner_url: str | None

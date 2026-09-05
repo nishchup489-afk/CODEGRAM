@@ -41,7 +41,7 @@ async def follow_single_user(
 ):
     return await follow_user(
         db=db,
-        clerk_user_id=current_user.clerk_user_id,
+        current_user=current_user,
         username=username,
     )
 
@@ -63,7 +63,7 @@ async def unfollow_single_user(
 ):
     return await unfollow_user(
         db=db,
-        clerk_user_id=current_user.clerk_user_id,
+        current_user=current_user,
         username=username,
     )
 
@@ -85,6 +85,6 @@ async def get_follow_status(
 ):
     return await check_follow_status(
         db=db,
-        clerk_user_id=current_user.clerk_user_id,
+        current_user=current_user,
         username=username,
     )

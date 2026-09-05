@@ -64,11 +64,9 @@ class UserResponse(BaseModel):
 
 class UserFullProfileResponse(BaseModel):
     id: UUID
-    clerk_user_id: str
 
     username: str
     display_name: str | None
-    email: str
 
     bio: str | None
     avatar_url: str | None

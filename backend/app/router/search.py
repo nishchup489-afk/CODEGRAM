@@ -31,8 +31,9 @@ async def search_users(
     stmt = (
         select(User)
         .where(
-            User.is_active == True,
-            User.is_banned == False,
+                User.is_active == True,
+                User.is_banned == False,
+                User.is_private == False,
             or_(
                 User.username_lower.ilike(
                     f"%{cleaned_query}%"

@@ -1,7 +1,8 @@
 from fastapi import HTTPException
+from uuid import UUID
 
 from app.models.user import User 
-from app.schema.profile import get_profile_data , update_profile_data 
+from app.schema.profile import PrivateProfileResponse, PublicProfileResponse, update_profile_data
 from sqlalchemy.ext.asyncio import AsyncSession 
 from sqlalchemy import select 
 
@@ -9,7 +10,8 @@ from sqlalchemy import select
 async def get_user_profile_data(
     db: AsyncSession,
     username: str,
-) -> get_profile_data:
+    viewer_user_id: UUID | None = None,
+) -> PublicProfileResponse:
 
     user = await db.scalar(
         select(User).where(
@@ -17,7 +19,7 @@ async def get_user_profile_data(
         )
     )
 
-    if not user:
+    if not user or (user.is_private and user.id != viewer_user_id):
 
         raise HTTPException(
             status_code=404,
@@ -28,13 +30,9 @@ async def get_user_profile_data(
 
         "id": user.id,
 
-        "clerk_user_id": user.clerk_user_id,
-
         "username": user.username,
 
         "display_name": user.display_name,
-
-        "email": user.email,
 
         "bio": user.bio,
 
@@ -125,7 +123,7 @@ async def update_user_profile_data(
 async def get_my_profile_data(
     db: AsyncSession,
     clerk_user_id: str,
-) -> get_profile_data:
+) -> PrivateProfileResponse:
 
     result = await db.execute(
         select(User).where(

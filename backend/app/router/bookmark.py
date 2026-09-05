@@ -33,5 +33,5 @@ async def get_bookmarked_projects(
 
     return await get_my_bookmarks(
         db=db,
-        clerk_user_id=current_user.clerk_user_id,
+        user_id=current_user.id,
     )

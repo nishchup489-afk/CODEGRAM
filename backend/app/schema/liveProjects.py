@@ -39,6 +39,8 @@ class CreateLiveProject(BaseModel):
 
 class UpdateLiveProject(BaseModel):
 
+    model_config = ConfigDict(extra="forbid")
+
     title: str | None = None
     slug: str | None = None
 
@@ -66,7 +68,6 @@ class UpdateLiveProject(BaseModel):
     tech_stack: list[str] | None = None
 
     is_public: bool | None = None
-    is_featured: bool | None = None
 
 
 class GetLiveProject(BaseModel):

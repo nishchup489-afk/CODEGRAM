@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
-from sqlalchemy import select, update
+from sqlalchemy import and_, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -37,12 +37,13 @@ import httpx
 async def fetch_latest_commit(
     db: AsyncSession,
     slug: str,
+    current_user: User | None = None,
 ):
 
-    live_project = await db.scalar(
-        select(LiveProject).where(
-            LiveProject.slug == slug
-        )
+    live_project = await _get_visible_live_project_by_slug(
+        db=db,
+        slug=slug,
+        current_user=current_user,
     )
 
     if not live_project:
@@ -116,6 +117,63 @@ async def fetch_latest_commit(
 # HELPERS
 # =========================================================
 
+def _can_view_live_project(
+    live_project: LiveProject | None,
+    current_user: User | None,
+) -> bool:
+    if live_project is None:
+        return False
+    if current_user and live_project.user_id == current_user.id:
+        return True
+    return live_project.is_public and not live_project.is_draft
+
+
+def _live_project_visibility_clause(current_user: User | None):
+    public_project = and_(
+        LiveProject.is_public.is_(True),
+        LiveProject.is_draft.is_(False),
+    )
+    if current_user is None:
+        return public_project
+    return or_(LiveProject.user_id == current_user.id, public_project)
+
+
+async def _get_visible_live_project_by_slug(
+    db: AsyncSession,
+    slug: str,
+    current_user: User | None,
+    *,
+    load_user: bool = False,
+) -> LiveProject | None:
+    query = select(LiveProject).where(
+        LiveProject.slug == slug,
+        _live_project_visibility_clause(current_user),
+    )
+    if load_user:
+        query = query.options(selectinload(LiveProject.user))
+    return await db.scalar(query)
+
+
+async def _require_journal_project_visibility(
+    db: AsyncSession,
+    journal_id: UUID,
+    current_user: User | None,
+) -> LiveProject:
+    live_project = await db.scalar(
+        select(LiveProject)
+        .join(
+            LiveProjectJournal,
+            LiveProjectJournal.live_project_id == LiveProject.id,
+        )
+        .where(
+            LiveProjectJournal.id == journal_id,
+            _live_project_visibility_clause(current_user),
+        )
+    )
+    if not live_project:
+        raise HTTPException(status_code=404, detail="Journal not found")
+    return live_project
+
 async def get_user_by_clerk_id(
     db: AsyncSession,
     clerk_user_id: str,
@@ -154,7 +212,6 @@ async def create_live_project(
         db=db,
         title=data.title,
         model=LiveProject,
-        user_id=user.id,
     )
 
     verified_github_url = data.github_url
@@ -220,16 +277,14 @@ async def create_live_project(
 async def get_single_live_project(
     db: AsyncSession,
     slug: str,
+    current_user: User | None = None,
 ):
 
-    live_project = await db.scalar(
-        select(LiveProject)
-        .options(
-            selectinload(LiveProject.user)
-        )
-        .where(
-            LiveProject.slug == slug
-        )
+    live_project = await _get_visible_live_project_by_slug(
+        db=db,
+        slug=slug,
+        current_user=current_user,
+        load_user=True,
     )
 
     if not live_project:
@@ -285,7 +340,8 @@ async def get_live_projects_feed(
         )
 
         .where(
-            LiveProject.is_public == True
+            LiveProject.is_public == True,
+            LiveProject.is_draft == False,
         )
 
         .order_by(
@@ -542,12 +598,13 @@ async def create_live_project_journal(
 async def get_live_project_journals(
     db: AsyncSession,
     slug: str,
+    current_user: User | None = None,
 ):
 
-    live_project = await db.scalar(
-        select(LiveProject).where(
-            LiveProject.slug == slug
-        )
+    live_project = await _get_visible_live_project_by_slug(
+        db=db,
+        slug=slug,
+        current_user=current_user,
     )
 
     if not live_project:
@@ -688,6 +745,12 @@ async def create_live_project_journal_comment(
         clerk_user_id=clerk_user_id,
     )
 
+    await _require_journal_project_visibility(
+        db=db,
+        journal_id=journal_id,
+        current_user=user,
+    )
+
     journal = await db.scalar(
         select(LiveProjectJournal).where(
             LiveProjectJournal.id == journal_id
@@ -781,6 +844,12 @@ async def update_live_project_journal_comment(
             detail="Comment not found",
         )
 
+    await _require_journal_project_visibility(
+        db=db,
+        journal_id=comment.journal_id,
+        current_user=user,
+    )
+
     comment.content = data.content
     comment.is_edited = True
 
@@ -820,6 +889,12 @@ async def delete_live_project_journal_comment(
             detail="Comment not found",
         )
 
+    await _require_journal_project_visibility(
+        db=db,
+        journal_id=comment.journal_id,
+        current_user=user,
+    )
+
     comment.content = "[deleted]"
     comment.deleted_at = datetime.now(timezone.utc)
 
@@ -848,7 +923,14 @@ async def delete_live_project_journal_comment(
 async def get_live_project_journal_comments(
     db: AsyncSession,
     journal_id: UUID,
+    current_user: User | None = None,
 ):
+
+    await _require_journal_project_visibility(
+        db=db,
+        journal_id=journal_id,
+        current_user=current_user,
+    )
 
     comments = await db.scalars(
         select(LiveProjectJournalComment)
@@ -881,6 +963,12 @@ async def like_live_project_journal(
     user = await get_user_by_clerk_id(
         db=db,
         clerk_user_id=clerk_user_id,
+    )
+
+    await _require_journal_project_visibility(
+        db=db,
+        journal_id=journal_id,
+        current_user=user,
     )
 
     journal = await db.scalar(
@@ -955,6 +1043,12 @@ async def unlike_live_project_journal(
         clerk_user_id=clerk_user_id,
     )
 
+    await _require_journal_project_visibility(
+        db=db,
+        journal_id=journal_id,
+        current_user=user,
+    )
+
     like = await db.scalar(
         select(LiveProjectJournalLike).where(
             LiveProjectJournalLike.user_id == user.id,
@@ -1012,6 +1106,17 @@ async def create_feed_event(
 
 ):
 
+    event_is_public = True
+    if live_project_id:
+        live_project = await db.scalar(
+            select(LiveProject).where(LiveProject.id == live_project_id)
+        )
+        event_is_public = bool(
+            live_project
+            and live_project.is_public
+            and not live_project.is_draft
+        )
+
     new_event = FeedEvent(
 
         user_id=user_id,
@@ -1023,6 +1128,8 @@ async def create_feed_event(
         content=content,
 
         event_metadata=event_metadata or {},
+
+        is_public=event_is_public,
 
     )
 
@@ -1041,6 +1148,14 @@ async def get_feed_events(
             selectinload(FeedEvent.live_project),
         )
         .where(FeedEvent.is_public == True)
+        .join(
+            LiveProject,
+            FeedEvent.live_project_id == LiveProject.id,
+        )
+        .where(
+            LiveProject.is_public == True,
+            LiveProject.is_draft == False,
+        )
         .order_by(FeedEvent.created_at.desc())
         .limit(50)
     )
