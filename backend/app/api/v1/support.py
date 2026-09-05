@@ -11,6 +11,8 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 
 from app.schema.support import (
     SupportTicketCreate,
@@ -50,7 +52,7 @@ def _extract_request_diagnostics(
 
 # =========================================================
 # CREATE TICKET
-# POST /support/tickets?clerk_user_id=xxx
+# POST /support/tickets (Bearer token required)
 # =========================================================
 
 @router.post(
@@ -61,7 +63,7 @@ def _extract_request_diagnostics(
 async def create_ticket(
     payload: SupportTicketCreate,
     request: Request,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -72,7 +74,7 @@ async def create_ticket(
     )
 
     return await service.create_ticket(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         payload=payload,
         request_diagnostics=diagnostics,
     )
@@ -80,7 +82,7 @@ async def create_ticket(
 
 # =========================================================
 # LIST MY TICKETS
-# GET /support/tickets?clerk_user_id=xxx
+# GET /support/tickets (Bearer token required)
 # =========================================================
 
 @router.get(
@@ -88,7 +90,7 @@ async def create_ticket(
     response_model=list[SupportTicketResponse],
 )
 async def list_my_tickets(
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     ticket_status: TicketStatus | None = Query(default=None),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
@@ -98,7 +100,7 @@ async def list_my_tickets(
     service = SupportService(db)
 
     tickets, _total = await service.list_user_tickets(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         ticket_status=ticket_status,
         limit=limit,
         offset=offset,
@@ -109,7 +111,7 @@ async def list_my_tickets(
 
 # =========================================================
 # LIST MY OPEN TICKETS
-# GET /support/tickets/open?clerk_user_id=xxx
+# GET /support/tickets/open (Bearer token required)
 # For top support page section.
 # =========================================================
 
@@ -118,20 +120,20 @@ async def list_my_tickets(
     response_model=list[SupportTicketResponse],
 )
 async def list_my_open_tickets(
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     service = SupportService(db)
 
     return await service.list_user_open_tickets(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
     )
 
 
 # =========================================================
 # GET SINGLE TICKET
-# GET /support/tickets/{ticket_id}?clerk_user_id=xxx
+# GET /support/tickets/{ticket_id} (Bearer token required)
 # =========================================================
 
 @router.get(
@@ -140,21 +142,21 @@ async def list_my_open_tickets(
 )
 async def get_my_ticket(
     ticket_id: UUID,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     service = SupportService(db)
 
     return await service.get_ticket_for_user(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         ticket_id=ticket_id,
     )
 
 
 # =========================================================
 # CLOSE MY TICKET
-# PATCH /support/tickets/{ticket_id}/close?clerk_user_id=xxx
+# PATCH /support/tickets/{ticket_id}/close (Bearer token required)
 # =========================================================
 
 @router.patch(
@@ -163,21 +165,21 @@ async def get_my_ticket(
 )
 async def close_my_ticket(
     ticket_id: UUID,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     service = SupportService(db)
 
     return await service.close_user_ticket(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         ticket_id=ticket_id,
     )
 
 
 # =========================================================
 # RESOLVE MY TICKET
-# PATCH /support/tickets/{ticket_id}/resolve?clerk_user_id=xxx
+# PATCH /support/tickets/{ticket_id}/resolve (Bearer token required)
 # =========================================================
 
 @router.patch(
@@ -186,14 +188,14 @@ async def close_my_ticket(
 )
 async def resolve_my_ticket(
     ticket_id: UUID,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     service = SupportService(db)
 
     return await service.resolve_user_ticket(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         ticket_id=ticket_id,
     )
 

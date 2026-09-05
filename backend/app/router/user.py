@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import ClerkPrincipal, get_clerk_principal, get_clerk_primary_email
 
 from app.schema.user import (
     UserSync,
@@ -33,12 +34,17 @@ router = APIRouter(
 )
 async def sync_user_route(
     data: UserSync,
+    principal: ClerkPrincipal = Depends(get_clerk_principal),
     db: AsyncSession = Depends(get_db),
 ):
+
+    email = await get_clerk_primary_email(principal)
 
     return await sync_user(
         db=db,
         data=data,
+        clerk_user_id=principal.user_id,
+        email=email,
     )
 
 
@@ -52,12 +58,14 @@ async def sync_user_route(
 )
 async def complete_onboarding_route(
     data: UserOnboarding,
+    principal: ClerkPrincipal = Depends(get_clerk_principal),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await complete_onboarding(
         db=db,
         data=data,
+        clerk_user_id=principal.user_id,
     )
 
 
@@ -70,12 +78,11 @@ async def complete_onboarding_route(
     response_model=UserResponse,
 )
 async def get_user_data(
-    clerk_user_id: str = Query(...),
+    principal: ClerkPrincipal = Depends(get_clerk_principal),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await get_user_by_clerk_id(
         db=db,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=principal.user_id,
     )
-

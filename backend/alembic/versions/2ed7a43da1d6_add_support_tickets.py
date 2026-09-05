@@ -7,7 +7,7 @@ Create Date: 2026-06-07 18:33:03.902318
 
 from typing import Sequence, Union
 
-from alembic import op
+from alembic import context, op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
@@ -22,12 +22,13 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     """Upgrade schema."""
 
-    bind = op.get_bind()
-    inspector = sa.inspect(bind)
+    table_names = set()
+    if not context.is_offline_mode():
+        table_names = set(sa.inspect(op.get_bind()).get_table_names())
 
     # If table already exists, don't recreate anything.
     # This protects you from half-broken migration states.
-    if "support_tickets" in inspector.get_table_names():
+    if "support_tickets" in table_names:
         return
 
     # =========================================================

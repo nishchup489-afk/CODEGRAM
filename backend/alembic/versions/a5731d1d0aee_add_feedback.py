@@ -7,7 +7,7 @@ Create Date: 2026-06-07 19:30:25.652259
 
 from typing import Sequence, Union
 
-from alembic import op
+from alembic import context, op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
@@ -19,8 +19,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    bind = op.get_bind()
-    inspector = sa.inspect(bind)
+    table_names = set()
+    if not context.is_offline_mode():
+        table_names = set(sa.inspect(op.get_bind()).get_table_names())
 
     # =========================================================
     # CREATE ENUMS SAFELY
@@ -143,7 +144,7 @@ def upgrade() -> None:
     # IDEAS TABLE
     # =========================================================
 
-    if "ideas" not in inspector.get_table_names():
+    if "ideas" not in table_names:
         op.create_table(
             "ideas",
 
@@ -237,7 +238,7 @@ def upgrade() -> None:
     # FEEDBACK TABLE
     # =========================================================
 
-    if "feedback" not in inspector.get_table_names():
+    if "feedback" not in table_names:
         op.create_table(
             "feedback",
 

@@ -1,9 +1,9 @@
-from uuid import UUID
-
-from fastapi import APIRouter, Depends , Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 
 from app.schema.dashboard_user_preview import (
     DashboardUserPreview
@@ -25,11 +25,11 @@ router = APIRouter(
     response_model=DashboardUserPreview,
 )
 async def get_left_panel_user_data(
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await get_user_for_left_panel(
         db=db,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
     )

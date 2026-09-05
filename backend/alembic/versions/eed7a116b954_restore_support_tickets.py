@@ -1,6 +1,6 @@
 from typing import Sequence, Union
 
-from alembic import op
+from alembic import context, op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
@@ -13,6 +13,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    # The clean offline script already creates these objects in 2ed7a43da1d6.
+    # This revision exists only to repair databases affected by the former
+    # destructive 54582825b0fb revision, which requires online inspection.
+    if context.is_offline_mode():
+        return
+
     bind = op.get_bind()
     inspector = sa.inspect(bind)
 
@@ -233,15 +239,10 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("DROP INDEX IF EXISTS ix_support_tickets_status")
-    op.execute("DROP INDEX IF EXISTS ix_support_tickets_project_id")
-    op.execute("DROP INDEX IF EXISTS ix_support_tickets_user_id")
-    op.execute("DROP INDEX IF EXISTS ix_support_tickets_ticket_number")
+    """Keep objects owned by revision 2ed7a43da1d6.
 
-    op.execute("DROP TABLE IF EXISTS support_tickets")
-
-    op.execute("DROP SEQUENCE IF EXISTS support_ticket_seq")
-
-    op.execute("DROP TYPE IF EXISTS ticket_priority")
-    op.execute("DROP TYPE IF EXISTS ticket_status")
-    op.execute("DROP TYPE IF EXISTS ticket_category")
+    This revision repairs databases affected by the former destructive child
+    migration; it does not own the support-ticket schema and therefore must not
+    remove it during a partial downgrade.
+    """
+    pass

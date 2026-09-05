@@ -1,12 +1,13 @@
 from fastapi import (
     APIRouter,
     Depends,
-    Query,
 )
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 
 from app.schema.follow import FollowStatus
 
@@ -34,13 +35,13 @@ router = APIRouter(
 async def follow_single_user(
     username: str,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 ):
     return await follow_user(
         db=db,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         username=username,
     )
 
@@ -56,13 +57,13 @@ async def follow_single_user(
 async def unfollow_single_user(
     username: str,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 ):
     return await unfollow_user(
         db=db,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         username=username,
     )
 
@@ -78,12 +79,12 @@ async def unfollow_single_user(
 async def get_follow_status(
     username: str,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 ):
     return await check_follow_status(
         db=db,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         username=username,
     )

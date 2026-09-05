@@ -7,6 +7,13 @@ from app.models.notification import Notification
 from app.models.post import Post , PostLike , PostMedia , PostTag 
 from app.models.tag import Tag
 from app.models.project import Project , ProjectStar
+from app.models.LiveProject import (
+    FeedEvent,
+    LiveProject,
+    LiveProjectJournal,
+    LiveProjectJournalComment,
+    LiveProjectJournalLike,
+)
 from app.models.feedback import Feedback
 from app.models.idea import Idea 
 from app.models.support import SupportTicket

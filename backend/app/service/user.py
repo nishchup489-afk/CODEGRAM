@@ -31,17 +31,31 @@ async def get_user_by_clerk_id(
 async def sync_user(
     db: AsyncSession,
     data: UserSync,
+    clerk_user_id: str,
+    email: str,
 ):
     # 1. First try to find user by Clerk ID
     existing_user = await db.scalar(
         select(User).where(
-            User.clerk_user_id == data.clerk_user_id
+            User.clerk_user_id == clerk_user_id
         )
     )
 
     if existing_user:
+        email_owner = await db.scalar(
+            select(User).where(
+                User.email == email,
+                User.id != existing_user.id,
+            )
+        )
+        if email_owner:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email is already linked to another Clerk account",
+            )
+
         # Keep safe Clerk data fresh
-        existing_user.email = data.email
+        existing_user.email = email
         existing_user.display_name = data.display_name
 
         # IMPORTANT:
@@ -58,33 +72,25 @@ async def sync_user(
     # 2. If Clerk ID not found, check by email
     email_user = await db.scalar(
         select(User).where(
-            User.email == data.email
+            User.email == email
         )
     )
 
     if email_user:
-        # Link old DB user to the new Clerk user ID
-        email_user.clerk_user_id = data.clerk_user_id
-
-        if data.display_name:
-            email_user.display_name = data.display_name
-
-        # Same rule here:
-        # only set Clerk avatar if user has no avatar yet
-        if not email_user.avatar_url:
-            email_user.avatar_url = data.avatar_url
-
-        await db.commit()
-        await db.refresh(email_user)
-
-        return email_user
+        # Never move an existing account to a different Clerk subject inside
+        # a public request. Legacy account linking must use an audited admin
+        # migration or a verified Clerk webhook.
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email is already linked to another Clerk account",
+        )
 
     # 3. Create new user only when BOTH clerk_user_id and email are new
     generated_username = f"user_{uuid.uuid4().hex[:8]}"
 
     new_user = User(
-        clerk_user_id=data.clerk_user_id,
-        email=data.email,
+        clerk_user_id=clerk_user_id,
+        email=email,
         display_name=data.display_name,
         avatar_url=data.avatar_url,  # initial default avatar only
         username=generated_username,
@@ -101,11 +107,12 @@ async def sync_user(
 async def complete_onboarding(
     db: AsyncSession,
     data: UserOnboarding,
+    clerk_user_id: str,
 ):
 
     existing_user = await db.scalar(
         select(User).where(
-            User.clerk_user_id == data.clerk_user_id
+            User.clerk_user_id == clerk_user_id
         )
     )
 
@@ -153,4 +160,3 @@ async def complete_onboarding(
     await db.refresh(existing_user)
 
     return existing_user
-

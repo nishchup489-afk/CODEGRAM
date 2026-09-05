@@ -1,12 +1,13 @@
 from fastapi import (
     APIRouter,
     Depends,
-    Query,
 )
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 
 from app.schema.project import GetProject
 
@@ -26,11 +27,11 @@ router = APIRouter(
     response_model=list[GetProject],
 )
 async def get_bookmarked_projects(
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await get_my_bookmarks(
         db=db,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
     )

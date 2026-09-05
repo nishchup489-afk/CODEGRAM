@@ -2,22 +2,18 @@ from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
-from pydantic import EmailStr
 
 from app.schema.ProfileAnalytics import ProfileLiveProjectResponse, ProfileProjectResponse, UserStackStatResponse
 
 
 class UserSync(BaseModel):
 
-    clerk_user_id: str
-    email: EmailStr
     display_name: str | None = None
     avatar_url: str | None = None
 
 
 class UserOnboarding(BaseModel):
 
-    clerk_user_id: str
     username: str
     display_name: str
 

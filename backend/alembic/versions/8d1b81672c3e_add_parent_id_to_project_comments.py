@@ -55,7 +55,26 @@ def upgrade() -> None:
     op.create_unique_constraint('unique_project_star', 'project_stars', ['user_id', 'project_id'])
     op.add_column('projects', sa.Column('gallery_urls', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
     op.add_column('projects', sa.Column('github_data', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
-    op.add_column('projects', sa.Column('comments_count', sa.Integer(), nullable=False))
+    # Expand/backfill/contract so databases with existing projects can upgrade.
+    # The final column intentionally has no server default, matching the ORM's
+    # Python-side default.
+    op.add_column(
+        'projects',
+        sa.Column('comments_count', sa.Integer(), nullable=True),
+    )
+    op.execute(
+        sa.text(
+            "UPDATE projects "
+            "SET comments_count = 0 "
+            "WHERE comments_count IS NULL"
+        )
+    )
+    op.alter_column(
+        'projects',
+        'comments_count',
+        existing_type=sa.Integer(),
+        nullable=False,
+    )
     # ### end Alembic commands ###
 
 

@@ -5,12 +5,10 @@ from typing import List
 from fastapi import (
     APIRouter,
     Depends,
-    HTTPException,
     Query,
     status,
 )
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -18,7 +16,6 @@ from app.core.database import get_db
 from app.schema.project import (
     AnalyzeRepoRequest,
     CreateProject,
-    GetProjectBookmark,
     PaginatedProjects,
     UpdateProject,
     GetProject,
@@ -50,7 +47,7 @@ from app.service.project import (
     
 )
 from app.models.user import User
-from app.core.auth import get_current_user_optional
+from app.core.auth import get_current_user, get_current_user_optional
 from app.schema.ProfileAnalytics import UserFullProfileResponse
 
 
@@ -71,26 +68,13 @@ router = APIRouter(
 )
 async def create_project(
     data: CreateProject,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    user = await db.scalar(
-        select(User).where(
-            User.clerk_user_id == clerk_user_id
-        )
-    )
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
-
     return await create_new_project(
         db=db,
         data=data,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -104,14 +88,14 @@ async def create_project(
 )
 async def get_project(
     slug: str,
-    clerk_user_id : str | None = None ,
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await get_existing_project(
         db=db,
         slug=slug,
-        clerk_user_id=clerk_user_id
+        clerk_user_id=current_user.clerk_user_id if current_user else None,
     )
 
 
@@ -207,13 +191,13 @@ async def fetch_projects(
 )
 async def delete_project(
     slug: str,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     return await delete_existing_project(
         db=db,
         slug=slug,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
     )
 
 
@@ -228,26 +212,14 @@ async def delete_project(
 async def update_project(
     slug: str,
     data: UpdateProject,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    user = await db.scalar(
-        select(User).where(
-            User.clerk_user_id == clerk_user_id
-        )
-    )
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
-
     return await update_existing_project(
         db=db,
         slug=slug,
         data=data,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -261,27 +233,14 @@ async def update_project(
 )
 async def star_project(
     slug: str,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-
-    user = await db.scalar(
-    select(User).where(
-        User.clerk_user_id == clerk_user_id
-    )
-)
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
 
     return await add_project_star(
         db=db,
         slug=slug,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -295,27 +254,14 @@ async def star_project(
 )
 async def unstar_project(
     slug: str,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-
-    user = await db.scalar(
-        select(User).where(
-            User.clerk_user_id == clerk_user_id
-        )
-    )
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
 
     return await remove_project_star(
         db=db,
         slug=slug,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -331,28 +277,15 @@ async def unstar_project(
 async def create_comment(
     slug: str,
     data: AddComment,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-
-    user = await db.scalar(
-    select(User).where(
-        User.clerk_user_id == clerk_user_id
-    )
-)
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
 
     return await add_project_comment(
         db=db,
         slug=slug,
         data=data,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -386,7 +319,7 @@ async def fetch_project_comments(
 async def edit_comment(
     comment_id: UUID,
     data: UpdateComment,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -394,7 +327,7 @@ async def edit_comment(
         db=db,
         comment_id=comment_id,
         data=data,
-        clerk_user_id=clerk_user_id,
+        user_id=current_user.id,
     )
 
 
@@ -407,14 +340,14 @@ async def edit_comment(
 )
 async def remove_comment(
     comment_id: UUID,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await delete_project_comment(
         db=db,
         comment_id=comment_id,
-        clerk_user_id=clerk_user_id,
+        user_id=current_user.id,
     )
 
 
@@ -429,7 +362,7 @@ async def remove_comment(
 async def vote_comment(
     comment_id: UUID,
     data: AddVote,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -437,7 +370,7 @@ async def vote_comment(
         db=db,
         comment_id=comment_id,
         data=data,
-        clerk_user_id=clerk_user_id,
+        user_id=current_user.id,
     )
 
 
@@ -451,27 +384,14 @@ async def vote_comment(
 )
 async def bookmark_project(
     slug: str,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-
-    user = await db.scalar(
-        select(User).where(
-            User.clerk_user_id == clerk_user_id
-        )
-    )
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
 
     return await add_project_bookmark(
         db=db,
         slug=slug,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -485,25 +405,12 @@ async def bookmark_project(
 )
 async def unbookmark_project(
     slug: str,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-
-    user = await db.scalar(
-        select(User).where(
-            User.clerk_user_id == clerk_user_id
-        )
-    )
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
 
     return await remove_project_bookmark(
         db=db,
         slug=slug,
-        user_id=user.id,
+        user_id=current_user.id,
     )

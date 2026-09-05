@@ -11,6 +11,8 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user, get_current_user_optional
+from app.models.user import User
 
 from app.models.feedback import (
     FeedbackType,
@@ -51,8 +53,7 @@ def _extract_request_diagnostics(
 
 # =========================================================
 # CREATE FEEDBACK
-# POST /feedback?clerk_user_id=xxx
-# clerk_user_id optional for MVP.
+# POST /feedback (Bearer token optional for anonymous feedback)
 # =========================================================
 
 @router.post(
@@ -63,7 +64,7 @@ def _extract_request_diagnostics(
 async def create_feedback(
     payload: FeedbackCreate,
     request: Request,
-    clerk_user_id: str | None = Query(default=None),
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ):
 
@@ -75,14 +76,14 @@ async def create_feedback(
 
     return await service.create_feedback(
         payload=payload,
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id if current_user else None,
         request_diagnostics=diagnostics,
     )
 
 
 # =========================================================
 # LIST MY FEEDBACK
-# GET /feedback/me?clerk_user_id=xxx
+# GET /feedback/me (Bearer token required)
 # =========================================================
 
 @router.get(
@@ -90,7 +91,7 @@ async def create_feedback(
     response_model=list[FeedbackResponse],
 )
 async def list_my_feedback(
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -99,7 +100,7 @@ async def list_my_feedback(
     service = FeedbackService(db)
 
     feedback_items, _total = await service.list_my_feedback(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         limit=limit,
         offset=offset,
     )
@@ -109,7 +110,7 @@ async def list_my_feedback(
 
 # =========================================================
 # GET MY SINGLE FEEDBACK
-# GET /feedback/me/{feedback_id}?clerk_user_id=xxx
+# GET /feedback/me/{feedback_id} (Bearer token required)
 # =========================================================
 
 @router.get(
@@ -118,14 +119,14 @@ async def list_my_feedback(
 )
 async def get_my_feedback(
     feedback_id: UUID,
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
 
     service = FeedbackService(db)
 
     return await service.get_my_feedback(
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
         feedback_id=feedback_id,
     )
 

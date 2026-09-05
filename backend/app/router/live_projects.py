@@ -1,12 +1,13 @@
 from fastapi import (
     APIRouter,
     Depends,
-    Query,
 )
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 
 from app.schema.liveProjects import *
 
@@ -32,7 +33,7 @@ async def create_new_live_project(
 
     data: CreateLiveProject,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -42,7 +43,7 @@ async def create_new_live_project(
 
         db=db,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
         data=data,
 
@@ -103,7 +104,7 @@ async def update_single_live_project(
 
     data: UpdateLiveProject,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -115,7 +116,7 @@ async def update_single_live_project(
 
         slug=slug,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
         data=data,
 
@@ -134,7 +135,7 @@ async def delete_single_live_project(
 
     slug: str,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -146,7 +147,7 @@ async def delete_single_live_project(
 
         slug=slug,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
     )
 
@@ -166,7 +167,7 @@ async def create_journal_entry(
 
     data: CreateLiveProjectJournal,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -178,7 +179,7 @@ async def create_journal_entry(
 
         slug=slug,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
         data=data,
 
@@ -226,7 +227,7 @@ async def create_journal_comment(
 
     data: CreateLiveProjectJournalComment,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -238,7 +239,7 @@ async def create_journal_comment(
 
         journal_id=journal_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
         data=data,
 
@@ -257,7 +258,7 @@ async def like_journal(
 
     journal_id: UUID,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -269,7 +270,7 @@ async def like_journal(
 
         journal_id=journal_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
     )
 
@@ -286,7 +287,7 @@ async def unlike_journal(
 
     journal_id: UUID,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -298,7 +299,7 @@ async def unlike_journal(
 
         journal_id=journal_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
     )
 
@@ -341,7 +342,7 @@ async def update_journal_entry(
 
     data: UpdateLiveProjectJournal,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -353,7 +354,7 @@ async def update_journal_entry(
 
         journal_id=journal_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
         data=data,
 
@@ -372,7 +373,7 @@ async def delete_journal_entry(
 
     journal_id: UUID,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -384,7 +385,7 @@ async def delete_journal_entry(
 
         journal_id=journal_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
     )
 
@@ -431,7 +432,7 @@ async def update_journal_comment(
 
     data: UpdateLiveProjectJournalComment,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -443,7 +444,7 @@ async def update_journal_comment(
 
         comment_id=comment_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
         data=data,
 
@@ -463,7 +464,7 @@ async def delete_journal_comment(
 
     comment_id: UUID,
 
-    clerk_user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
 
     db: AsyncSession = Depends(get_db),
 
@@ -475,9 +476,7 @@ async def delete_journal_comment(
 
         comment_id=comment_id,
 
-        clerk_user_id=clerk_user_id,
+        clerk_user_id=current_user.clerk_user_id,
 
     )
-
-
 

@@ -41,6 +41,23 @@ class Settings(BaseSettings):
 
     CLERK_SECRET_KEY: str | None = None
 
+    # Frontend API URL from Clerk, for example
+    # https://example.clerk.accounts.dev. Session-token `iss` must match it.
+    CLERK_ISSUER: str | None = None
+
+    # Optional override. By default this is derived from CLERK_ISSUER.
+    CLERK_JWKS_URL: str | None = None
+
+    # Comma-separated origins allowed in the Clerk token `azp` claim.
+    # Falls back to CORS_ORIGINS when unset.
+    CLERK_AUTHORIZED_PARTIES: str = ""
+
+    # Clerk session tokens do not contain `aud` by default. Set this only
+    # when a custom token template includes an audience for this API.
+    CLERK_JWT_AUDIENCE: str | None = None
+
+    CLERK_API_URL: str = "https://api.clerk.com/v1"
+
 
     # =========================================================
     # CLOUDINARY / MEDIA
@@ -84,6 +101,19 @@ class Settings(BaseSettings):
             for user_id in self.ADMIN_CLERK_USER_IDS.split(",")
             if user_id.strip()
         ]
+
+    @property
+    def clerk_authorized_party_list(self) -> list[str]:
+        raw = self.CLERK_AUTHORIZED_PARTIES or self.CORS_ORIGINS
+        return [value.strip().rstrip("/") for value in raw.split(",") if value.strip()]
+
+    @property
+    def clerk_jwks_url(self) -> str | None:
+        if self.CLERK_JWKS_URL:
+            return self.CLERK_JWKS_URL.strip()
+        if self.CLERK_ISSUER:
+            return f"{self.CLERK_ISSUER.strip().rstrip('/')}/.well-known/jwks.json"
+        return None
 
 
 @lru_cache

@@ -293,6 +293,148 @@ Fix these in this order:
 
 **Do not rewrite the architecture.** Your router → service → model structure is already decent. Secure it, eliminate contract drift, add tests, and only then optimize for traffic.
 
+more broadly 
+
+I inspected the current [`nishchup489-afk/CODEGRAM`](https://github.com/nishchup489-afk/CODEGRAM) `main` branch. Before V2, fix these in order:
+
+## Must fix before V2
+
+1. **Implement real backend authentication**
+
+   * Verify Clerk JWTs.
+   * Derive the user ID from the token.
+   * Stop accepting `clerk_user_id` through query parameters and headers.
+   * This is currently the largest security flaw.
+
+2. **Fix existing correctness bugs**
+
+   * Follow currently decreases counters.
+   * Comment edit/delete/vote receives the wrong type of user ID.
+   * Project ownership detection is wrong in the frontend.
+   * Private live projects and journals are publicly accessible.
+   * Duplicate `GET /dashboard` routes can shadow each other.
+   * Profile-settings frontend and backend contracts disagree.
+
+3. **Remove database writes from read requests**
+
+   * Opening a project increments views and commits immediately.
+   * Opening a live project also updates and commits.
+   * This makes every page view a database write.
+   * Buffer views in Redis and periodically flush them to PostgreSQL.
+
+4. **Fix the project-feed N+1 queries**
+
+   * The feed performs separate star-count and `is_starred` queries for every project.
+   * Twenty projects can create 40+ additional queries.
+   * Fetch counts and viewer state using joins/subqueries in one or two queries.
+
+5. **Paginate every growing collection**
+
+   * Live-project feed currently loads every public live project.
+   * Project comments load every comment and reply.
+   * Journals load everything.
+   * Profiles load every completed and live project.
+   * Use cursor pagination with `(created_at, id)`, not timestamps alone.
+
+6. **Add the correct composite indexes**
+
+   * `projects(created_at DESC, id)`
+   * `projects(user_id, created_at DESC)`
+   * `project_stars(project_id, user_id)`
+   * `project_bookmarks(project_id, user_id)`
+   * `project_comments(project_id, parent_id, created_at DESC)`
+   * `live_project_journals(live_project_id, created_at DESC)`
+   * `feed_events(is_public, created_at DESC, id)`
+
+7. **Replace `%query%` user search**
+
+   * Current `ILIKE '%text%'` cannot efficiently use a normal B-tree index.
+   * Add PostgreSQL `pg_trgm` and GIN trigram indexes.
+   * Debounce the frontend and require at least two characters.
+
+8. **Use Alembic only**
+
+   * Remove `Base.metadata.create_all()` from application startup.
+   * Run migrations as a separate deployment step.
+   * Startup schema mutation becomes dangerous with multiple server instances.
+
+9. **Configure the SQLAlchemy connection pool**
+
+   * Set `pool_size`, `max_overflow`, `pool_timeout`, `pool_recycle`, and `pool_pre_ping`.
+   * Disable `echo=True` in production.
+   * Keep total connections below Neon/Postgres limits across all workers.
+
+10. **Stop loading complete relationships for dashboards**
+
+    * The dashboard loads every project and live project, sorts them in Python, and calculates totals in Python.
+    * Use SQL aggregates for totals and limited queries for recent items.
+
+11. **Move external validation out of request paths**
+
+    * GitHub inspection and live-URL verification can make project creation slow or unreliable.
+    * Save the project as `processing`.
+    * Process verification in a worker with timeouts and retries.
+    * Start with ARQ/Dramatiq + Redis; you do not need Kafka.
+
+12. **Make counters concurrency-safe**
+
+    * Stars, followers, comments, journals, and views can drift during concurrent updates.
+    * Use atomic SQL updates such as `count = count + 1`.
+    * Keep uniqueness constraints.
+    * Add a periodic reconciliation job.
+
+13. **Standardize the API**
+
+    * Put routes under `/api/v1`.
+    * Use one authentication dependency.
+    * Use consistent response/error formats.
+    * Generate frontend TypeScript types from FastAPI’s OpenAPI schema.
+
+14. **Split giant frontend pages**
+
+    * The projects page is roughly 1,300 lines and entirely client-rendered.
+    * Separate feed fetching, cards, dialogs, reactions, and pagination.
+    * Use Server Components for initial public content and small client islands for interaction.
+
+15. **Introduce a frontend data-fetching layer**
+
+    * Use TanStack Query or SWR.
+    * Centralize query keys, caching, retries, optimistic updates, and invalidation.
+    * Stop manually coordinating the same state across large pages.
+
+16. **Add rate limiting**
+
+    * Apply it to search, comments, votes, follows, project creation, support, feedback, and uploads.
+    * Use Redis-backed limits so they work across multiple backend instances.
+
+17. **Secure media uploads**
+
+    * Replace unsigned Cloudinary uploads with backend-generated signed upload parameters.
+    * Restrict file type, size, folder, and transformation rules.
+
+18. **Add tests before adding more subsystems**
+
+    * Auth and authorization tests.
+    * Feed pagination tests.
+    * Concurrent star/follow tests.
+    * Private-project access tests.
+    * API contract tests.
+    * One end-to-end user journey.
+
+19. **Add production observability**
+
+    * Structured JSON logs.
+    * Request IDs.
+    * Sentry/error tracking.
+    * Endpoint latency and database-query monitoring.
+    * Health and readiness endpoints that actually check dependencies.
+
+20. **Add CI deployment gates**
+
+    * Backend tests and linting.
+    * Frontend linting, type-checking, and build.
+    * Alembic migration validation.
+    * Dependency/security scanning.
 
 
 
@@ -310,3 +452,8 @@ scalable change
 - add __init__ in every backend folder and import it 
 - add repository folder and all database query put their 
 - i am planning to remove the post feature so gotta do something about it 
+- for each api write a api docs in backend/api_docs 
+        that will be like 
+         GET api route 
+         frontend route 
+         api return {} 
