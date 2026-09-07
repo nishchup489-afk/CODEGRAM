@@ -24,6 +24,15 @@ expiration, not-before time, session, subject, and authorized-party claims.
 through Clerk's Backend API; identity fields in request bodies or query strings
 are not trusted.
 
+Application endpoints are published canonically under `/api/v1`. Unversioned
+aliases remain temporarily available for the frontend migration, but they are
+excluded from OpenAPI and should not be used by new clients.
+
+The PostgreSQL pool is configured through `DATABASE_POOL_SIZE`,
+`DATABASE_MAX_OVERFLOW`, `DATABASE_POOL_TIMEOUT`, `DATABASE_POOL_RECYCLE`, and
+`DATABASE_POOL_PRE_PING`. Size the pool across all workers so their combined
+maximum stays below the database connection limit.
+
 `GET /health/live` is a dependency-free process probe. `GET /health/ready`
 checks PostgreSQL and, when configured, Redis. Requests receive an
 `X-Request-ID` response header and are logged as structured JSON.

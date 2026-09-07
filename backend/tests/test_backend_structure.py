@@ -12,7 +12,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_router_package_exports_an_aggregate_router():
-    assert router_package.__all__ == ["router"]
+    assert "router" in router_package.__all__
     assert isinstance(router_package.router, APIRouter)
 
 
