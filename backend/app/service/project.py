@@ -3,7 +3,7 @@ import uuid
 
 from fastapi import HTTPException , status
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import and_, delete, or_, select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -331,19 +331,6 @@ async def get_existing_project(
             detail="Project not found",
         )
 
-    project.views_count += 1
-
-    await db.commit()
-
-    await db.refresh(project)
-
-    stars_count = await db.scalar(
-        select(func.count(ProjectStar.id))
-        .where(
-            ProjectStar.project_id == project.id
-        )
-    )
-
     is_starred = False
 
     is_bookmarked = False
@@ -404,7 +391,7 @@ async def get_existing_project(
 
         "tech_stack": project.tech_stack,
 
-        "stars_count": stars_count,
+        "stars_count": project.stars_count,
 
         "views_count": project.views_count,
 
@@ -460,6 +447,7 @@ async def get_projects(
     db: AsyncSession,
     limit: int = 20,    # The limit Nami gave. 3 for islands , 20 for our DevManiac
     cursor: datetime | None = None, # like pointer, which point i am   
+    cursor_id: uuid.UUID | None = None,
                                     # This is Nami's pointer flag. she in a island , she add the flag
     current_user : User | None = None ,
 ):
@@ -468,16 +456,23 @@ async def get_projects(
     query = (    # select project , order by 'created_at descending' , limit by a number like 20
         select(Project)
         .options(selectinload(Project.user))
-        .order_by(Project.created_at.desc())
+        .order_by(Project.created_at.desc(), Project.id.desc())
         .limit(limit + 1)
     )
 
     if cursor:    # if we are in a certain point or project(created at a certain time)
                      # if Nami is in an island , suppose she is in Egghead ( 10:10)
                   
-        query =  query.where(    # from those 20 limited query ordered by newest
-            Project.created_at < cursor # only show me all older than the cursor or point
-                                        # She start searching next islands less newer than Egghead like Wano , Whole cake within limit
+        query = query.where(
+            or_(
+                Project.created_at < cursor,
+                and_(
+                    Project.created_at == cursor,
+                    Project.id < cursor_id,
+                ),
+            )
+            if cursor_id
+            else Project.created_at < cursor
         )
 
     result = await db.scalars(query)  # all result together
@@ -488,34 +483,42 @@ async def get_projects(
      projects = projects[:-1] 
 
     next_cursor = None # Currently Nami is just in Egghead , so she dont need to be worried abot island after her limit Whole Cake
+    next_cursor_id = None
 
     if projects: # When Nami done visiting first 3 islands of her limit ( egghead , wano , whole cake)
         next_cursor = projects[-1].created_at  # take the last project time , this will be our new pointer now
+        next_cursor_id = projects[-1].id
                                                # she calculate the last island ( Whole cake)  , add a flag or pointer , mark it as a starting point for next limit , and do the process again
+
+    project_ids = [project.id for project in projects]
+    starred_project_ids: set[uuid.UUID] = set()
+    bookmarked_project_ids: set[uuid.UUID] = set()
+
+    if current_user and project_ids:
+        starred_project_ids = set(
+            (
+                await db.scalars(
+                    select(ProjectStar.project_id).where(
+                        ProjectStar.user_id == current_user.id,
+                        ProjectStar.project_id.in_(project_ids),
+                    )
+                )
+            ).all()
+        )
+        bookmarked_project_ids = set(
+            (
+                await db.scalars(
+                    select(ProjectBookmark.project_id).where(
+                        ProjectBookmark.user_id == current_user.id,
+                        ProjectBookmark.project_id.in_(project_ids),
+                    )
+                )
+            ).all()
+        )
 
     serialized_projects = []
 
     for project in projects:
-
-        stars_count = await db.scalar(
-            select(func.count(ProjectStar.id))
-            .where(
-                ProjectStar.project_id == project.id
-            )
-        )
-
-        is_starred = False
-
-        if current_user:
-
-            existing_star = await db.scalar(
-                select(ProjectStar).where(
-                    ProjectStar.project_id == project.id,
-                    ProjectStar.user_id == current_user.id,
-                )
-            )
-
-            is_starred = existing_star is not None
 
         serialized_projects.append({
 
@@ -541,7 +544,7 @@ async def get_projects(
 
             "tech_stack": project.tech_stack,
 
-            "stars_count": stars_count,
+            "stars_count": project.stars_count,
 
             "views_count": project.views_count,
 
@@ -549,7 +552,9 @@ async def get_projects(
 
             "is_featured": project.is_featured,
 
-            "is_starred": is_starred,
+            "is_starred": project.id in starred_project_ids,
+
+            "is_bookmarked": project.id in bookmarked_project_ids,
 
             "created_at": project.created_at,
 
@@ -572,6 +577,8 @@ async def get_projects(
         "items": serialized_projects,
 
         "next_cursor": next_cursor,
+
+        "next_cursor_id": next_cursor_id,
 
         "has_more": has_more,
     }
@@ -970,13 +977,16 @@ async def delete_project_comment(
 async def get_project_comments(
     db: AsyncSession,
     slug: str,
+    limit: int = 50,
+    cursor: datetime | None = None,
+    cursor_id: uuid.UUID | None = None,
 ):
 
     project = await _get_project_by_slug(db, slug)
     
   
 
-    comments = await db.scalars(
+    query = (
         select(ProjectComment)
         .where(
             ProjectComment.project_id == project.id,
@@ -993,8 +1003,24 @@ async def get_project_comments(
                     ProjectComment.user
                 ),
             )
-        .order_by(ProjectComment.created_at.desc())
+        .order_by(ProjectComment.created_at.desc(), ProjectComment.id.desc())
+        .limit(limit)
     )
+
+    if cursor:
+        query = query.where(
+            or_(
+                ProjectComment.created_at < cursor,
+                and_(
+                    ProjectComment.created_at == cursor,
+                    ProjectComment.id < cursor_id,
+                ),
+            )
+            if cursor_id
+            else ProjectComment.created_at < cursor
+        )
+
+    comments = await db.scalars(query)
 
     return comments.all()
 

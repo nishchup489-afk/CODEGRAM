@@ -1,4 +1,3 @@
-import os
 import ipaddress
 import re
 import secrets
@@ -10,6 +9,7 @@ from fastapi import HTTPException
 import httpx
 from sqlalchemy import select
 
+from app.core.config import settings
 from app.models.project import Project
 
 
@@ -19,8 +19,6 @@ from app.models.project import Project
 
 # Optional. Unauthenticated GitHub API = 60 req/hour per IP.
 # With a token = 5000 req/hour. Set GITHUB_TOKEN in env.
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-
 # Shared timeout for all outbound calls. Without this a hung
 # remote host hangs the whole request indefinitely.
 HTTP_TIMEOUT = httpx.Timeout(10.0)
@@ -34,9 +32,9 @@ def _github_headers():
         "Accept": "application/vnd.github+json",
     }
 
-    if GITHUB_TOKEN:
+    if settings.GITHUB_TOKEN:
 
-        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+        headers["Authorization"] = f"Bearer {settings.GITHUB_TOKEN}"
 
     return headers
 

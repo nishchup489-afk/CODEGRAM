@@ -32,6 +32,7 @@ from app.utility.project_utility import (
     generate_unique_slug,
     fetch_github_url,
 )
+from app.core.http_client import request_with_retries
 import httpx
 
 async def fetch_latest_commit(
@@ -69,11 +70,18 @@ async def fetch_latest_commit(
         f"{repo_path}/commits"
     )
 
-    async with httpx.AsyncClient() as client:
-
-        response = await client.get(
-            github_api_url
-        )
+    try:
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(10.0),
+            trust_env=False,
+            headers={"Accept": "application/vnd.github+json"},
+        ) as client:
+            response = await request_with_retries(client, "GET", github_api_url)
+    except httpx.RequestError:
+        raise HTTPException(
+            status_code=502,
+            detail="Could not reach GitHub",
+        ) from None
 
     if response.status_code != 200:
 
@@ -293,28 +301,6 @@ async def get_single_live_project(
             detail="Live project not found",
         )
 
-    await db.execute(
-        update(LiveProject)
-        .where(
-            LiveProject.id == live_project.id
-        )
-        .values(
-            views_count=LiveProject.views_count + 1
-        )
-    )
-
-    await db.commit()
-
-    live_project = await db.scalar(
-        select(LiveProject)
-        .options(
-            selectinload(LiveProject.user)
-        )
-        .where(
-            LiveProject.id == live_project.id
-        )
-    )
-
     live_project.days_count = (
         datetime.now(timezone.utc).date()
         - live_project.created_at.date()
@@ -329,10 +315,11 @@ async def get_single_live_project(
 
 async def get_live_projects_feed(
     db: AsyncSession,
+    limit: int = 50,
+    cursor: datetime | None = None,
+    cursor_id: UUID | None = None,
 ):
-
-    result = await db.scalars(
-
+    query = (
         select(LiveProject)
 
         .options(
@@ -344,11 +331,24 @@ async def get_live_projects_feed(
             LiveProject.is_draft == False,
         )
 
-        .order_by(
-            LiveProject.created_at.desc()
+        .order_by(LiveProject.created_at.desc(), LiveProject.id.desc())
+        .limit(limit)
+    )
+
+    if cursor:
+        query = query.where(
+            or_(
+                LiveProject.created_at < cursor,
+                and_(
+                    LiveProject.created_at == cursor,
+                    LiveProject.id < cursor_id,
+                ),
+            )
+            if cursor_id
+            else LiveProject.created_at < cursor
         )
 
-    )
+    result = await db.scalars(query)
 
     projects = result.all()
 
@@ -598,6 +598,9 @@ async def create_live_project_journal(
 async def get_live_project_journals(
     db: AsyncSession,
     slug: str,
+    limit: int = 50,
+    cursor: datetime | None = None,
+    cursor_id: UUID | None = None,
     current_user: User | None = None,
 ):
 
@@ -613,15 +616,29 @@ async def get_live_project_journals(
             detail="Live project not found",
         )
 
-    journals = await db.scalars(
+    query = (
         select(LiveProjectJournal)
         .where(
             LiveProjectJournal.live_project_id == live_project.id
         )
-        .order_by(
-            LiveProjectJournal.created_at.desc()
-        )
+        .order_by(LiveProjectJournal.created_at.desc(), LiveProjectJournal.id.desc())
+        .limit(limit)
     )
+
+    if cursor:
+        query = query.where(
+            or_(
+                LiveProjectJournal.created_at < cursor,
+                and_(
+                    LiveProjectJournal.created_at == cursor,
+                    LiveProjectJournal.id < cursor_id,
+                ),
+            )
+            if cursor_id
+            else LiveProjectJournal.created_at < cursor
+        )
+
+    journals = await db.scalars(query)
 
     return journals.all()
 
@@ -923,6 +940,9 @@ async def delete_live_project_journal_comment(
 async def get_live_project_journal_comments(
     db: AsyncSession,
     journal_id: UUID,
+    limit: int = 50,
+    cursor: datetime | None = None,
+    cursor_id: UUID | None = None,
     current_user: User | None = None,
 ):
 
@@ -932,7 +952,7 @@ async def get_live_project_journal_comments(
         current_user=current_user,
     )
 
-    comments = await db.scalars(
+    query = (
         select(LiveProjectJournalComment)
         .options(
             selectinload(LiveProjectJournalComment.user),
@@ -943,9 +963,26 @@ async def get_live_project_journal_comments(
             LiveProjectJournalComment.parent_id.is_(None),
         )
         .order_by(
-            LiveProjectJournalComment.created_at.asc()
+            LiveProjectJournalComment.created_at.asc(),
+            LiveProjectJournalComment.id.asc(),
         )
+        .limit(limit)
     )
+
+    if cursor:
+        query = query.where(
+            or_(
+                LiveProjectJournalComment.created_at > cursor,
+                and_(
+                    LiveProjectJournalComment.created_at == cursor,
+                    LiveProjectJournalComment.id > cursor_id,
+                ),
+            )
+            if cursor_id
+            else LiveProjectJournalComment.created_at > cursor
+        )
+
+    comments = await db.scalars(query)
 
     return comments.all()
 
@@ -1140,8 +1177,11 @@ async def create_feed_event(
 
 async def get_feed_events(
     db: AsyncSession,
+    limit: int = 50,
+    cursor: datetime | None = None,
+    cursor_id: UUID | None = None,
 ):
-    result = await db.scalars(
+    query = (
         select(FeedEvent)
         .options(
             selectinload(FeedEvent.user),
@@ -1156,8 +1196,23 @@ async def get_feed_events(
             LiveProject.is_public == True,
             LiveProject.is_draft == False,
         )
-        .order_by(FeedEvent.created_at.desc())
-        .limit(50)
+        .order_by(FeedEvent.created_at.desc(), FeedEvent.id.desc())
+        .limit(limit)
     )
+
+    if cursor:
+        query = query.where(
+            or_(
+                FeedEvent.created_at < cursor,
+                and_(
+                    FeedEvent.created_at == cursor,
+                    FeedEvent.id < cursor_id,
+                ),
+            )
+            if cursor_id
+            else FeedEvent.created_at < cursor
+        )
+
+    result = await db.scalars(query)
 
     return result.all()

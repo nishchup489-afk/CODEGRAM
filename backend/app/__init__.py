@@ -1,0 +1,1 @@
+"""DevManiac backend application package."""

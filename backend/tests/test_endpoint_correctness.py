@@ -54,7 +54,7 @@ def test_bookmark_response_contracts_are_published(test_app):
     paths = test_app.openapi()["paths"]
 
     for method in ("post", "delete"):
-        operation = paths["/projects/{slug}/bookmark"][method]
+        operation = paths["/api/v1/projects/{slug}/bookmark"][method]
         schema = operation["responses"]["200"]["content"]["application/json"][
             "schema"
         ]
@@ -65,9 +65,9 @@ def test_comment_mutations_use_bearer_identity_not_identity_parameters(test_app)
     paths = test_app.openapi()["paths"]
 
     for path, method in (
-        ("/projects/comments/{comment_id}", "patch"),
-        ("/projects/comments/{comment_id}", "delete"),
-        ("/projects/comments/{comment_id}/vote", "post"),
+        ("/api/v1/projects/comments/{comment_id}", "patch"),
+        ("/api/v1/projects/comments/{comment_id}", "delete"),
+        ("/api/v1/projects/comments/{comment_id}/vote", "post"),
     ):
         operation = paths[path][method]
         assert operation["security"] == [{"HTTPBearer": []}]

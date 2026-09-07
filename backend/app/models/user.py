@@ -7,7 +7,9 @@ from sqlalchemy import (
     ForeignKey,
     Text,
     UniqueConstraint,
+    Index,
     func,
+    text,
 )
 
 from sqlalchemy.dialects.postgresql import UUID
@@ -198,6 +200,30 @@ class User(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_users_username_lower_trgm",
+            username_lower,
+            postgresql_using="gin",
+            postgresql_ops={"username_lower": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_users_display_name_lower_trgm",
+            func.lower(display_name).label("display_name_lower"),
+            postgresql_using="gin",
+            postgresql_ops={"display_name_lower": "gin_trgm_ops"},
+            postgresql_where=display_name.is_not(None),
+        ),
+        Index(
+            "ix_users_public_search_rank",
+            followers_count.desc(),
+            created_at.desc(),
+            postgresql_where=text(
+                "is_active = true AND is_banned = false AND is_private = false"
+            ),
+        ),
     )
 
     # =====================================================

@@ -11,6 +11,7 @@ from sqlalchemy import (
     UniqueConstraint,
     CheckConstraint,
     Index,
+    text,
 )
 
 from sqlalchemy.dialects.postgresql import (
@@ -134,6 +135,11 @@ class Project(Base):
         nullable=False,
     )
 
+    __table_args__ = (
+        Index("ix_projects_created_at_id", created_at.desc(), id.desc()),
+        Index("ix_projects_user_created_at", user_id, created_at.desc()),
+    )
+
     # =====================================================
     # RELATIONSHIPS
     # =====================================================
@@ -176,6 +182,12 @@ class ProjectStar(Base):
             "user_id",
             "project_id",
             name="unique_project_star",
+        ),
+
+        Index(
+            "ix_project_stars_project_user",
+            "project_id",
+            "user_id",
         ),
 
     )
@@ -239,6 +251,14 @@ class ProjectComment(Base):
         Index(
             "ix_project_comments_project_id",
             "project_id",
+        ),
+
+        Index(
+            "ix_project_comments_visible_thread",
+            "project_id",
+            "parent_id",
+            "created_at",
+            postgresql_where=text("deleted_at IS NULL"),
         ),
 
     )
@@ -445,6 +465,12 @@ class ProjectBookmark(Base):
             "user_id",
             "project_id",
             name="unique_project_bookmark",
+        ),
+
+        Index(
+            "ix_project_bookmarks_project_user",
+            "project_id",
+            "user_id",
         ),
 
     )

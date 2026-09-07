@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +15,21 @@ class Settings(BaseSettings):
 
     API_V1_PREFIX: str = "/api/v1"
 
-    DEBUG: bool = True
+    DEBUG: bool = False
+
+    LOG_LEVEL: str = "INFO"
+
+    # Optional shared backend for rate limits. When unset, the process-local
+    # fallback is useful for development but does not coordinate replicas.
+    REDIS_URL: str | None = None
+
+    RATE_LIMIT_ENABLED: bool = True
+
+    RATE_LIMIT_WRITE_REQUESTS: int = Field(default=60, ge=1)
+
+    RATE_LIMIT_SENSITIVE_REQUESTS: int = Field(default=10, ge=1)
+
+    RATE_LIMIT_WINDOW_SECONDS: int = Field(default=60, ge=1)
 
 
     # =========================================================
@@ -22,6 +37,16 @@ class Settings(BaseSettings):
     # =========================================================
 
     DATABASE_URL: str
+
+    DATABASE_POOL_SIZE: int = Field(default=5, ge=1)
+
+    DATABASE_MAX_OVERFLOW: int = Field(default=10, ge=0)
+
+    DATABASE_POOL_TIMEOUT: float = Field(default=30.0, gt=0)
+
+    DATABASE_POOL_RECYCLE: int = Field(default=1800, ge=1)
+
+    DATABASE_POOL_PRE_PING: bool = True
 
 
     # =========================================================
@@ -68,6 +93,9 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: str | None = None
 
     CLOUDINARY_API_SECRET: str | None = None
+
+    # Optional GitHub API token used when validating repository URLs.
+    GITHUB_TOKEN: str | None = None
 
 
     # =========================================================

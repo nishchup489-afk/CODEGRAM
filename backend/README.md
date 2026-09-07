@@ -24,6 +24,15 @@ expiration, not-before time, session, subject, and authorized-party claims.
 through Clerk's Backend API; identity fields in request bodies or query strings
 are not trusted.
 
+`GET /health/live` is a dependency-free process probe. `GET /health/ready`
+checks PostgreSQL and, when configured, Redis. Requests receive an
+`X-Request-ID` response header and are logged as structured JSON.
+
+Write endpoints are rate limited. The default in-memory backend is
+process-local, so production deployments with multiple workers or replicas
+should configure `REDIS_URL` and install the `redis` Python package in the
+deployment image.
+
 ## Development checks
 
 Install the locked application and test dependencies:

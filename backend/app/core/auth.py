@@ -14,6 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.http_client import request_with_retries
 from app.models.user import User
 
 from .database import get_db
@@ -138,7 +139,7 @@ async def get_clerk_primary_email(principal: ClerkPrincipal) -> str:
             headers={"Authorization": f"Bearer {secret_key}"},
             timeout=httpx.Timeout(5.0),
         ) as client:
-            response = await client.get(f"/users/{user_id}")
+            response = await request_with_retries(client, "GET", f"/users/{user_id}")
     except httpx.RequestError:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,

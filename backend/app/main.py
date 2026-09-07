@@ -1,70 +1,37 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import app.models
-
-from app.router.user import router as user_router
-from app.router.dashboard_layout import router as dashboard_router
-from app.router.profile import router as profile_router
-from app.router.project import router as project_router
-from app.router.bookmark import router as bookmark_router
-from app.router.live_projects import router as live_project_router
-from app.router.feed_event import router as feed_event_router
-from app.router.dashboard import router as main_dashboard_router
-from app.api.v1.support import router as support_router
-from app.api.v1.feedback import router as feedback_router
-from app.api.v1 import admin
-from app.router.follow import router as follow_router
-from app.router.search import router as search_router
-from app.router.changelog import router as changelog_router
-from app.router.app_notice import router as app_notice_router
+import app.models  # noqa: F401
+from app.core.config import settings
+from app.core.operations import configure_operational_middleware
+from app.router import router
 
 
 
 app = FastAPI(
-    title="DevManiac API",
+    title=f"{settings.APP_NAME} API",
     version="1.0.0",
+    debug=settings.DEBUG,
 )
-
-
-
-origins = [
-    "http://localhost:3000",
-    "https://devmaniac.com",
-    "https://www.devmaniac.com",
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+configure_operational_middleware(app)
 
-app.include_router(user_router)
-app.include_router(dashboard_router)
-app.include_router(profile_router)
-app.include_router(project_router)
-app.include_router(bookmark_router)
-app.include_router(live_project_router)
-app.include_router(feed_event_router)
-app.include_router(main_dashboard_router)
-app.include_router(support_router)
-app.include_router(feedback_router)
-app.include_router(admin.router)
-app.include_router(follow_router)
-app.include_router(search_router)
-app.include_router(changelog_router)
-app.include_router(app_notice_router)
+
+# Versioned routes are the canonical API contract. The unversioned mount keeps
+# the current frontend working during its later migration and is intentionally
+# hidden from generated API documentation.
+app.include_router(router, prefix=settings.API_V1_PREFIX)
+app.include_router(router, include_in_schema=False)
 
 
 @app.get("/")
 async def root():
     return {"message": "DevManiac API"}
-
-
-@app.get("/health")
-async def health():
-    return {"status": "ok"}

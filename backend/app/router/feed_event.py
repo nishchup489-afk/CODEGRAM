@@ -1,7 +1,10 @@
 from fastapi import (
     APIRouter,
     Depends,
+    Query,
 )
+from datetime import datetime
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -39,6 +42,12 @@ router = APIRouter(
 
 async def get_feed(
 
+    limit: int = Query(default=50, ge=1, le=100),
+
+    cursor: datetime | None = Query(default=None),
+
+    cursor_id: UUID | None = Query(default=None),
+
     db: AsyncSession = Depends(get_db),
 
 ):
@@ -46,5 +55,11 @@ async def get_feed(
     return await get_feed_events(
 
         db=db,
+
+        limit=limit,
+
+        cursor=cursor,
+
+        cursor_id=cursor_id,
 
     )

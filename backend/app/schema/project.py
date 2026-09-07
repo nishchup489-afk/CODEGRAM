@@ -127,6 +127,7 @@ class PaginatedProjects(BaseModel):
     items: list[GetProject]
 
     next_cursor: datetime | None
+    next_cursor_id: UUID | None = None
 
     has_more: bool
 

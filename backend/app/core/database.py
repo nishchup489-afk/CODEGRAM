@@ -6,18 +6,19 @@ from sqlalchemy.orm import (
     sessionmaker,
     declarative_base,
 )
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
+from app.core.config import settings
 
 Base = declarative_base()
 
 engine = create_async_engine(
-    DATABASE_URL,
-    echo=True,
+    settings.DATABASE_URL,
+    echo=settings.DEBUG and settings.APP_ENV != "production",
+    pool_size=settings.DATABASE_POOL_SIZE,
+    max_overflow=settings.DATABASE_MAX_OVERFLOW,
+    pool_timeout=settings.DATABASE_POOL_TIMEOUT,
+    pool_recycle=settings.DATABASE_POOL_RECYCLE,
+    pool_pre_ping=settings.DATABASE_POOL_PRE_PING,
 )
 
 AsyncSessionLocal = sessionmaker(

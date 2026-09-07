@@ -63,6 +63,13 @@ class LiveProject(Base):
             postgresql_where=text("is_public = true"),
         ),
 
+        Index(
+            "ix_live_projects_visible_feed",
+            "created_at",
+            "id",
+            postgresql_where=text("is_public = true AND is_draft = false"),
+        ),
+
     )
 
     id = Column(
@@ -578,6 +585,13 @@ class FeedEvent(Base):
             "ix_feed_events_project_created_at",
             "live_project_id",
             "created_at",
+        ),
+
+        Index(
+            "ix_feed_events_public_created_at_id",
+            "created_at",
+            "id",
+            postgresql_where=text("is_public = true"),
         ),
 
     )

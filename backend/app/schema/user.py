@@ -58,8 +58,7 @@ class UserResponse(BaseModel):
     project_count: int
     onboarding_completed: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserFullProfileResponse(BaseModel):

@@ -1,7 +1,10 @@
 from fastapi import (
     APIRouter,
     Depends,
+    Query,
 )
+from datetime import datetime
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -205,6 +208,12 @@ async def get_project_journals(
 
     slug: str,
 
+    limit: int = Query(default=50, ge=1, le=100),
+
+    cursor: datetime | None = Query(default=None),
+
+    cursor_id: UUID | None = Query(default=None),
+
     current_user: User | None = Depends(get_current_user_optional),
 
     db: AsyncSession = Depends(get_db),
@@ -216,6 +225,12 @@ async def get_project_journals(
         db=db,
 
         slug=slug,
+
+        limit=limit,
+
+        cursor=cursor,
+
+        cursor_id=cursor_id,
 
         current_user=current_user,
 
@@ -325,6 +340,12 @@ async def unlike_journal(
 
 async def get_live_projects(
 
+    limit: int = Query(default=50, ge=1, le=100),
+
+    cursor: datetime | None = Query(default=None),
+
+    cursor_id: UUID | None = Query(default=None),
+
     db: AsyncSession = Depends(get_db),
 
 ):
@@ -332,6 +353,12 @@ async def get_live_projects(
     return await get_live_projects_feed(
 
         db=db,
+
+        limit=limit,
+
+        cursor=cursor,
+
+        cursor_id=cursor_id,
 
     )
 
@@ -413,6 +440,12 @@ async def get_journal_comments(
 
     journal_id: UUID,
 
+    limit: int = Query(default=50, ge=1, le=100),
+
+    cursor: datetime | None = Query(default=None),
+
+    cursor_id: UUID | None = Query(default=None),
+
     current_user: User | None = Depends(get_current_user_optional),
 
     db: AsyncSession = Depends(get_db),
@@ -424,6 +457,12 @@ async def get_journal_comments(
         db=db,
 
         journal_id=journal_id,
+
+        limit=limit,
+
+        cursor=cursor,
+
+        cursor_id=cursor_id,
 
         current_user=current_user,
 

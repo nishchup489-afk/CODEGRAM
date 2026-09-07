@@ -166,7 +166,8 @@ async def analyze_repository(
 )
 async def fetch_projects(
     limit: int = Query(default=20, le=100),
-    cursor: datetime = Query(default=None),
+    cursor: datetime | None = Query(default=None),
+    cursor_id: UUID | None = Query(default=None),
 
     db: AsyncSession = Depends(get_db),
 
@@ -179,6 +180,7 @@ async def fetch_projects(
         db=db,
         limit=limit,
         cursor=cursor,
+        cursor_id=cursor_id,
         current_user=current_user,
     )
 
@@ -300,12 +302,18 @@ async def create_comment(
 )
 async def fetch_project_comments(
     slug: str,
+    limit: int = Query(default=50, ge=1, le=100),
+    cursor: datetime | None = Query(default=None),
+    cursor_id: UUID | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ):
 
     return await get_project_comments(
         db=db,
         slug=slug,
+        limit=limit,
+        cursor=cursor,
+        cursor_id=cursor_id,
     )
 
 
