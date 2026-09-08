@@ -1,21 +1,47 @@
 import { clerkMiddleware } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
 
-export default clerkMiddleware(async (_auth, request) => {
-    const maintenanceMode =
-        process.env.MAINTENANCE_MODE === 'true'
+/**
+ * Temporary maintenance mode.
+ *
+ * Toggle with the MAINTENANCE_MODE env var on Vercel (Production).
+ * While it is 'true' every matched route is rewritten to the static page in
+ * public/, so the app never renders and never calls the backend API — the
+ * backend can stay switched off.
+ *
+ * This must match the filename in public/ exactly.
+ */
+const MAINTENANCE_PAGE = '/maintenance.html'
 
-    if (maintenanceMode) {
+const clerk = clerkMiddleware()
+
+export default function proxy(
+    request: NextRequest,
+    event: NextFetchEvent,
+) {
+    // Checked before Clerk runs, so maintenance mode still works even if the
+    // Clerk keys are missing or the auth service is unreachable.
+    if (process.env.MAINTENANCE_MODE === 'true') {
         const url = request.nextUrl.clone()
 
-        url.pathname = '/maintenance.html'
+        url.pathname = MAINTENANCE_PAGE
+        url.search = ''
 
-        return NextResponse.rewrite(url)
+        const response = NextResponse.rewrite(url)
+
+        response.headers.set('Cache-Control', 'no-store, must-revalidate')
+        response.headers.set('Retry-After', '3600')
+
+        return response
     }
-})
+
+    return clerk(request, event)
+}
 
 export const config = {
     matcher: [
+        // Skip Next.js internals and static files (including the maintenance
+        // page itself, so the rewrite above can't loop).
         '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
         '/(api|trpc)(.*)',
         '/__clerk/(.*)',
