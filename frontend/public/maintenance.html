@@ -627,6 +627,22 @@
                 translateX(3px);
         }
 
+        .form-error {
+            margin-top: 12px;
+
+            font-size: 13px;
+
+            color: #ff8f8f;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+        }
+
         .form-status {
             margin-top: 12px;
 
@@ -1334,6 +1350,13 @@
 
             </div>
 
+            <div
+                class="form-error"
+                id="formError"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
         </div>
 
 
@@ -1859,12 +1882,82 @@
             );
 
 
+        const emailInput =
+            document.getElementById(
+                "emailInput"
+            );
+
+        const errorBox =
+            document.getElementById(
+                "formError"
+            );
+
+
+        const EMAIL_PATTERN =
+            /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+        let submitting = false;
+
+
+        function showError(message) {
+
+            errorBox.textContent = message;
+
+            errorBox.style.display = "flex";
+
+        }
+
+
+        function clearError() {
+
+            errorBox.textContent = "";
+
+            errorBox.style.display = "none";
+
+        }
+
+
+        function releaseButton() {
+
+            submitting = false;
+
+            submitBtn.style.opacity = "";
+
+            submitBtn.style.pointerEvents = "";
+
+        }
+
+
         form.addEventListener(
             "submit",
             (event) => {
 
                 event.preventDefault();
 
+                if (submitting) {
+                    return;
+                }
+
+
+                const email =
+                    emailInput.value.trim();
+
+                if (!EMAIL_PATTERN.test(email)) {
+
+                    showError(
+                        "That email address doesn't look right."
+                    );
+
+                    emailInput.focus();
+
+                    return;
+
+                }
+
+
+                clearError();
+
+                submitting = true;
 
                 submitBtn.style.opacity =
                     "0.6";
@@ -1873,20 +1966,80 @@
                     "none";
 
 
-                setTimeout(
-                    () => {
+                const payload = {
+                    email: email,
+                    source: "maintenance"
+                };
 
-                        form.style.display =
-                            "none";
+                if (document.referrer) {
+                    payload.referrer =
+                        document.referrer.slice(0, 500);
+                }
 
-                        status.style.display =
-                            "flex";
 
+                fetch("/api/early-access", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
                     },
-                    600
-                );
+                    body: JSON.stringify(payload)
+                })
+                    .then((response) => {
+
+                        if (response.ok) {
+
+                            form.style.display =
+                                "none";
+
+                            status.style.display =
+                                "flex";
+
+                            return;
+
+                        }
+
+
+                        releaseButton();
+
+                        if (response.status === 429) {
+
+                            showError(
+                                "Too many attempts. Try again in a minute."
+                            );
+
+                        } else if (response.status === 422) {
+
+                            showError(
+                                "That email address was rejected. Check it and retry."
+                            );
+
+                        } else {
+
+                            showError(
+                                "Could not save that just now. Please try again."
+                            );
+
+                        }
+
+                    })
+                    .catch(() => {
+
+                        releaseButton();
+
+                        showError(
+                            "Network error. Check your connection and try again."
+                        );
+
+                    });
 
             }
+        );
+
+
+        emailInput.addEventListener(
+            "input",
+            clearError
         );
 
     </script>
