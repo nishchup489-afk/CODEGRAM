@@ -116,6 +116,7 @@ export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
     const [error, setError] = useState('')
+    const [forbidden, setForbidden] = useState(false)
 
     useEffect(() => {
         if (!isLoaded) return
@@ -131,6 +132,7 @@ export default function AdminDashboardPage() {
     async function fetchDashboard() {
         try {
             setError('')
+            setForbidden(false)
             setRefreshing(true)
 
             const res = await api.get('/admin/dashboard')
@@ -138,6 +140,15 @@ export default function AdminDashboardPage() {
             setDashboard(res.data)
         } catch (err: any) {
             console.error(err)
+
+            const status = err?.response?.status
+
+            // The backend is the authority on admin access. A 401/403 from
+            // /admin/dashboard is what tells us this account isn't an admin.
+            if (status === 401 || status === 403) {
+                setForbidden(true)
+                return
+            }
 
             const detail =
                 err?.response?.data?.detail ||
@@ -182,7 +193,7 @@ export default function AdminDashboardPage() {
         )
     }
 
-    if (!isAdmin) {
+    if (forbidden) {
         return (
             <AdminShell>
                 <AccessCard
