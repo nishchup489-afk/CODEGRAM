@@ -7,6 +7,7 @@ from app.router import (
     changelog,
     dashboard,
     dashboard_layout,
+    early_access,
     feed_event,
     feedback,
     follow,
@@ -38,6 +39,7 @@ for child_router in (
     search.router,
     changelog.router,
     app_notice.router,
+    early_access.router,
     operations.router,
 ):
     router.include_router(child_router)
@@ -50,6 +52,7 @@ __all__ = [
     "changelog",
     "dashboard",
     "dashboard_layout",
+    "early_access",
     "feed_event",
     "feedback",
     "follow",

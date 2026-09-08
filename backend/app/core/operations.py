@@ -20,6 +20,7 @@ logger = logging.getLogger("app.http")
 _REQUEST_ID_HEADER = "x-request-id"
 _SENSITIVE_PATH_PARTS = (
     "/sync",
+    "/early-access",
     "/support",
     "/feedback",
     "/follow",

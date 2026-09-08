@@ -3,6 +3,7 @@ from app.models import (
     bookmark,
     changelog,
     comment,
+    early_access,
     feedback,
     idea,
     live_project,
@@ -25,6 +26,7 @@ from app.models.app_notice import AppNotice
 from app.models.bookmark import Bookmark
 from app.models.changelog import Changelog
 from app.models.comment import Comment
+from app.models.early_access import EarlyAccessSignup
 from app.models.feedback import Feedback, FeedbackSentiment, FeedbackStatus, FeedbackType
 from app.models.idea import Idea, IdeaCategory, IdeaStatus
 from app.models.notification import Notification
@@ -47,6 +49,7 @@ __all__ = [
     "bookmark",
     "changelog",
     "comment",
+    "early_access",
     "feedback",
     "idea",
     "live_project",
@@ -62,6 +65,7 @@ __all__ = [
     "Bookmark",
     "Changelog",
     "Comment",
+    "EarlyAccessSignup",
     "Feedback",
     "FeedbackSentiment",
     "FeedbackStatus",

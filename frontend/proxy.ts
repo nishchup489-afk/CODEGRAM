@@ -13,6 +13,13 @@ import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
  */
 const MAINTENANCE_PAGE = '/maintenance.html'
 
+/**
+ * Paths that keep working while maintenance mode is on. The maintenance page
+ * collects early-access emails, so its endpoint must not be rewritten to the
+ * page that calls it.
+ */
+const MAINTENANCE_ALLOWLIST = ['/api/early-access']
+
 const clerk = clerkMiddleware()
 
 export default function proxy(
@@ -21,7 +28,11 @@ export default function proxy(
 ) {
     // Checked before Clerk runs, so maintenance mode still works even if the
     // Clerk keys are missing or the auth service is unreachable.
-    if (process.env.MAINTENANCE_MODE === 'true') {
+    const allowed = MAINTENANCE_ALLOWLIST.some((path) =>
+        request.nextUrl.pathname.startsWith(path),
+    )
+
+    if (process.env.MAINTENANCE_MODE === 'true' && !allowed) {
         const url = request.nextUrl.clone()
 
         url.pathname = MAINTENANCE_PAGE
