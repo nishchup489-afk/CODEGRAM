@@ -4,13 +4,13 @@ import { useEffect, useState } from "react"
 
 import { useUser } from "@clerk/nextjs"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import Image from "next/image"
 
 import no_cover from "@/public/no_cover.png"
 
-import { uploadToCloudinary } from "@/app/lib/cloudinary"
+import { uploadToCloudinary } from "@/app/_lib/cloudinary"
 import { use } from "react"
 
 import {

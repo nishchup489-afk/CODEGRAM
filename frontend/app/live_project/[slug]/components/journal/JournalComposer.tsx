@@ -4,7 +4,7 @@ import { useState } from "react"
 
 import {
     GetLiveProject,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 interface ProblemSolution {
 

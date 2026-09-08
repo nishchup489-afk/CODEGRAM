@@ -17,8 +17,8 @@ import {
     Star,
 } from "lucide-react";
 
-import api from "@/app/lib/api";
-import useCurrentUser from "@/app/lib/currentUser";
+import api from "@/app/_lib/api";
+import useCurrentUser from "@/app/_lib/currentUser";
 
 
 type DashboardStats = {

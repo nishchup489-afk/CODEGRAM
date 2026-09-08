@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 
 import { useState } from "react"
-import BuyMeCoffee from "@/app/components/BuyMeCoffee";
+import BuyMeCoffee from "@/app/_components/BuyMeCoffee";
 
 type StackStat = {
     name: string

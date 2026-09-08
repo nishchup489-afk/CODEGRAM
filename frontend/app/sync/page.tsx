@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import gsap from "gsap"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 export default function SyncUserPage() {
     const { user, isLoaded } = useUser()

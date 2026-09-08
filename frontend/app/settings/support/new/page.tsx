@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import { useUser } from '@clerk/nextjs'
 
-import api from '@/app/lib/api'
+import api from '@/app/_lib/api'
 
 import {
     ArrowLeft,

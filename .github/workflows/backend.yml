@@ -58,6 +58,9 @@ jobs:
       - name: Compile backend modules
         run: poetry run python -m compileall -q app alembic
 
+      - name: Verify new migration names
+        run: poetry run python check_migration_names.py
+
       - name: Verify migration graph has one head
         run: test "$(poetry run alembic heads | wc -l | tr -d ' ')" = "1"
 

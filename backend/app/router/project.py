@@ -47,7 +47,7 @@ from app.service.project import (
 from app.service.bookmark import add_project_bookmark, remove_project_bookmark
 from app.models.user import User
 from app.core.auth import get_current_user, get_current_user_optional
-from app.schema.ProfileAnalytics import UserFullProfileResponse
+from app.schema.profile_analytics import UserFullProfileResponse
 
 
 router = APIRouter(

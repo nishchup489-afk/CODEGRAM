@@ -4,7 +4,7 @@ List Admin Support Tickets
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_support_tickets_api_v1_admin_support_tickets_get`
-- Backend implementation: [`backend/app/api/v1/admin.py:98`](../backend/app/api/v1/admin.py#L98)
+- Backend implementation: [`backend/app/router/admin.py:98`](../backend/app/router/admin.py#L98)
 
 ## Frontend connections
 

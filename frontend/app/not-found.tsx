@@ -1,4 +1,4 @@
-import LegendaryNotFoundScreen from "./components/LegendaryNotFoundScreen";
+import LegendaryNotFoundScreen from "./_components/LegendaryNotFoundScreen";
 
 export default function NotFound() {
     return <LegendaryNotFoundScreen />;

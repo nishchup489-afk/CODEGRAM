@@ -22,7 +22,7 @@ def make_request(authorization: str | None = None) -> Request:
 @pytest.mark.asyncio
 async def test_spoofed_query_identity_cannot_access_profile(api_client):
     response = await api_client.get(
-        "/profile/me",
+        "/api/v1/profile/me",
         params={"clerk_user_id": "user_victim"},
     )
 
@@ -34,7 +34,7 @@ async def test_spoofed_query_identity_cannot_access_profile(api_client):
 @pytest.mark.asyncio
 async def test_spoofed_query_identity_cannot_access_admin(api_client):
     response = await api_client.get(
-        "/admin/dashboard",
+        "/api/v1/admin/dashboard",
         params={"clerk_user_id": "user_admin"},
     )
 
@@ -44,19 +44,19 @@ async def test_spoofed_query_identity_cannot_access_admin(api_client):
 @pytest.mark.parametrize(
     ("method", "path"),
     [
-        ("GET", "/support/admin/tickets"),
-        ("PATCH", "/support/admin/tickets/00000000-0000-0000-0000-000000000001"),
-        ("GET", "/feedback/admin"),
-        ("GET", "/feedback/admin/00000000-0000-0000-0000-000000000001"),
-        ("PATCH", "/feedback/admin/00000000-0000-0000-0000-000000000001"),
+        ("GET", "/api/v1/support/admin/tickets"),
+        ("PATCH", "/api/v1/support/admin/tickets/00000000-0000-0000-0000-000000000001"),
+        ("GET", "/api/v1/feedback/admin"),
+        ("GET", "/api/v1/feedback/admin/00000000-0000-0000-0000-000000000001"),
+        ("PATCH", "/api/v1/feedback/admin/00000000-0000-0000-0000-000000000001"),
         (
             "PATCH",
-            "/feedback/admin/00000000-0000-0000-0000-000000000001/archive",
+            "/api/v1/feedback/admin/00000000-0000-0000-0000-000000000001/archive",
         ),
-        ("POST", "/changelog"),
-        ("GET", "/changelog/admin/all"),
-        ("PATCH", "/changelog/00000000-0000-0000-0000-000000000001"),
-        ("DELETE", "/changelog/00000000-0000-0000-0000-000000000001"),
+        ("POST", "/api/v1/changelog"),
+        ("GET", "/api/v1/changelog/admin/all"),
+        ("PATCH", "/api/v1/changelog/00000000-0000-0000-0000-000000000001"),
+        ("DELETE", "/api/v1/changelog/00000000-0000-0000-0000-000000000001"),
     ],
 )
 @pytest.mark.asyncio

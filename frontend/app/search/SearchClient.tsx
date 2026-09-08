@@ -14,7 +14,7 @@ import {
     Sparkles,
 } from "lucide-react"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 type SearchUser = {
     id: string

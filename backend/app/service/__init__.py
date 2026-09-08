@@ -1,7 +1,6 @@
 """Application service modules."""
 
 from app.service import (
-    LiveProjects,
     admin,
     bookmark,
     changelog,
@@ -9,6 +8,7 @@ from app.service import (
     dashboard_user_preview,
     feedback,
     follow,
+    live_projects,
     profile,
     project,
     support,
@@ -17,7 +17,6 @@ from app.service import (
 
 
 __all__ = [
-    "LiveProjects",
     "admin",
     "bookmark",
     "changelog",
@@ -25,6 +24,7 @@ __all__ = [
     "dashboard_user_preview",
     "feedback",
     "follow",
+    "live_projects",
     "profile",
     "project",
     "support",

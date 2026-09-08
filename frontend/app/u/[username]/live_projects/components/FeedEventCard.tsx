@@ -11,9 +11,9 @@ import {
 } from "lucide-react"
 
 import type { FeedEvent }
-from "@/app/lib/type/feed"
+from "@/app/_lib/type/feed"
 import { useRouter } from "next/navigation"
-import useCurrentUser from "@/app/lib/currentUser"
+import useCurrentUser from "@/app/_lib/currentUser"
 
 type Props = {
 

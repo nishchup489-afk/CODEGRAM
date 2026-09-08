@@ -200,7 +200,11 @@ def generate() -> None:
     # Operational probes are deliberately hidden from OpenAPI but still need
     # route documentation.
     documented_paths = {path for path, _, _ in operations}
-    for path in ("/health", "/health/live", "/health/ready"):
+    for path in (
+        "/api/v1/health",
+        "/api/v1/health/live",
+        "/api/v1/health/ready",
+    ):
         if path not in documented_paths:
             operations.append(
                 (

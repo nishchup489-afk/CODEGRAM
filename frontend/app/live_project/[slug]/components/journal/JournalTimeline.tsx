@@ -7,7 +7,7 @@ import JournalEntryCard from "./JournalEntryCard";
 
 import type {
     GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject";
+} from "@/app/_lib/type/liveproject";
 
 interface JournalTimelineProps {
     journals: GetLiveProjectJournal[];

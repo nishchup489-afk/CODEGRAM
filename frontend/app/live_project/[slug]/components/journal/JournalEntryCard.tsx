@@ -12,7 +12,7 @@ import {
 
 import type {
     GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 import CodeSnippetBlock from "./CodeSnippetBlock"
 import ProblemSolutionBlock from "./ProblemSolutionBlock"

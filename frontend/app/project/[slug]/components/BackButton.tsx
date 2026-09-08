@@ -3,7 +3,7 @@
 import { ArrowLeft } from "lucide-react"
 
 import { useRouter } from "next/navigation"
-import useCurrentUser from "@/app/lib/currentUser"
+import useCurrentUser from "@/app/_lib/currentUser"
 
 
 

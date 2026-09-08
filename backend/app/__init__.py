@@ -4,7 +4,16 @@ from importlib import import_module
 from types import ModuleType
 
 
-__all__ = ["api", "core", "main", "models", "router", "schema", "service", "utility"]
+__all__ = [
+    "core",
+    "main",
+    "models",
+    "repository",
+    "router",
+    "schema",
+    "service",
+    "utility",
+]
 
 
 def __getattr__(name: str) -> ModuleType:

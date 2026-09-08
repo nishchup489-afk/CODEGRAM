@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 
 import { uploadToCloudinary }
-    from '@/app/lib/cloudinary'
+    from '@/app/_lib/cloudinary'
 
 
 interface VisualStepProps {

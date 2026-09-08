@@ -4,7 +4,7 @@ Delete Admin Changelog
 
 - Authentication: Admin bearer token required
 - Operation ID: `delete_admin_changelog_api_v1_admin_changelogs__changelog_id__delete`
-- Backend implementation: [`backend/app/api/v1/admin.py:264`](../backend/app/api/v1/admin.py#L264)
+- Backend implementation: [`backend/app/router/admin.py:264`](../backend/app/router/admin.py#L264)
 
 ## Frontend connections
 

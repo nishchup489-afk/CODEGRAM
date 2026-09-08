@@ -4,7 +4,7 @@ Close My Ticket
 
 - Authentication: Bearer token required
 - Operation ID: `close_my_ticket_api_v1_support_tickets__ticket_id__close_patch`
-- Backend implementation: [`backend/app/api/v1/support.py:163`](../backend/app/api/v1/support.py#L163)
+- Backend implementation: [`backend/app/router/support.py:163`](../backend/app/router/support.py#L163)
 
 ## Frontend connections
 

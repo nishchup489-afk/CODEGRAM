@@ -4,14 +4,14 @@ import { useState } from "react"
 
 import { useUser } from "@clerk/nextjs"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import type {
     GetLiveProjectJournal,
     JournalEntryType,
     LiveProjectCodeSnippet,
     LiveProjectProblemSolution,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 
 

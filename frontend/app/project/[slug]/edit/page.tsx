@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { Loader2, Save, Trash2, X } from "lucide-react"
 
-import api from "@/app/lib/api"
-import { uploadToCloudinary } from "@/app/lib/cloudinary"
+import api from "@/app/_lib/api"
+import { uploadToCloudinary } from "@/app/_lib/cloudinary"
 
 type ProjectForm = {
     title: string

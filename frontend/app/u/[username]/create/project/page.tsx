@@ -16,11 +16,11 @@ import {
     X,
 } from "lucide-react"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
-import useCurrentUser from "@/app/lib/currentUser"
+import useCurrentUser from "@/app/_lib/currentUser"
 
-import { uploadToCloudinary } from "@/app/lib/cloudinary"
+import { uploadToCloudinary } from "@/app/_lib/cloudinary"
 import { useRouter } from "next/navigation"
 
 

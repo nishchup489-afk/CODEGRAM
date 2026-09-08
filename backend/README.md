@@ -33,6 +33,12 @@ The PostgreSQL pool is configured through `DATABASE_POOL_SIZE`,
 `DATABASE_POOL_PRE_PING`. Size the pool across all workers so their combined
 maximum stays below the database connection limit.
 
+Persistence is isolated under `app/repository`. Routers continue to call the
+service API, while service modules act as stable compatibility facades over
+the repository implementations. SQLAlchemy statements and session mutations
+must not be added to routers, API modules, services, authentication helpers, or
+general utilities; boundary tests enforce this rule.
+
 `GET /health/live` is a dependency-free process probe. `GET /health/ready`
 checks PostgreSQL and, when configured, Redis. Requests receive an
 `X-Request-ID` response header and are logged as structured JSON.

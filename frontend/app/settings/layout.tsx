@@ -26,7 +26,7 @@ import {
     LogOut,
 } from 'lucide-react'
 
-import useCurrentUser from '../lib/currentUser'
+import useCurrentUser from '../_lib/currentUser'
 
 const SETTINGS_NAVIGATION = [
     {

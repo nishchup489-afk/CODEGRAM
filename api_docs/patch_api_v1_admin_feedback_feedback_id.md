@@ -4,7 +4,7 @@ Update Admin Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_feedback_api_v1_admin_feedback__feedback_id__patch`
-- Backend implementation: [`backend/app/api/v1/admin.py:76`](../backend/app/api/v1/admin.py#L76)
+- Backend implementation: [`backend/app/router/admin.py:76`](../backend/app/router/admin.py#L76)
 
 ## Frontend connections
 

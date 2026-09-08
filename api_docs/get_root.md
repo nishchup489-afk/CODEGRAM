@@ -4,7 +4,7 @@ Root
 
 - Authentication: Public
 - Operation ID: `root__get`
-- Backend implementation: [`backend/app/main.py:35`](../backend/app/main.py#L35)
+- Backend implementation: [`backend/app/main.py:32`](../backend/app/main.py#L32)
 
 ## Frontend connections
 

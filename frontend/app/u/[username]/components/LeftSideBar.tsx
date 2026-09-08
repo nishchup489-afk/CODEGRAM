@@ -34,7 +34,7 @@ type LeftSidebarProps = {
     username: string
 }
 
-import useCurrentUser from "@/app/lib/currentUser"
+import useCurrentUser from "@/app/_lib/currentUser"
 
 
 

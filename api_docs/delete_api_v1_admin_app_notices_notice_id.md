@@ -4,7 +4,7 @@ Delete Admin App Notice
 
 - Authentication: Admin bearer token required
 - Operation ID: `delete_admin_app_notice_api_v1_admin_app_notices__notice_id__delete`
-- Backend implementation: [`backend/app/api/v1/admin.py:332`](../backend/app/api/v1/admin.py#L332)
+- Backend implementation: [`backend/app/router/admin.py:332`](../backend/app/router/admin.py#L332)
 
 ## Frontend connections
 

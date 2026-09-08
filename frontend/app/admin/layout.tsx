@@ -28,7 +28,7 @@ import {
     Megaphone,
 } from 'lucide-react'
 import { currentUser } from '@clerk/nextjs/server'
-import useCurrentUser from '../lib/currentUser'
+import useCurrentUser from '../_lib/currentUser'
 
 
 const ADMIN_NAVIGATION = [

@@ -12,7 +12,7 @@ import { useUser } from '@clerk/nextjs'
 
 import { gsap } from 'gsap'
 
-import api from '../lib/api'
+import api from '../_lib/api'
 
 import LeftPanel from './components/LeftPanel'
 

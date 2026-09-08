@@ -4,7 +4,7 @@ Search Users
 
 - Authentication: Public
 - Operation ID: `search_users_api_v1_search_users_get`
-- Backend implementation: [`backend/app/router/search.py:20`](../backend/app/router/search.py#L20)
+- Backend implementation: [`backend/app/router/search.py:19`](../backend/app/router/search.py#L19)
 
 ## Frontend connections
 

@@ -41,6 +41,9 @@ Canonical application routes use `/api/v1`. Unversioned compatibility aliases ar
 | PATCH | `/api/v1/feedback/admin/{feedback_id}/archive` | [Admin Archive Feedback](patch_api_v1_feedback_admin_feedback_id_archive.md) |
 | GET | `/api/v1/feedback/me` | [List My Feedback](get_api_v1_feedback_me.md) |
 | GET | `/api/v1/feedback/me/{feedback_id}` | [Get My Feedback](get_api_v1_feedback_me_feedback_id.md) |
+| GET | `/api/v1/health` | [Operational health probe](get_api_v1_health.md) |
+| GET | `/api/v1/health/live` | [Operational health probe](get_api_v1_health_live.md) |
+| GET | `/api/v1/health/ready` | [Operational health probe](get_api_v1_health_ready.md) |
 | GET | `/api/v1/live-projects` | [Get Live Projects](get_api_v1_live_projects.md) |
 | POST | `/api/v1/live-projects` | [Create New Live Project](post_api_v1_live_projects.md) |
 | DELETE | `/api/v1/live-projects/comments/{comment_id}` | [Delete Journal Comment](delete_api_v1_live_projects_comments_comment_id.md) |
@@ -91,9 +94,6 @@ Canonical application routes use `/api/v1`. Unversioned compatibility aliases ar
 | DELETE | `/api/v1/users/{username}/follow` | [Unfollow Single User](delete_api_v1_users_username_follow.md) |
 | POST | `/api/v1/users/{username}/follow` | [Follow Single User](post_api_v1_users_username_follow.md) |
 | GET | `/api/v1/users/{username}/follow-status` | [Get Follow Status](get_api_v1_users_username_follow_status.md) |
-| GET | `/health` | [Operational health probe](get_health.md) |
-| GET | `/health/live` | [Operational health probe](get_health_live.md) |
-| GET | `/health/ready` | [Operational health probe](get_health_ready.md) |
 
 Regenerate after changing routes or schemas:
 

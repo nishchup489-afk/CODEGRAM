@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation"
 
 import type {
     ProjectAuthor,
-} from "@/app/lib/type/project"
+} from "@/app/_lib/type/project"
 
-import timeAgo from "@/app/utils/timeAgo"
+import timeAgo from "@/app/_utils/timeAgo"
 
 type ProfilePreviewProps = {
     profile: ProjectAuthor

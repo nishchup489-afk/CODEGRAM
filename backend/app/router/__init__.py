@@ -1,15 +1,14 @@
 from fastapi import APIRouter
 
-from app.api.v1.admin import router as admin_router
-from app.api.v1.feedback import router as feedback_router
-from app.api.v1.support import router as support_router
 from app.router import (
+    admin,
     app_notice,
     bookmark,
     changelog,
     dashboard,
     dashboard_layout,
     feed_event,
+    feedback,
     follow,
     idea,
     live_projects,
@@ -17,6 +16,7 @@ from app.router import (
     profile,
     project,
     search,
+    support,
     user,
 )
 
@@ -31,9 +31,9 @@ for child_router in (
     live_projects.router,
     feed_event.router,
     dashboard.router,
-    support_router,
-    feedback_router,
-    admin_router,
+    support.router,
+    feedback.router,
+    admin.router,
     follow.router,
     search.router,
     changelog.router,
@@ -44,12 +44,14 @@ for child_router in (
 
 
 __all__ = [
+    "admin",
     "app_notice",
     "bookmark",
     "changelog",
     "dashboard",
     "dashboard_layout",
     "feed_event",
+    "feedback",
     "follow",
     "idea",
     "live_projects",
@@ -58,5 +60,6 @@ __all__ = [
     "project",
     "router",
     "search",
+    "support",
     "user",
 ]

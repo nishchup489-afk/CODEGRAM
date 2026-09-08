@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import { FeedEvent }
-from "@/app/lib/type/feed"
+from "@/app/_lib/type/feed"
 
 
 

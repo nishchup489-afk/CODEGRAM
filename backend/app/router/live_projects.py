@@ -12,9 +12,9 @@ from app.core.database import get_db
 from app.core.auth import get_current_user, get_current_user_optional
 from app.models.user import User
 
-from app.schema.liveProjects import *
+from app.schema.live_projects import *
 
-from app.service.LiveProjects import *
+from app.service.live_projects import *
 
 
 router = APIRouter(

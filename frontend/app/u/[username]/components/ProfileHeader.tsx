@@ -14,7 +14,7 @@ import {
     ShieldCheck,
 } from "lucide-react"
 
-import { UserFullProfile } from "@/app/lib/type/profileAnalytics"
+import { UserFullProfile } from "@/app/_lib/type/profileAnalytics"
 
 type ProfileHeaderProps = {
     profileData: UserFullProfile

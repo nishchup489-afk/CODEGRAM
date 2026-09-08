@@ -4,7 +4,7 @@ Create Admin App Notice
 
 - Authentication: Admin bearer token required
 - Operation ID: `create_admin_app_notice_api_v1_admin_app_notices_post`
-- Backend implementation: [`backend/app/api/v1/admin.py:298`](../backend/app/api/v1/admin.py#L298)
+- Backend implementation: [`backend/app/router/admin.py:298`](../backend/app/router/admin.py#L298)
 
 ## Frontend connections
 

@@ -6,18 +6,18 @@ import { useUser } from "@clerk/nextjs"
 
 import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import LiveProjectHero from "./components/hero/LiveProjectHero"
 import LiveProjectSetupPanel from "./components/setup/LiveProjectSetupPanel"
 import LatestCommitCard from "./components/commit/LatestCommitCard"
 import JournalSection from "./components/journal/JournalSection"
-import useCurrentUser from "@/app/lib/currentUser"
+import useCurrentUser from "@/app/_lib/currentUser"
 
 import {
     GetLiveProject,
     GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 const emptyProject: GetLiveProject = {
     id: "",

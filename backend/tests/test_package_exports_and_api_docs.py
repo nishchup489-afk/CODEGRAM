@@ -2,7 +2,7 @@ from pathlib import Path
 import re
 
 import app
-from app import api, core, models, router, schema, service, utility
+from app import core, models, repository, router, schema, service, utility
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -11,10 +11,10 @@ DOCS_ROOT = REPO_ROOT / "api_docs"
 
 def test_root_package_exposes_every_backend_layer():
     assert set(app.__all__) == {
-        "api",
         "core",
         "main",
         "models",
+        "repository",
         "router",
         "schema",
         "service",
@@ -23,7 +23,15 @@ def test_root_package_exposes_every_backend_layer():
 
 
 def test_every_package_export_is_explicit_and_resolvable():
-    for package in (api, api.v1, core, models, router, schema, service, utility):
+    for package in (
+        core,
+        models,
+        repository,
+        router,
+        schema,
+        service,
+        utility,
+    ):
         assert package.__all__
         assert all(isinstance(name, str) for name in package.__all__)
         assert all(hasattr(package, name) for name in package.__all__)
@@ -49,7 +57,7 @@ def test_every_module_in_each_backend_layer_is_imported():
             "user",
         },
         schema: {
-            "ProfileAnalytics",
+            "profile_analytics",
             "admin",
             "app_notice",
             "changelog",
@@ -58,14 +66,13 @@ def test_every_module_in_each_backend_layer_is_imported():
             "feedback",
             "follow",
             "idea",
-            "liveProjects",
+            "live_projects",
             "profile",
             "project",
             "support",
             "user",
         },
         service: {
-            "LiveProjects",
             "admin",
             "bookmark",
             "changelog",
@@ -73,6 +80,7 @@ def test_every_module_in_each_backend_layer_is_imported():
             "dashboard_user_preview",
             "feedback",
             "follow",
+            "live_projects",
             "profile",
             "project",
             "support",
@@ -85,13 +93,12 @@ def test_every_module_in_each_backend_layer_is_imported():
 
 
 def test_init_exports_cover_every_module_file():
-    packages = (api.v1, core, models, router, schema, service, utility)
-    aliases = {"LiveProject": "live_project"}
+    packages = (core, models, repository, router, schema, service, utility)
 
     for package in packages:
         package_directory = Path(package.__file__).parent
         expected = {
-            aliases.get(path.stem, path.stem)
+            path.stem
             for path in package_directory.glob("*.py")
             if path.stem != "__init__"
         }
@@ -116,4 +123,8 @@ def test_each_canonical_openapi_operation_has_its_own_document(test_app):
 
     actual = {path.name for path in DOCS_ROOT.glob("*.md") if path.name != "README.md"}
     assert expected <= actual
-    assert {"get_health.md", "get_health_live.md", "get_health_ready.md"} <= actual
+    assert {
+        "get_api_v1_health.md",
+        "get_api_v1_health_live.md",
+        "get_api_v1_health_ready.md",
+    } <= actual

@@ -16,30 +16,26 @@ def test_router_package_exports_an_aggregate_router():
     assert isinstance(router_package.router, APIRouter)
 
 
-def test_aggregate_registers_only_the_current_dashboard_route(test_app):
+def test_aggregate_registers_only_the_versioned_dashboard_route(test_app):
     dashboard_routes = [
         route
         for route in test_app.routes
         if getattr(route, "path", None).rstrip("/")
-        in {"/dashboard", "/api/v1/dashboard"}
+        == "/api/v1/dashboard"
         and "GET" in getattr(route, "methods", set())
     ]
 
-    assert {route.path for route in dashboard_routes} == {
-        "/dashboard",
-        "/api/v1/dashboard",
-    }
-    assert sum(route.include_in_schema for route in dashboard_routes) == 1
+    assert {route.path for route in dashboard_routes} == {"/api/v1/dashboard"}
+    assert all(route.include_in_schema for route in dashboard_routes)
 
 
 def test_operations_use_explicit_health_endpoints(test_app):
     paths = {getattr(route, "path", None) for route in test_app.routes}
 
-    # The old probe remains as a hidden compatibility alias while deployments
-    # move to the explicit liveness/readiness pair.
-    assert "/health" in paths
-    assert "/health/live" in paths
-    assert "/health/ready" in paths
+    assert "/api/v1/health" in paths
+    assert "/api/v1/health/live" in paths
+    assert "/api/v1/health/ready" in paths
+    assert "/health" not in paths
 
 
 def test_application_packages_have_init_modules():

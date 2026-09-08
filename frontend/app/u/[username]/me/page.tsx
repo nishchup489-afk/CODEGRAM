@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import ProfileHeader from "../components/ProfileHeader"
 
 import { useUser } from "@clerk/nextjs"
 import { useParams } from "next/navigation"
 
-import { UserFullProfile } from "@/app/lib/type/profileAnalytics"
+import { UserFullProfile } from "@/app/_lib/type/profileAnalytics"
 
 import StacksAnalytics from "./components/StacksAnalytics"
 import ProjectsPreview from "./components/ProjectPreview"

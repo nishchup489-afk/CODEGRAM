@@ -10,7 +10,6 @@ from fastapi import Depends, HTTPException, Request, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 from jwt.exceptions import InvalidTokenError, PyJWKClientError
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -21,6 +20,14 @@ from .database import get_db
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
+
+
+async def _find_persisted_user(db: AsyncSession, clerk_user_id: str) -> User | None:
+    # Local import keeps model registration independent from repository package
+    # initialization while still placing the database query in the repository.
+    from app.repository.user import get_user_by_clerk_id
+
+    return await get_user_by_clerk_id(db=db, clerk_user_id=clerk_user_id)
 
 
 @dataclass(frozen=True)
@@ -183,7 +190,7 @@ async def get_current_user(
     principal: ClerkPrincipal = Depends(get_clerk_principal),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    user = await db.scalar(select(User).where(User.clerk_user_id == principal.user_id))
+    user = await _find_persisted_user(db, principal.user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -203,7 +210,7 @@ async def get_current_user_optional(
 ) -> User | None:
     if principal is None:
         return None
-    user = await db.scalar(select(User).where(User.clerk_user_id == principal.user_id))
+    user = await _find_persisted_user(db, principal.user_id)
     if user and (user.is_banned or not user.is_active):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

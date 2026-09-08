@@ -6,17 +6,17 @@ import gsap from "gsap"
 
 import { useParams } from "next/navigation"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import type { GetProject }
-from "@/app/lib/type/project"
-import type { CurrentUser } from "@/app/lib/type/currentUser"
-import type { CommentData } from "@/app/lib/type/comment"
-import type { GetComment } from "@/app/lib/type/comment"
-import type { ProjectAuthor } from "@/app/lib/type/project"
+from "@/app/_lib/type/project"
+import type { CurrentUser } from "@/app/_lib/type/currentUser"
+import type { CommentData } from "@/app/_lib/type/comment"
+import type { GetComment } from "@/app/_lib/type/comment"
+import type { ProjectAuthor } from "@/app/_lib/type/project"
 
 import useCurrentUser
-from "@/app/lib/currentUser"
+from "@/app/_lib/currentUser"
 import BackButton from "./components/BackButton"
 import Breadcrumb from "./components/BreadCrumb"
 import ProjectTags from "./components/ProjectTags"

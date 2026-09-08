@@ -12,12 +12,12 @@ import { useState } from "react"
 
 import type {
     CurrentUser,
-} from "@/app/lib/type/currentUser"
+} from "@/app/_lib/type/currentUser"
 
 import type {
     GetComment,
     CommentData,
-} from "@/app/lib/type/comment"
+} from "@/app/_lib/type/comment"
 
 
 

@@ -1,4 +1,4 @@
-import CodegramLoadingScreen from "./components/CodegramLoadingScreen";
+import CodegramLoadingScreen from "./_components/CodegramLoadingScreen";
 
 export default function Loading() {
     return <CodegramLoadingScreen />;

@@ -4,10 +4,8 @@ import logging
 from typing import Any
 
 from fastapi import APIRouter, Response, status
-from sqlalchemy import text
-
 from app.core.config import settings
-from app.core.database import AsyncSessionLocal
+from app.repository.health import check_database
 
 
 router = APIRouter(tags=["Operations"])
@@ -21,8 +19,7 @@ async def liveness() -> dict[str, str]:
 
 
 async def _database_ready() -> None:
-    async with AsyncSessionLocal() as db:
-        await db.execute(text("SELECT 1"))
+    await check_database()
 
 
 async def _redis_ready() -> None:

@@ -4,7 +4,7 @@ Update Admin Project
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_project_api_v1_admin_projects__project_id__patch`
-- Backend implementation: [`backend/app/api/v1/admin.py:192`](../backend/app/api/v1/admin.py#L192)
+- Backend implementation: [`backend/app/router/admin.py:192`](../backend/app/router/admin.py#L192)
 
 ## Frontend connections
 

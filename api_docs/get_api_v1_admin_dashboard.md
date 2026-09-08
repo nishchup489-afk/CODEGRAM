@@ -4,7 +4,7 @@ Get Admin Dashboard
 
 - Authentication: Admin bearer token required
 - Operation ID: `get_admin_dashboard_api_v1_admin_dashboard_get`
-- Backend implementation: [`backend/app/api/v1/admin.py:41`](../backend/app/api/v1/admin.py#L41)
+- Backend implementation: [`backend/app/router/admin.py:41`](../backend/app/router/admin.py#L41)
 
 ## Frontend connections
 

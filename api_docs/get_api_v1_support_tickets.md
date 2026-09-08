@@ -4,7 +4,7 @@ List My Tickets
 
 - Authentication: Bearer token required
 - Operation ID: `list_my_tickets_api_v1_support_tickets_get`
-- Backend implementation: [`backend/app/api/v1/support.py:89`](../backend/app/api/v1/support.py#L89)
+- Backend implementation: [`backend/app/router/support.py:89`](../backend/app/router/support.py#L89)
 
 ## Frontend connections
 

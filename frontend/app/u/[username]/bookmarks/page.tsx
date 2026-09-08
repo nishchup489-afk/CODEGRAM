@@ -7,10 +7,10 @@ import {
 
 import { useUser } from "@clerk/nextjs"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import type { GetProject }
-from "@/app/lib/type/project"
+from "@/app/_lib/type/project"
 
 import ProjectCard from "./components/ProjectCard"
 

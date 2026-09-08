@@ -7,8 +7,6 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 from anyio import to_thread
 from fastapi import HTTPException
 import httpx
-from sqlalchemy import select
-
 from app.core.config import settings
 from app.models.project import Project
 
@@ -358,29 +356,6 @@ def get_project_slug(project_title):
     return project_slug or "project"
 
 
-async def slug_exists(
-    db,
-    model,
-    slug,
-    user_id=None,
-):
-
-    query = select(model.id).where(
-        model.slug == slug
-    )
-
-    if user_id:
-
-        query = query.where(
-            model.user_id == user_id
-        )
-
-    result = await db.execute(query)
-
-    return result.first() is not None
-
-
-
 async def generate_unique_slug(
     db,
     title,
@@ -393,6 +368,8 @@ async def generate_unique_slug(
     Clean slug first.
     Entropy suffix only on collision.
     """
+
+    from app.repository.slug import slug_exists
 
     base = get_project_slug(title)
 

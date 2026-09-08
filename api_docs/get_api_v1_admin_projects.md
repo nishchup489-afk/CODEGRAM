@@ -4,7 +4,7 @@ List Admin Projects
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_projects_api_v1_admin_projects_get`
-- Backend implementation: [`backend/app/api/v1/admin.py:176`](../backend/app/api/v1/admin.py#L176)
+- Backend implementation: [`backend/app/router/admin.py:176`](../backend/app/router/admin.py#L176)
 
 ## Frontend connections
 

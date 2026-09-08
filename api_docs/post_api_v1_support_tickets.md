@@ -4,7 +4,7 @@ Create Ticket
 
 - Authentication: Bearer token required
 - Operation ID: `create_ticket_api_v1_support_tickets_post`
-- Backend implementation: [`backend/app/api/v1/support.py:59`](../backend/app/api/v1/support.py#L59)
+- Backend implementation: [`backend/app/router/support.py:59`](../backend/app/router/support.py#L59)
 
 ## Frontend connections
 

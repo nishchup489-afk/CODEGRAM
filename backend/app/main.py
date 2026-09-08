@@ -25,11 +25,8 @@ app.add_middleware(
 configure_operational_middleware(app)
 
 
-# Versioned routes are the canonical API contract. The unversioned mount keeps
-# the current frontend working during its later migration and is intentionally
-# hidden from generated API documentation.
+# Versioned routes are the sole public API contract.
 app.include_router(router, prefix=settings.API_V1_PREFIX)
-app.include_router(router, include_in_schema=False)
 
 
 @app.get("/")

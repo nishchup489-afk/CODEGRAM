@@ -4,7 +4,7 @@ Create Admin Changelog
 
 - Authentication: Admin bearer token required
 - Operation ID: `create_admin_changelog_api_v1_admin_changelogs_post`
-- Backend implementation: [`backend/app/api/v1/admin.py:230`](../backend/app/api/v1/admin.py#L230)
+- Backend implementation: [`backend/app/router/admin.py:230`](../backend/app/router/admin.py#L230)
 
 ## Frontend connections
 

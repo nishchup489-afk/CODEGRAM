@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import type {
     GetLiveProject,
     GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 
 

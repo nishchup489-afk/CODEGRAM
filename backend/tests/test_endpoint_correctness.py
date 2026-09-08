@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.router import project as project_router
-from app.schema.liveProjects import UpdateLiveProject
+from app.schema.live_projects import UpdateLiveProject
 from app.schema.project import AddVote, UpdateProject
 from app.service import bookmark as bookmark_service
 from app.service.project import (

@@ -10,11 +10,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 
-from app.schema.liveProjects import (
+from app.schema.live_projects import (
     GetFeedEvent,
 )
 
-from app.service.LiveProjects import (
+from app.service.live_projects import (
     get_feed_events,
 )
 

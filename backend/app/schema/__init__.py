@@ -1,7 +1,6 @@
 """API request and response schema modules."""
 
 from app.schema import (
-    ProfileAnalytics,
     admin,
     app_notice,
     changelog,
@@ -10,8 +9,9 @@ from app.schema import (
     feedback,
     follow,
     idea,
-    liveProjects,
+    live_projects,
     profile,
+    profile_analytics,
     project,
     support,
     user,
@@ -19,7 +19,6 @@ from app.schema import (
 
 
 __all__ = [
-    "ProfileAnalytics",
     "admin",
     "app_notice",
     "changelog",
@@ -28,8 +27,9 @@ __all__ = [
     "feedback",
     "follow",
     "idea",
-    "liveProjects",
+    "live_projects",
     "profile",
+    "profile_analytics",
     "project",
     "support",
     "user",

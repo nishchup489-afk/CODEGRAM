@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from app.schema.ProfileAnalytics import ProfileLiveProjectResponse, ProfileProjectResponse, UserStackStatResponse
+from app.schema.profile_analytics import ProfileLiveProjectResponse, ProfileProjectResponse, UserStackStatResponse
 
 
 class UserSync(BaseModel):

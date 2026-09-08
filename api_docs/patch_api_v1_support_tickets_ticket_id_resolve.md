@@ -4,7 +4,7 @@ Resolve My Ticket
 
 - Authentication: Bearer token required
 - Operation ID: `resolve_my_ticket_api_v1_support_tickets__ticket_id__resolve_patch`
-- Backend implementation: [`backend/app/api/v1/support.py:186`](../backend/app/api/v1/support.py#L186)
+- Backend implementation: [`backend/app/router/support.py:186`](../backend/app/router/support.py#L186)
 
 ## Frontend connections
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { UserFullProfile } from "@/app/lib/type/profileAnalytics";
+import { UserFullProfile } from "@/app/_lib/type/profileAnalytics";
 import { useEffect, useState } from "react";
 import {
     Activity,

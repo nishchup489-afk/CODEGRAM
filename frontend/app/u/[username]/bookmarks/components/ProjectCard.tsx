@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 
 import type { GetProject }
-from "@/app/lib/type/project"
+from "@/app/_lib/type/project"
 
 
 

@@ -4,7 +4,7 @@ Admin Get Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `admin_get_feedback_api_v1_feedback_admin__feedback_id__get`
-- Backend implementation: [`backend/app/api/v1/feedback.py:176`](../backend/app/api/v1/feedback.py#L176)
+- Backend implementation: [`backend/app/router/feedback.py:176`](../backend/app/router/feedback.py#L176)
 
 ## Frontend connections
 

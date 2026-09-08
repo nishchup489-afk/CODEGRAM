@@ -3,7 +3,7 @@
 import { SignUp, useUser } from '@clerk/nextjs'
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import api from '@/app/lib/api'
+import api from '@/app/_lib/api'
 import gsap from 'gsap'
 import Link from 'next/link'
 
@@ -616,21 +616,21 @@ export default function Page() {
       <p className="mt-4 text-balance text-center text-[0.8rem] leading-6 text-zinc-500">
         By continuing, you agree to DevManiac&rsquo;s{" "}
         <Link
-          href="/footer/terms"
+          href="/terms"
           className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"
         >
           Terms
         </Link>{" "}
         and acknowledge our{" "}
         <Link
-          href="/footer/privacy"
+          href="/privacy"
           className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"
         >
           Privacy Policy
         </Link>{" "}
         and follow our{" "}
         <Link 
-        href="/footer/guidelines"
+        href="/guidelines"
         className="font-medium text-orange-400! underline decoration-orange-400/30 underline-offset-2 transition-colors hover:text-orange-300 hover:decoration-orange-300"
 >
          Community Guidelines

@@ -3,7 +3,7 @@
 import {
     GetLiveProject,
     GetLiveProjectJournal,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 import JournalComposer from "./JournalComposer"
 import JournalEntryCard from "./JournalEntryCard"

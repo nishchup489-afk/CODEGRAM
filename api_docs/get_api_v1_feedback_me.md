@@ -4,7 +4,7 @@ List My Feedback
 
 - Authentication: Bearer token required
 - Operation ID: `list_my_feedback_api_v1_feedback_me_get`
-- Backend implementation: [`backend/app/api/v1/feedback.py:90`](../backend/app/api/v1/feedback.py#L90)
+- Backend implementation: [`backend/app/router/feedback.py:90`](../backend/app/router/feedback.py#L90)
 
 ## Frontend connections
 

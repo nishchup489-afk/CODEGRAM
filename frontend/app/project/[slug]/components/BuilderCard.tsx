@@ -10,7 +10,7 @@ import {
     Linkedin,
 } from "lucide-react"
 
-import type { CurrentUser } from "@/app/lib/type/currentUser"
+import type { CurrentUser } from "@/app/_lib/type/currentUser"
 
 import linkedin from "@/public/linkedin-svg.svg"
 

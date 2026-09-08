@@ -19,13 +19,13 @@ import {
      Trash2,
 } from "lucide-react"
 
-import api from "@/app/lib/api"
+import api from "@/app/_lib/api"
 
 import type {
     GetProject,
-} from "@/app/lib/type/project"
+} from "@/app/_lib/type/project"
 
-import useCurrentUser from "@/app/lib/currentUser"
+import useCurrentUser from "@/app/_lib/currentUser"
 
 import ProfilePreview from "./components/ProfilePreview"
 import ProjectStar from "./components/ProjectStar"

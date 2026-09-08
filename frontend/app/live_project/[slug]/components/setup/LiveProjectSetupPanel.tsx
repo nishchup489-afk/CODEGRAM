@@ -15,7 +15,7 @@ import RevealWrapper from "../animations/RevealWrapper"
 
 import type {
     GetLiveProject,
-} from "@/app/lib/type/liveproject"
+} from "@/app/_lib/type/liveproject"
 
 interface LiveProjectSetupPanelProps {
     project: GetLiveProject

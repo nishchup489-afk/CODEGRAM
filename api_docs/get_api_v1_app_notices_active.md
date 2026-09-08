@@ -4,7 +4,7 @@ Get Active App Notice
 
 - Authentication: Public
 - Operation ID: `get_active_app_notice_api_v1_app_notices_active_get`
-- Backend implementation: [`backend/app/router/app_notice.py:19`](../backend/app/router/app_notice.py#L19)
+- Backend implementation: [`backend/app/router/app_notice.py:16`](../backend/app/router/app_notice.py#L16)
 
 ## Frontend connections
 

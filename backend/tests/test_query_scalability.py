@@ -9,8 +9,8 @@ from fastapi import FastAPI
 from sqlalchemy.dialects import postgresql
 
 from app.router import feed_event, live_projects, project as project_router, search
-from app.service import LiveProjects as live_project_service
-from app.service import project as project_service
+from app.repository import live_projects as live_project_service
+from app.repository import project as project_service
 
 
 class ScalarRows:

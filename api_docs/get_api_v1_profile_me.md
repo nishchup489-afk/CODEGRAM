@@ -8,7 +8,7 @@ Get My Profile
 
 ## Frontend connections
 
-- [`frontend/app/lib/currentUser.ts:41`](../frontend/app/lib/currentUser.ts#L41): `/profile/me?clerk_user_id=${user.id}`
+- [`frontend/app/_lib/currentUser.ts:41`](../frontend/app/_lib/currentUser.ts#L41): `/profile/me?clerk_user_id=${user.id}`
 - [`frontend/app/settings/account/page.tsx:96`](../frontend/app/settings/account/page.tsx#L96): `/profile/me`
 - [`frontend/app/settings/github/page.tsx:156`](../frontend/app/settings/github/page.tsx#L156): `/profile/me`
 - [`frontend/app/settings/profile/page.tsx:72`](../frontend/app/settings/profile/page.tsx#L72): `/profile/me`

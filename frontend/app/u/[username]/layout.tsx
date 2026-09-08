@@ -1,14 +1,14 @@
 "use client";
 
-import api from "@/app/lib/api";
+import api from "@/app/_lib/api";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useUser } from "@clerk/nextjs";
 
-import AppNoticeManager from "@/app/components/AppNoticeManager";
-import AppFooter from "@/app/components/AppFooter";
-import BuyMeCoffee from "@/app/components/BuyMeCoffee";
+import AppNoticeManager from "@/app/_components/AppNoticeManager";
+import AppFooter from "@/app/_components/AppFooter";
+import BuyMeCoffee from "@/app/_components/BuyMeCoffee";
 
 import {
     Home,

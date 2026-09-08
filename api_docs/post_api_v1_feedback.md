@@ -4,7 +4,7 @@ Create Feedback
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `create_feedback_api_v1_feedback_post`
-- Backend implementation: [`backend/app/api/v1/feedback.py:60`](../backend/app/api/v1/feedback.py#L60)
+- Backend implementation: [`backend/app/router/feedback.py:60`](../backend/app/router/feedback.py#L60)
 
 ## Frontend connections
 

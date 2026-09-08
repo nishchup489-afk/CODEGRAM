@@ -5,10 +5,10 @@ from uuid import uuid4
 import pytest
 from fastapi import HTTPException
 
-from app.models.LiveProject import LiveProject
+from app.models.live_project import LiveProject
 from app.schema.profile import PublicProfileResponse
-from app.service import LiveProjects as live_project_service
-from app.service.LiveProjects import _can_view_live_project
+from app.repository import live_projects as live_project_service
+from app.repository.live_projects import _can_view_live_project
 from app.utility import project_utility
 
 

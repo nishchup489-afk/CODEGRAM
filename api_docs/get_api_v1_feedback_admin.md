@@ -4,7 +4,7 @@ Admin List Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `admin_list_feedback_api_v1_feedback_admin_get`
-- Backend implementation: [`backend/app/api/v1/feedback.py:141`](../backend/app/api/v1/feedback.py#L141)
+- Backend implementation: [`backend/app/router/feedback.py:141`](../backend/app/router/feedback.py#L141)
 
 ## Frontend connections
 

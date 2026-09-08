@@ -6,7 +6,7 @@ import Image from "next/image"
 
 import { ExternalLink } from "lucide-react"
 
-import type { CurrentUser } from "@/app/lib/type/currentUser"
+import type { CurrentUser } from "@/app/_lib/type/currentUser"
 
 
 type BuilderCardUser = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { UserFullProfile } from "@/app/lib/type/profileAnalytics";
+import { UserFullProfile } from "@/app/_lib/type/profileAnalytics";
 
 type Props = {
     profile: UserFullProfile;

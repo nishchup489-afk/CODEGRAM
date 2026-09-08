@@ -1,11 +1,11 @@
 from app.models import (
-    LiveProject as live_project,
     app_notice,
     bookmark,
     changelog,
     comment,
     feedback,
     idea,
+    live_project,
     notification,
     post,
     project,
@@ -14,7 +14,7 @@ from app.models import (
     tag,
     user,
 )
-from app.models.LiveProject import (
+from app.models.live_project import (
     FeedEvent,
     LiveProject,
     LiveProjectJournal,

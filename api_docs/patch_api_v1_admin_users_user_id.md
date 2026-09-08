@@ -4,7 +4,7 @@ Update Admin User
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_user_api_v1_admin_users__user_id__patch`
-- Backend implementation: [`backend/app/api/v1/admin.py:154`](../backend/app/api/v1/admin.py#L154)
+- Backend implementation: [`backend/app/router/admin.py:154`](../backend/app/router/admin.py#L154)
 
 ## Frontend connections
 
