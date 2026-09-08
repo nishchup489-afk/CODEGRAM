@@ -3,7 +3,8 @@
 ## Local setup
 
 Copy `.env.example` to `.env`, replace its placeholder values, then install the
-locked dependencies:
+locked dependencies. The backend resolves this file relative to `backend/`, so
+startup does not depend on the shell's current directory:
 
 ```bash
 poetry install --with dev --no-root
@@ -25,8 +26,11 @@ through Clerk's Backend API; identity fields in request bodies or query strings
 are not trusted.
 
 Application endpoints are published canonically under `/api/v1`. Unversioned
-aliases remain temporarily available for the frontend migration, but they are
-excluded from OpenAPI and should not be used by new clients.
+aliases are not mounted.
+
+Development defaults to the local PostgreSQL URL shown in `.env.example` when
+`DATABASE_URL` is absent. Production remains fail-closed: when
+`APP_ENV=production`, `DATABASE_URL` must be configured explicitly.
 
 The PostgreSQL pool is configured through `DATABASE_POOL_SIZE`,
 `DATABASE_MAX_OVERFLOW`, `DATABASE_POOL_TIMEOUT`, `DATABASE_POOL_RECYCLE`, and

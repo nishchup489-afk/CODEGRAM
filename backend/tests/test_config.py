@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.core.config import Settings
+from app.core.config import LOCAL_DATABASE_URL, Settings
 
 
 def make_settings(**overrides) -> Settings:
@@ -13,9 +13,25 @@ def make_settings(**overrides) -> Settings:
     return Settings(**values)
 
 
-def test_database_url_is_required():
+def test_null_database_url_is_rejected():
     with pytest.raises(ValidationError):
         Settings(DATABASE_URL=None, _env_file=None)
+
+
+def test_development_uses_safe_local_database_default(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL")
+    settings = Settings(_env_file=None)
+
+    assert settings.DATABASE_URL == LOCAL_DATABASE_URL
+
+
+def test_production_requires_an_explicit_database_url(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL")
+    with pytest.raises(
+        ValidationError,
+        match="DATABASE_URL must be explicitly configured in production",
+    ):
+        Settings(APP_ENV="production", _env_file=None)
 
 
 def test_comma_separated_configuration_is_normalized():

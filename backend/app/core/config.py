@@ -1,7 +1,14 @@
 from functools import lru_cache
+from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
+LOCAL_DATABASE_URL = (
+    "postgresql+asyncpg://postgres:postgres@localhost:5432/codegram"
+)
 
 
 class Settings(BaseSettings):
@@ -36,7 +43,7 @@ class Settings(BaseSettings):
     # DATABASE
     # =========================================================
 
-    DATABASE_URL: str
+    DATABASE_URL: str = LOCAL_DATABASE_URL
 
     DATABASE_POOL_SIZE: int = Field(default=5, ge=1)
 
@@ -103,7 +110,7 @@ class Settings(BaseSettings):
     # =========================================================
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=BACKEND_ROOT / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -112,6 +119,17 @@ class Settings(BaseSettings):
     # =========================================================
     # HELPERS
     # =========================================================
+
+    @model_validator(mode="after")
+    def require_explicit_production_database(self) -> "Settings":
+        if (
+            self.APP_ENV.strip().lower() == "production"
+            and self.DATABASE_URL == LOCAL_DATABASE_URL
+        ):
+            raise ValueError(
+                "DATABASE_URL must be explicitly configured in production"
+            )
+        return self
 
     @property
     def cors_origin_list(self) -> list[str]:
