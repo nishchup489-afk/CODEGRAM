@@ -117,22 +117,6 @@ export default function AdminDashboardPage() {
     const [refreshing, setRefreshing] = useState(false)
     const [error, setError] = useState('')
 
-    const adminIds = useMemo(() => {
-        const raw =
-            process.env.NEXT_PUBLIC_ADMIN_CLERK_USER_IDS ||
-            process.env.NEXT_PUBLIC_ADMIN_CLERK_USER_ID ||
-            ''
-
-        return raw
-            .split(',')
-            .map((item) => item.trim())
-            .filter(Boolean)
-    }, [])
-
-    const isAdmin = Boolean(
-        user?.id && adminIds.includes(user.id)
-    )
-
     useEffect(() => {
         if (!isLoaded) return
 
@@ -141,24 +125,15 @@ export default function AdminDashboardPage() {
             return
         }
 
-        if (!isAdmin) {
-            setLoading(false)
-            return
-        }
-
         fetchDashboard()
-    }, [isLoaded, user?.id, isAdmin])
+    }, [isLoaded, user?.id])
 
     async function fetchDashboard() {
         try {
             setError('')
             setRefreshing(true)
 
-            const res = await api.get('/admin/dashboard', {
-                params: {
-                    clerk_user_id: user?.id,
-                },
-            })
+            const res = await api.get('/admin/dashboard')
 
             setDashboard(res.data)
         } catch (err: any) {

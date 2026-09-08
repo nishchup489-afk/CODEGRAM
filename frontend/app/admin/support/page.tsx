@@ -255,7 +255,6 @@ export default function AdminSupportPage() {
 
             const res = await api.get('/admin/support-tickets', {
                 params: {
-                    clerk_user_id: clerkUserId,
                     limit: 100,
                 },
             })
@@ -296,11 +295,6 @@ export default function AdminSupportPage() {
                     status: draftStatus,
                     priority: draftPriority,
                     internal_notes: draftNotes.trim() || null,
-                },
-                {
-                    params: {
-                        clerk_user_id: clerkUserId,
-                    },
                 }
             )
 
@@ -341,12 +335,7 @@ export default function AdminSupportPage() {
 
             const res = await api.patch(
                 `/admin/support-tickets/${ticket.id}`,
-                payload,
-                {
-                    params: {
-                        clerk_user_id: clerkUserId,
-                    },
-                }
+                payload
             )
 
             setTickets((prev) =>

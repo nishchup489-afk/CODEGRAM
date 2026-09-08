@@ -188,10 +188,7 @@ export default function EditProfile({
 
 
 
-            await api.patch(
-                `/profile/me?clerk_user_id=${user.id}`,
-                profileData
-            )
+            await api.patch("/profile/me", profileData)
 
 
 

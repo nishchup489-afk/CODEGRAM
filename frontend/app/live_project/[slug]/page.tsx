@@ -133,10 +133,7 @@ export default function GetLiveProjectPage() {
             )
         }
 
-        const res = await api.patch(
-            `/live-projects/${slug}?clerk_user_id=${user.id}`,
-            data
-        )
+        const res = await api.patch(`/live-projects/${slug}`, data)
 
         const updatedProject =
             res.data as GetLiveProject
@@ -168,7 +165,7 @@ export default function GetLiveProjectPage() {
 
         try {
             const res = await api.post(
-                `/live-projects/${slug}/journals?clerk_user_id=${user.id}`,
+                `/live-projects/${slug}/journals`,
                 data
             )
 

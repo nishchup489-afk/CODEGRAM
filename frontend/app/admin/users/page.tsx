@@ -156,7 +156,6 @@ export default function AdminUsersPage() {
 
             const res = await api.get('/admin/users', {
                 params: {
-                    clerk_user_id: clerkUserId,
                     limit: 100,
                 },
             })
@@ -192,12 +191,7 @@ export default function AdminUsersPage() {
 
             const res = await api.patch(
                 `/admin/users/${userId}`,
-                payload,
-                {
-                    params: {
-                        clerk_user_id: clerkUserId,
-                    },
-                }
+                payload
             )
 
             setUsers((prev) =>

@@ -120,7 +120,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (userLoading) return;
 
-        if (!currentUser?.clerk_user_id) {
+        if (!currentUser) {
             setLoading(false);
             return;
         }
@@ -130,9 +130,7 @@ export default function Dashboard() {
                 setLoading(true);
                 setError("");
 
-                const response = await api.get(
-                    `/dashboard?clerk_user_id=${currentUser.clerk_user_id}`
-                );
+                const response = await api.get("/dashboard");
 
                 setDashboard(response.data);
             } catch (err) {
@@ -144,7 +142,7 @@ export default function Dashboard() {
         };
 
         fetchDashboard();
-    }, [userLoading, currentUser?.clerk_user_id]);
+    }, [userLoading, currentUser]);
 
     if (loading || userLoading) {
         return (

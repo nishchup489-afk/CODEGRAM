@@ -135,12 +135,10 @@ export default function GetSingleProject() {
     useState<GetComment[]>([])
 
     const isOwner =
-        user?.id &&
-        currentUser?.clerk_user_id &&
-        user.id === currentUser.clerk_user_id
+        Boolean(currentUser?.id && projectData.user_id === currentUser.id)
 
     const projectOwner = {
-        id: projectData.user.id,
+        id: projectData.user_id,
         username: projectData.user.username,
         display_name: projectData.user.display_name,
         avatar_url: projectData.user.avatar_url,
@@ -161,12 +159,7 @@ export default function GetSingleProject() {
 
                     const res =
                         await api.get(
-                            `/projects/${slug}`,
-                            {
-                                params: {
-                                    clerk_user_id: user?.id,
-                                },
-                            }
+                            `/projects/${slug}`
                         )
 
                     setProjectData(
@@ -235,11 +228,6 @@ export default function GetSingleProject() {
                 {
                     content: commentData.content,
                     parent_id: commentData.parent_id || null,
-                },
-                {
-                    params: {
-                        clerk_user_id: user.id,
-                    },
                 }
             )
 
@@ -327,12 +315,7 @@ export default function GetSingleProject() {
 
                 const result =
                     await api.delete(
-                        `/projects/${projectData.slug}/star`,
-                        {
-                            params: {
-                                clerk_user_id: user.id,
-                            },
-                        }
+                        `/projects/${projectData.slug}/star`
                     )
 
                 setProjectData(result.data)
@@ -344,12 +327,7 @@ export default function GetSingleProject() {
                 const result =
                     await api.post(
                         `/projects/${projectData.slug}/star`,
-                        {},
-                        {
-                            params: {
-                                clerk_user_id: user.id,
-                            },
-                        }
+                        {}
                     )
 
                 setProjectData(result.data)
@@ -376,13 +354,7 @@ const toggleProjectBookmark =
             ) {
 
                 await api.delete(
-                    `/projects/${projectData.slug}/bookmark`,
-                    {
-                        params: {
-                            clerk_user_id:
-                                user.id,
-                        },
-                    }
+                    `/projects/${projectData.slug}/bookmark`
                 )
 
                 setProjectData(
@@ -399,13 +371,7 @@ const toggleProjectBookmark =
 
                 await api.post(
                     `/projects/${projectData.slug}/bookmark`,
-                    {},
-                    {
-                        params: {
-                            clerk_user_id:
-                                user.id,
-                        },
-                    }
+                    {}
                 )
 
                 setProjectData(
@@ -587,11 +553,7 @@ const toggleProjectBookmark =
 
                                     if (!confirmed || !user?.id) return
 
-                                    await api.delete(`/projects/${projectData.slug}`, {
-                                        params: {
-                                            clerk_user_id: user.id,
-                                        },
-                                    })
+                                    await api.delete(`/projects/${projectData.slug}`)
 
                                     router.push(`/u/${currentUser?.username}/me`)
                                 }}

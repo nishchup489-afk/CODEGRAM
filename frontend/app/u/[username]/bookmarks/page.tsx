@@ -65,13 +65,7 @@ export default function GetBookmarks() {
 
                     const response =
                         await api.get(
-                            "/bookmarks/me",
-                            {
-                                params: {
-                                    clerk_user_id:
-                                        user.id,
-                                },
-                            }
+                            "/bookmarks/me"
                         )
 
                     setBookmarks(
@@ -374,13 +368,7 @@ export default function GetBookmarks() {
                         try {
 
                             await api.delete(
-                                `/projects/${slug}/bookmark`,
-                                {
-                                    params: {
-                                        clerk_user_id:
-                                            user.id,
-                                    },
-                                }
+                                `/projects/${slug}/bookmark`
                             )
 
                             // ====================================

@@ -281,7 +281,7 @@ export default function CreateProject() {
 
             await api.post(
 
-                `/projects/?clerk_user_id=${currentUser?.clerk_user_id}`,
+                "/projects/",
 
                 {
 

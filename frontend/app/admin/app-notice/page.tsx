@@ -236,18 +236,12 @@ export default function AdminAppNoticesPage() {
 
     const isEditing = Boolean(editingId);
 
-    const adminQuery = useMemo(() => {
-        if (!user?.id) return "";
-
-        return `clerk_user_id=${encodeURIComponent(user.id)}`;
-    }, [user?.id]);
-
     const activeCount = useMemo(() => {
         return items.filter((item) => item.is_active).length;
     }, [items]);
 
     const fetchNotices = async () => {
-        if (!user?.id || !adminQuery) {
+        if (!user?.id) {
             setLoading(false);
             return;
         }
@@ -257,7 +251,12 @@ export default function AdminAppNoticesPage() {
             setError("");
 
             const res = await api.get<AppNoticeItem[]>(
-                `/admin/app-notices?limit=100&${adminQuery}`
+                "/admin/app-notices",
+                {
+                    params: {
+                        limit: 100,
+                    },
+                }
             );
 
             setItems(res.data || []);
@@ -316,8 +315,8 @@ export default function AdminAppNoticesPage() {
     ) => {
         e.preventDefault();
 
-        if (!user?.id || !adminQuery) {
-            setError("Admin Clerk user id missing.");
+        if (!user?.id) {
+            setError("Admin session missing.");
             return;
         }
 
@@ -340,16 +339,13 @@ export default function AdminAppNoticesPage() {
 
             if (editingId) {
                 await api.patch(
-                    `/admin/app-notices/${editingId}?${adminQuery}`,
+                    `/admin/app-notices/${editingId}`,
                     payload
                 );
 
                 setSuccess("App notice updated successfully.");
             } else {
-                await api.post(
-                    `/admin/app-notices?${adminQuery}`,
-                    payload
-                );
+                await api.post("/admin/app-notices", payload);
 
                 setSuccess("App notice created successfully.");
             }
@@ -373,8 +369,8 @@ export default function AdminAppNoticesPage() {
     };
 
     const handleDelete = async (item: AppNoticeItem) => {
-        if (!user?.id || !adminQuery) {
-            setError("Admin Clerk user id missing.");
+        if (!user?.id) {
+            setError("Admin session missing.");
             return;
         }
 
@@ -389,9 +385,7 @@ export default function AdminAppNoticesPage() {
             setError("");
             setSuccess("");
 
-            await api.delete(
-                `/admin/app-notices/${item.id}?${adminQuery}`
-            );
+            await api.delete(`/admin/app-notices/${item.id}`);
 
             setSuccess("App notice deleted successfully.");
 
@@ -410,8 +404,8 @@ export default function AdminAppNoticesPage() {
     };
 
     const handleToggleActive = async (item: AppNoticeItem) => {
-        if (!user?.id || !adminQuery) {
-            setError("Admin Clerk user id missing.");
+        if (!user?.id) {
+            setError("Admin session missing.");
             return;
         }
 
@@ -420,7 +414,7 @@ export default function AdminAppNoticesPage() {
             setSuccess("");
 
             await api.patch(
-                `/admin/app-notices/${item.id}?${adminQuery}`,
+                `/admin/app-notices/${item.id}`,
                 {
                     is_active: !item.is_active,
                 }

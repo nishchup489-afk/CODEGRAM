@@ -58,11 +58,7 @@ export default function EditProjectPage() {
                 setLoading(true)
                 setError("")
 
-                const res = await api.get(`/projects/${slug}`, {
-                    params: {
-                        clerk_user_id: user?.id,
-                    },
-                })
+                const res = await api.get(`/projects/${slug}`)
 
                 setForm({
                     title: res.data.title || "",
@@ -192,11 +188,6 @@ export default function EditProjectPage() {
                     thumbnail_url: form.thumbnail_url || null,
                     demo_video_url: form.demo_video_url || null,
                     gallery_urls: form.gallery_urls,
-                },
-                {
-                    params: {
-                        clerk_user_id: user.id,
-                    },
                 }
             )
 
@@ -228,11 +219,7 @@ export default function EditProjectPage() {
             setDeleting(true)
             setError("")
 
-            await api.delete(`/projects/${slug}`, {
-                params: {
-                    clerk_user_id: user.id,
-                },
-            })
+            await api.delete(`/projects/${slug}`)
 
             router.push("/")
         } catch (err: any) {

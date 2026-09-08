@@ -77,9 +77,7 @@ export default function DashboardLayout({
                 setLoading(true);
                 setError("");
 
-                const result = await api.get(
-                    `/profile/me?clerk_user_id=${user.id}`
-                );
+                const result = await api.get("/profile/me");
 
                 setCurrentUser(result.data);
             } catch (err) {

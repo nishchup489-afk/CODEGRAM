@@ -162,8 +162,6 @@ export default function OnBoardingPage() {
             await api.post(
                 '/sync_user/onboarding',
                 {
-                    clerk_user_id: user.id,
-
                     username: username.trim(),
 
                     display_name: displayName.trim(),

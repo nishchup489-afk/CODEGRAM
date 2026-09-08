@@ -23,9 +23,7 @@ export default function Page() {
 
     const redirectExistingUser = async () => {
       try {
-        const res = await api.get(
-          `/sync_user/onboarding?clerk_user_id=${user.id}`
-        )
+        const res = await api.get('/sync_user/onboarding')
 
         const currentUser = res.data
 

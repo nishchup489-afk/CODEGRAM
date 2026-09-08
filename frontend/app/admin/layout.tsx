@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type React from 'react'
 
 import Link from 'next/link'
@@ -27,7 +27,6 @@ import {
     X,
     Megaphone,
 } from 'lucide-react'
-import { currentUser } from '@clerk/nextjs/server'
 import useCurrentUser from '../_lib/currentUser'
 
 
@@ -92,22 +91,6 @@ export default function AdminLayout({
     const [mobileSidebarOpen, setMobileSidebarOpen] =
         useState(false)
 
-    const adminIds = useMemo(() => {
-        const raw =
-            process.env.NEXT_PUBLIC_ADMIN_CLERK_USER_IDS ||
-            process.env.NEXT_PUBLIC_ADMIN_CLERK_USER_ID ||
-            ''
-
-        return raw
-            .split(',')
-            .map((item) => item.trim())
-            .filter(Boolean)
-    }, [])
-
-    const isAdmin = Boolean(
-        user?.id && adminIds.includes(user.id)
-    )
-
     function isNavActive(item: (typeof ADMIN_NAVIGATION)[number]) {
         if (item.exact) {
             return pathname === item.href
@@ -138,7 +121,7 @@ export default function AdminLayout({
         )
     }
 
-    if (!user?.id || !isAdmin) {
+    if (!user?.id) {
         return (
             <div className='flex min-h-screen items-center justify-center bg-[#050505] px-4 text-white'>
                 <div className='w-full max-w-lg rounded-4xl border border-[#2D2D2D] bg-[#111113] p-6 text-center shadow-2xl sm:p-8'>
@@ -151,8 +134,7 @@ export default function AdminLayout({
                     </h1>
 
                     <p className='mt-3 text-sm leading-7 text-[#A1A1AA]'>
-                        This area is private. Your account is not listed as an
-                        approved admin account.
+                        Sign in with an approved admin account to continue.
                     </p>
 
                     <Link

@@ -7,12 +7,14 @@ from app.schema.profile_analytics import ProfileLiveProjectResponse, ProfileProj
 
 
 class UserSync(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     display_name: str | None = None
     avatar_url: str | None = None
 
 
 class UserOnboarding(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     username: str
     display_name: str

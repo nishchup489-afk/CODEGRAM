@@ -251,12 +251,6 @@ export default function AdminChangelogPage() {
 
     const isEditing = Boolean(editingId);
 
-    const adminQuery = useMemo(() => {
-        if (!user?.id) return "";
-
-        return `clerk_user_id=${encodeURIComponent(user.id)}`;
-    }, [user?.id]);
-
     const publishedCount = useMemo(() => {
         return items.filter((item) => item.is_published).length;
     }, [items]);
@@ -276,7 +270,12 @@ export default function AdminChangelogPage() {
             setError("");
 
             const res = await api.get<AdminChangelogItem[]>(
-                `/admin/changelogs?limit=100&${adminQuery}`
+                "/admin/changelogs",
+                {
+                    params: {
+                        limit: 100,
+                    },
+                }
             );
 
             setItems(res.data || []);
@@ -347,8 +346,8 @@ export default function AdminChangelogPage() {
     ) => {
         e.preventDefault();
 
-        if (!user?.id || !adminQuery) {
-            setError("Admin Clerk user id missing.");
+        if (!user?.id) {
+            setError("Admin session missing.");
             return;
         }
 
@@ -371,16 +370,13 @@ export default function AdminChangelogPage() {
 
             if (editingId) {
                 await api.patch(
-                    `/admin/changelogs/${editingId}?${adminQuery}`,
+                    `/admin/changelogs/${editingId}`,
                     payload
                 );
 
                 setSuccess("Changelog updated successfully.");
             } else {
-                await api.post(
-                    `/admin/changelogs?${adminQuery}`,
-                    payload
-                );
+                await api.post("/admin/changelogs", payload);
 
                 setSuccess("Changelog created successfully.");
             }
@@ -404,8 +400,8 @@ export default function AdminChangelogPage() {
     };
 
     const handleDelete = async (item: AdminChangelogItem) => {
-        if (!user?.id || !adminQuery) {
-            setError("Admin Clerk user id missing.");
+        if (!user?.id) {
+            setError("Admin session missing.");
             return;
         }
 
@@ -420,9 +416,7 @@ export default function AdminChangelogPage() {
             setError("");
             setSuccess("");
 
-            await api.delete(
-                `/admin/changelogs/${item.id}?${adminQuery}`
-            );
+            await api.delete(`/admin/changelogs/${item.id}`);
 
             setSuccess("Changelog deleted successfully.");
 

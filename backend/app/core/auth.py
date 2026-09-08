@@ -20,6 +20,20 @@ from .database import get_db
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
+LEGACY_IDENTITY_QUERY_PARAMS = frozenset(
+    {
+        "admin_clerk_user_id",
+        "clerk_user_id",
+    }
+)
+LEGACY_IDENTITY_HEADERS = frozenset(
+    {
+        "admin_clerk_user_id",
+        "clerk_user_id",
+        "x-admin-clerk-user-id",
+        "x-clerk-user-id",
+    }
+)
 
 
 async def _find_persisted_user(db: AsyncSession, clerk_user_id: str) -> User | None:
@@ -43,6 +57,23 @@ def _unauthorized(detail: str = "Invalid or expired authentication token") -> HT
         detail=detail,
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+def _reject_legacy_identity_transport(request: Request) -> None:
+    query_names = {name.lower() for name in request.query_params}
+    header_names = {name.lower() for name in request.headers.keys()}
+
+    if query_names & LEGACY_IDENTITY_QUERY_PARAMS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Identity parameters are not accepted; use a Clerk session token",
+        )
+
+    if header_names & LEGACY_IDENTITY_HEADERS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Identity headers are not accepted; use a Clerk session token",
+        )
 
 
 @lru_cache
@@ -117,6 +148,7 @@ async def get_clerk_principal(
     token = _bearer_token(request, credentials)
     if token is None:
         raise _unauthorized("Authentication required")
+    _reject_legacy_identity_transport(request)
     return await to_thread.run_sync(_verify_token, token)
 
 
@@ -124,6 +156,7 @@ async def get_optional_clerk_principal(
     request: Request,
     credentials: HTTPAuthorizationCredentials | None = Security(bearer_scheme),
 ) -> ClerkPrincipal | None:
+    _reject_legacy_identity_transport(request)
     token = _bearer_token(request, credentials)
     if token is None:
         return None

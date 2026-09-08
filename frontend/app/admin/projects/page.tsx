@@ -181,7 +181,6 @@ export default function AdminProjectsPage() {
 
             const res = await api.get('/admin/projects', {
                 params: {
-                    clerk_user_id: clerkUserId,
                     limit: 100,
                 },
             })
@@ -212,12 +211,7 @@ export default function AdminProjectsPage() {
 
             const res = await api.patch(
                 `/admin/projects/${projectId}`,
-                payload,
-                {
-                    params: {
-                        clerk_user_id: clerkUserId,
-                    },
-                }
+                payload
             )
 
             setProjects((prev) =>

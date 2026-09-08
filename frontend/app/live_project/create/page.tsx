@@ -141,11 +141,6 @@ export default function CreateLiveProjectPage() {
                     thumbnail_url: thumbnailUrl || null,
 
                     is_public: isPublic,
-                },
-                {
-                    params: {
-                        clerk_user_id: user.id,
-                    },
                 }
             )
 

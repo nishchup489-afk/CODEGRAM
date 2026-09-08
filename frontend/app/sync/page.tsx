@@ -95,10 +95,8 @@ export default function SyncUserPage() {
                 setError("")
 
                 const response = await api.post(
-                    "/sync_user",
+                    "/sync_user/",
                     {
-                        clerk_user_id: user.id,
-                        email: user.primaryEmailAddress?.emailAddress,
                         display_name: user.fullName,
                         avatar_url: user.imageUrl
                     }

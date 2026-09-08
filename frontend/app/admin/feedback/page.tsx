@@ -300,7 +300,6 @@ export default function AdminFeedbackPage() {
 
             const res = await api.get('/admin/feedback', {
                 params: {
-                    clerk_user_id: clerkUserId,
                     limit: 100,
                 },
             })
@@ -341,11 +340,6 @@ export default function AdminFeedbackPage() {
                     status: draftStatus,
                     sentiment: draftSentiment,
                     admin_notes: draftNotes.trim() || null,
-                },
-                {
-                    params: {
-                        clerk_user_id: clerkUserId,
-                    },
                 }
             )
 
@@ -386,12 +380,7 @@ export default function AdminFeedbackPage() {
 
             const res = await api.patch(
                 `/admin/feedback/${item.id}`,
-                payload,
-                {
-                    params: {
-                        clerk_user_id: clerkUserId,
-                    },
-                }
+                payload
             )
 
             setFeedbackItems((prev) =>

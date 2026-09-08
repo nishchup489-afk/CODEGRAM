@@ -1,683 +1,906 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import {
-  Play,
-  ArrowRight,
-  Flame,
-  CheckCircle2,
-  BarChart3,
-  Users,
-  Target,
-  Trophy,
-  Code2,
-  GitBranch,
-  Terminal,
-  BookOpen,
-} from "lucide-react";
 
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+/* ─────────────────────────────────────────────────────────
+   V2.0-a LANDING PAGE
+   Design system lives in app/globals.css (.dm-* classes).
+───────────────────────────────────────────────────────── */
 
-import main_logo from "@/public/main_logo.jpg";
-import dashboardPreview from "@/public/new_dashboard.png";
+type ClassKey = "build" | "ship" | "practice" | "write" | "log";
 
-/* ─────────────────────────────────────────────
-   DATA
-───────────────────────────────────────────── */
+const CLASS_COLOR: Record<ClassKey, string> = {
+  build: "#2D5BD6",
+  ship: "#0E8A6A",
+  practice: "#7A4BC9",
+  write: "#C2761B",
+  log: "#B33A46",
+};
 
-const features = [
+const EMPTY = "#F2F2F0";
+
+/** Blend a class colour over the empty-cell wash at a given intensity. */
+function tint(key: ClassKey, level: number) {
+  const alpha = [0.28, 0.42, 0.62, 0.82, 1][Math.max(0, Math.min(4, level - 1))];
+  const hex = CLASS_COLOR[key];
+  const f = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  const b = [242, 242, 240];
+  const out = f.map((c, i) => Math.round(c * alpha + b[i] * (1 - alpha)));
+  return "rgb(" + out[0] + " " + out[1] + " " + out[2] + ")";
+}
+
+/* ── Hero comparison data ─────────────────────────────── */
+
+type Cell = { c: ClassKey; l: number; r?: ClassKey } | null;
+
+const WEEK_LABELS = [
+  "Jul 20",
+  "Jul 27",
+  "Aug 3",
+  "Aug 10",
+  "Aug 17",
+  "Aug 24",
+  "Aug 31",
+];
+
+const MINE: Cell[][] = [
+  [
+    { c: "practice", l: 4, r: "ship" },
+    { c: "log", l: 3 },
+    { c: "log", l: 1 },
+    null,
+    { c: "build", l: 5, r: "practice" },
+    { c: "build", l: 4 },
+    { c: "build", l: 4 },
+  ],
+  [
+    { c: "build", l: 5, r: "practice" },
+    { c: "write", l: 1 },
+    { c: "build", l: 4 },
+    { c: "build", l: 4, r: "write" },
+    null,
+    { c: "build", l: 4, r: "ship" },
+    { c: "log", l: 3 },
+  ],
+  [
+    { c: "build", l: 5, r: "practice" },
+    { c: "practice", l: 4, r: "ship" },
+    { c: "build", l: 4, r: "ship" },
+    { c: "practice", l: 4 },
+    { c: "log", l: 3 },
+    { c: "practice", l: 4, r: "write" },
+    { c: "build", l: 4 },
+  ],
+  [
+    { c: "build", l: 4, r: "ship" },
+    { c: "ship", l: 2 },
+    { c: "ship", l: 3, r: "build" },
+    null,
+    { c: "practice", l: 5, r: "build" },
+    null,
+    null,
+  ],
+  [
+    { c: "practice", l: 4, r: "build" },
+    null,
+    { c: "practice", l: 4, r: "ship" },
+    { c: "practice", l: 4, r: "ship" },
+    { c: "log", l: 4, r: "ship" },
+    null,
+    null,
+  ],
+  [
+    { c: "practice", l: 3 },
+    { c: "log", l: 4, r: "build" },
+    { c: "log", l: 3 },
+    { c: "practice", l: 5, r: "build" },
+    { c: "log", l: 4, r: "write" },
+    { c: "ship", l: 2 },
+    null,
+  ],
+  [
+    { c: "build", l: 4, r: "write" },
+    { c: "practice", l: 4 },
+    { c: "log", l: 3 },
+    { c: "ship", l: 3, r: "write" },
+    { c: "build", l: 3 },
+    { c: "build", l: 2 },
+    { c: "ship", l: 3, r: "practice" },
+  ],
+];
+
+/** GitHub's own contribution scale, light theme. Index 0 is an empty day. */
+const GH_SCALE = ["#EBEDF0", "#9BE9A8", "#40C463", "#30A14E", "#216E39"];
+
+/** The same seven weeks as GitHub sees them: four commit days, its own colours. */
+const GH_LEVELS: Record<string, number> = {
+  "0-5": 2,
+  "1-3": 1,
+  "2-6": 3,
+  "3-4": 1,
+};
+
+const GITHUB: number[][] = Array.from({ length: 7 }, (_, w) =>
+  Array.from({ length: 7 }, (_, d) => GH_LEVELS[w + "-" + d] ?? 0)
+);
+
+/* ── The graph section ────────────────────────────────── */
+
+const DAYS: { day: string; bands: { c: ClassKey; n: number }[] }[] = [
+  { day: "Mon", bands: [{ c: "build", n: 3 }, { c: "write", n: 1 }] },
   {
-    title: "Live project journal",
-    desc: "Log every build session. What you built, what broke, and what you learned.",
-    icon: Flame,
-    color: "#E8560A",
+    day: "Tue",
+    bands: [
+      { c: "practice", n: 3 },
+      { c: "build", n: 2 },
+      { c: "log", n: 1 },
+    ],
+  },
+  { day: "Wed", bands: [{ c: "build", n: 3 }, { c: "ship", n: 1 }] },
+  { day: "Thu", bands: [{ c: "log", n: 2 }, { c: "write", n: 1 }] },
+  {
+    day: "Fri",
+    bands: [
+      { c: "build", n: 3 },
+      { c: "ship", n: 1 },
+      { c: "write", n: 1 },
+    ],
+  },
+  { day: "Sat", bands: [{ c: "practice", n: 2 }, { c: "write", n: 1 }] },
+  { day: "Sun", bands: [] },
+];
+
+const CLASSES: { key: ClassKey; what: string; cap: number; short: string }[] = [
+  { key: "build", what: "Commits, pull requests, merges", cap: 3, short: "commits, PRs" },
+  { key: "ship", what: "Releases, tags, deploys", cap: 1, short: "releases" },
+  { key: "practice", what: "Exercises, coursework, drills", cap: 3, short: "exercises" },
+  { key: "write", what: "Posts, docs, review comments", cap: 1, short: "docs, reviews" },
+  { key: "log", what: "Research, design, debugging, meetings", cap: 2, short: "everything else" },
+];
+
+/* ── Other sections ───────────────────────────────────── */
+
+const CORROBORATION = [
+  {
+    mark: "check",
+    name: "Corroborated",
+    body: "A commit you authored inside the window describes the same work. The strongest thing the record can say about an entry.",
   },
   {
-    title: "Live → Done pipeline",
-    desc: "Turn messy build logs into clean portfolio proof automatically.",
-    icon: CheckCircle2,
-    color: "#16A34A",
+    mark: "half",
+    name: "Partly corroborated",
+    body: "You were committing around it, but nothing in the history matches the text. Common, and honest.",
   },
   {
-    title: "Real stack identity",
-    desc: "Your profile evolves from actual shipped work — not fake badges.",
-    icon: BarChart3,
-    color: "#3B82F6",
-  },
-  {
-    title: "Build-in-public feed",
-    desc: "Follow launches, debugging stories, milestones, and shipped work.",
-    icon: Users,
-    color: "#7C3AED",
-  },
-  {
-    title: "Missions",
-    desc: "Public accountability goals that force consistency and momentum.",
-    icon: Target,
-    color: "#EAB308",
-  },
-  {
-    title: "Build streak",
-    desc: "Track visible momentum over time and stay shipping.",
-    icon: Trophy,
-    color: "#14B8A6",
+    mark: "open",
+    name: "Attested",
+    body: "Your word, server-timestamped and frozen. Can still be corroborated later by whatever it produced.",
   },
 ];
 
-const steps = [
+const DEADLINES = [
   {
-    number: "1",
-    title: "Start a live project",
-    desc: "Name your project, connect a repo, and define your mission.",
+    name: "MLH Fellowship — Spring 2027",
+    meta: "Closes 11 Sep · Remote · 12 weeks",
+    left: "in 3 days",
   },
   {
-    number: "2",
-    title: "Log every session",
-    desc: "Post what changed, what shipped, and what broke.",
+    name: "HackMIT 2026",
+    meta: "Closes 14 Sep · Cambridge MA",
+    left: "in 6 days",
   },
   {
-    number: "3",
-    title: "Build your audience",
-    desc: "Developers follow your journey and growth.",
-  },
-  {
-    number: "4",
-    title: "Ship and own it",
-    desc: "Your build history becomes permanent portfolio proof.",
+    name: "Google STEP Internship — Summer 2027",
+    meta: "Closes 30 Sep · Sophomore · US",
+    left: "in 22 days",
   },
 ];
 
-const testimonials = [
+const PRIVACY = [
   {
-    quote:
-      "I shipped more in 3 months of building in public than in the previous year of silent coding. The accountability is real.",
-    name: "Marcus R.",
-    role: "Backend Engineer",
-    stack: "Python · FastAPI",
-    initials: "MR",
-    bg: "#7C3AED",
+    name: "Entry text and timestamps",
+    body: "What you wrote, and when it reached us. The timestamp is ours, never your machine's — that's the part that makes the record worth reading.",
   },
   {
-    quote:
-      "The live project journal turned my messy build notes into an actual portfolio piece. I linked it in my resume and got the interview.",
-    name: "Sara K.",
-    role: "Full-stack Dev",
-    stack: "Next.js · Go",
-    initials: "SK",
-    bg: "#1D4ED8",
+    name: "GitHub events, not source",
+    body: "Commit metadata for repos you link. For private repos, a daily count and nothing else. We request no repository content scope.",
   },
   {
-    quote:
-      "My DevManiac profile shows 8 shipped projects with exact stacks. No recruiter asks me to prove my skills anymore — they can just see it.",
-    name: "Jake T.",
-    role: "Self-taught Dev",
-    stack: "Rust · Svelte",
-    initials: "JT",
-    bg: "#E8560A",
+    name: "Private until you publish",
+    body: "Your profile is off by default. A daily commit pattern is inferable employer information, so publishing is an explicit choice you make once.",
+  },
+  {
+    name: "Leaving takes everything",
+    body: "Delete your record and the matched GitHub events go with it. Export first if you want a copy.",
   },
 ];
 
-const stats = [
-  { num: "20+", label: "active builders" },
-  { num: "10+", label: "projects created" },
-  { num: "10+", label: "build logs posted" },
-  { num: "73%", label: "avg completion rate" },
+const ROADMAP = [
+  {
+    version: "V2.0-a",
+    status: "Live",
+    live: true,
+    title: "The record",
+    body: "The log, the graph, and the two ways work gets in. No judgment of any kind.",
+    items: [
+      "CLI and git hook",
+      "GitHub App + private counts",
+      "Five-class graph",
+      "Deadline tracker",
+    ],
+  },
+  {
+    version: "V2.0-b",
+    status: "Coming soon",
+    live: false,
+    title: "Corroboration",
+    body: "Commit ingestion for linked repos, and the engine that checks an entry against the history around it.",
+    items: [
+      "Corroborated / partial / attested",
+      "Retroactive corroboration",
+      "Weekly review",
+      "Review doc export — paid",
+    ],
+  },
+  {
+    version: "V2.0-c",
+    status: "Coming soon",
+    live: false,
+    title: "Artifact depth",
+    body: "A deterministic scan of linked repositories: secrets, tests, CI, migrations, hygiene, history. Rules first, one cached model pass after.",
+    items: [
+      "Engineering maturity, 9 dimensions",
+      "Project tier, derived not chosen",
+      "First score, banded",
+    ],
+  },
+  {
+    version: "V2.1",
+    status: "Later",
+    live: false,
+    title: "Profile depth",
+    body: "The rest of a career, held to the same standard: evidence or it doesn't count.",
+    items: [
+      "Résumé and LinkedIn import",
+      "Skills from the evidence graph",
+      "Certificate verification",
+      "LeetCode ownership",
+    ],
+  },
+  {
+    version: "V2.2+",
+    status: "Later",
+    live: false,
+    title: "Production evidence",
+    body: "Claimed usage, verified with the provider that holds it — never a number typed into a form.",
+    items: [
+      "Stripe, one analytics provider",
+      "Open source contribution",
+      "Hackathons via organisers",
+      "Research via ORCID",
+    ],
+  },
 ];
 
-const avatars = [
-  { i: "NS", bg: "#E8560A" },
-  { i: "JR", bg: "#3B82F6" },
-  { i: "MO", bg: "#16A34A" },
-  { i: "AK", bg: "#7C3AED" },
-];
+/* ── Small pieces ─────────────────────────────────────── */
 
+function Mark({ size = 16 }: { size?: number }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 4,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        flex: "0 0 auto",
+      }}
+    >
+      <span style={{ height: "31%", background: "#8E9198" }} />
+      <span style={{ height: "38%", background: "currentColor" }} />
+      <span style={{ height: "31%", background: "currentColor" }} />
+    </span>
+  );
+}
+
+function Swatch({ k }: { k: ClassKey }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        width: 10,
+        height: 10,
+        borderRadius: 2,
+        background: CLASS_COLOR[k],
+        flex: "0 0 auto",
+      }}
+    />
+  );
+}
+
+function Grid({
+  weeks,
+  github = false,
+}: {
+  weeks: Cell[][] | number[][];
+  github?: boolean;
+}) {
+  return (
+    <div className="flex gap-2.5 sm:gap-5">
+      {weeks.map((week, wi) => (
+        <div key={wi} className="flex flex-col gap-1">
+          <div
+            className="grid gap-1"
+            style={{
+              gridTemplateRows: "repeat(7, 14px)",
+              gridAutoFlow: "column",
+            }}
+          >
+            {(week as (Cell | number)[]).map((cell, di) => {
+              if (github) {
+                return (
+                  <div
+                    key={di}
+                    className="dm-cell"
+                    style={{
+                      background: GH_SCALE[cell as number],
+                      borderRadius: 2,
+                    }}
+                  />
+                );
+              }
+              const c = cell as Cell;
+              if (!c) return <div key={di} className="dm-cell" />;
+              return (
+                <div
+                  key={di}
+                  className="dm-cell"
+                  style={{ background: tint(c.c, c.l) }}
+                >
+                  {c.r ? (
+                    <span
+                      style={{ height: 3, background: CLASS_COLOR[c.r] }}
+                    />
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+          <div className="dm-fine">{WEEK_LABELS[wi]}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Page ─────────────────────────────────────────────── */
 
 export default function Page() {
-  const pageRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      /* Hero intro */
-      gsap.from(".nav-item", {
-        y: -12,
-        opacity: 0,
-        duration: 0.6,
-        ease: "power3.out",
-        stagger: 0.06,
-      });
-
-      gsap.from(".hero-reveal", {
-        y: 28,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        stagger: 0.12,
-        delay: 0.15,
-      });
-
-      gsap.from(".dashboard-window", {
-        y: 60,
-        opacity: 0,
-        scale: 0.96,
-        rotateX: 5,
-        duration: 1.1,
-        ease: "power3.out",
-        delay: 0.55,
-      });
-
-      /* Floating dashboard */
-      gsap.to(".dashboard-window", {
-        y: -10,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      /* Coding badge pulse */
-      gsap.to(".live-pulse", {
-        scale: 1.4,
-        opacity: 0.35,
-        duration: 1.1,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      /* Section reveal */
-      gsap.utils.toArray<HTMLElement>(".section-reveal").forEach((section) => {
-        gsap.from(section, {
-          y: 45,
-          opacity: 0,
-          duration: 0.85,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 82%",
-          },
-        });
-      });
-
-      /* Cards reveal */
-      gsap.utils.toArray<HTMLElement>(".card-reveal").forEach((card, index) => {
-        gsap.from(card, {
-          y: 36,
-          opacity: 0,
-          duration: 0.75,
-          ease: "power3.out",
-          delay: (index % 3) * 0.07,
-          scrollTrigger: {
-            trigger: card,
-            start: "top 88%",
-          },
-        });
-      });
-
-      /* Code particles */
-      gsap.to(".code-chip", {
-        y: -8,
-        opacity: 0.75,
-        duration: 2.2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: 0.25,
-      });
-    }, pageRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <main
-      ref={pageRef}
-      className="min-h-screen overflow-x-hidden bg-[#050505] text-white antialiased"
-    >
-      {/* ═══════════════════════════════════════
-          HERO
-      ═══════════════════════════════════════ */}
+    <div className="dm min-h-screen">
+      {/* NAV */}
+      <header className="dm-band sticky top-0 z-50 border-b border-(--line)">
+        <nav className="dm-shell flex h-17 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-(--ink)">
+            <Mark />
+            <span className="text-[15px] font-medium tracking-[-0.01em]">
+              devmaniac
+            </span>
+          </Link>
 
-      <section className="relative overflow-hidden border-b border-white/5">
-        {/* Ambient grid */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.18]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-            maskImage:
-              "radial-gradient(circle at top, black 0%, transparent 62%)",
-          }}
-        />
+          <div className="flex items-center gap-5 sm:gap-7">
+            <a
+              href="#how-it-works"
+              className="dm-body hidden text-[15px] sm:block"
+            >
+              How it works
+            </a>
+            <a
+              href="#corroboration"
+              className="dm-body hidden text-[15px] sm:block"
+            >
+              Corroboration
+            </a>
+            <a href="#roadmap" className="dm-body hidden text-[15px] sm:block">
+              Roadmap
+            </a>
+            <Link href="/sign-in" className="text-[15px]">
+              Log in
+            </Link>
+            <Link href="/sign-up" className="dm-btn dm-btn-sm">
+              Sign up
+            </Link>
+          </div>
+        </nav>
+      </header>
 
-        {/* Ambient glow */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 overflow-hidden"
-        >
-          <div className="absolute left-1/2 top-0 h-190 w-190 -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#E8560A]/10 blur-[150px]" />
-          <div className="absolute left-[15%] top-[22%] h-65 w-65 rounded-full bg-[#E8560A]/5 blur-[100px]" />
+      {/* HERO */}
+      <section className="dm-band">
+        <div className="dm-shell pt-16 pb-20 sm:pt-24 sm:pb-28">
+          <h1 className="dm-h1 max-w-165">
+            GitHub only counts commits. Your work is bigger than that.
+          </h1>
+
+          <p className="dm-lede mt-7 max-w-[54ch]">
+            Research, design docs, reviews, debugging, private repos — the days
+            that look empty on GitHub. DevManiac records them, then checks them
+            against your commits so the record means something.
+          </p>
+
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <Link href="/sign-up" className="dm-btn">
+              Start your record
+            </Link>
+            <span className="dm-chip">
+              {'devmaniac push -t "…" -p "…" -s "…"'}
+            </span>
+          </div>
+
+          <p className="dm-fine mt-7">
+            Free while V2.0-a is in the open. No card, no scoring, nothing to
+            game.
+          </p>
+
+          {/* Comparison card */}
+          <div className="mt-14 rounded-lg border border-(--line) bg-(--card) p-6 sm:p-8">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="dm-h3">The same seven weeks, two records</h2>
+              <span className="dm-fine">
+                40 days on your record · 4 visible on GitHub
+              </span>
+            </div>
+
+            <div className="mt-7">
+              <div className="dm-fine">On DevManiac</div>
+              <div className="mt-3 overflow-x-auto pb-1">
+                <Grid weeks={MINE} />
+              </div>
+            </div>
+
+            <hr className="dm-rule-soft my-8" />
+
+            <div>
+              <div className="dm-fine">On GitHub</div>
+              <div className="mt-3 overflow-x-auto pb-1">
+                <Grid weeks={GITHUB} github />
+              </div>
+            </div>
+
+            <hr className="dm-rule-soft my-8" />
+
+            <ul className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {CLASSES.map((c) => (
+                <li key={c.key} className="flex items-center gap-2">
+                  <Swatch k={c.key} />
+                  <span className="text-[14px]">{c.key}</span>
+                  <span className="dm-fine">{c.short}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
+      </section>
 
-        <div className="relative mx-auto w-full max-w-7xl px-6 lg:px-8">
-          {/* Navbar */}
-          <nav className="flex h-16 items-center justify-between">
-            <div className="nav-item flex items-center gap-10">
-              <Link href="/" className="shrink-0">
-                <Image
-                  src={main_logo}
-                  alt="DevManiac"
-                  width={180}
-                  height={48}
-                  priority
-                  className="h-10 w-auto object-contain"
-                />
-              </Link>
+      {/* HOW WORK LANDS */}
+      <section id="how-it-works" className="dm-band">
+        <div className="dm-shell pb-20 sm:pb-28">
+          <p className="dm-eyebrow">How work lands</p>
+          <h2 className="dm-h2 mt-3">
+            Three ways in, none of them a form
+          </h2>
+          <p className="dm-lede mt-6 max-w-[58ch]">
+            A project is created the first time you push to it. It is never
+            submitted for evaluation — that was the part everybody skipped.
+          </p>
 
-              <div className="hidden items-center gap-8 md:flex">
-                {["Features", "Explore", "Community"].map((item) => (
-                  <a
-                    key={item}
-                    href={`#${item.toLowerCase()}`}
-                    className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
+          <hr className="dm-rule mt-12" />
+
+          <div className="grid gap-x-12 gap-y-12 pt-10 md:grid-cols-2">
+            <div>
+              <h3 className="dm-h3">One command</h3>
+              <p className="dm-body mt-3 max-w-[46ch]">
+                Title, problem, solution. The project and the linkable commits
+                come from the repo you&apos;re standing in.
+              </p>
+              <pre className="dm-pre mt-5">
+{`devmaniac push \\
+  -t "Fixed the N+1 in the feed query" \\
+  -p "3.2s load, 400 queries per request" \\
+  -s "Eager-loaded authors, added an index"`}
+              </pre>
             </div>
 
-            <div className="nav-item flex items-center gap-3">
-              <Link
-                href="/sign-in"
-                className="hidden rounded-xl border border-white/10 bg-white/3 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-white/[0.07] md:block"
-              >
-                Sign in
-              </Link>
-
-              <Link
-                href="/sign-up"
-                className="rounded-xl bg-[#E8560A] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_40px_rgba(232,86,10,0.24)] transition hover:bg-[#ff6a1a]"
-              >
-                Get started free
-              </Link>
-            </div>
-          </nav>
-
-          {/* Hero content */}
-          <div className="flex flex-col items-center pb-16 pt-20 text-center md:pb-20 md:pt-28">
-            <div className="hero-reveal mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-xs text-zinc-400 backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="live-pulse absolute inline-flex h-full w-full rounded-full bg-[#E8560A]" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E8560A]" />
-              </span>
-              Now in public beta — join 1,200+ builders
+            <div>
+              <h3 className="dm-h3">A git hook</h3>
+              <p className="dm-body mt-3 max-w-[46ch]">
+                Prompts for one line of why after every commit, pre-linked to
+                that commit. Never blocks the commit.
+              </p>
+              <pre className="dm-pre mt-5">devmaniac hook install</pre>
             </div>
 
-            <div className="hero-reveal mb-5 flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs text-zinc-500">
-              <Terminal size={14} className="text-[#E8560A]" />
-              <span className="font-mono">git commit -m "ship publicly"</span>
-            </div>
-
-            <h1 className="hero-reveal max-w-4xl text-center text-5xl font-black leading-[1.02] tracking-[-0.045em] text-white sm:text-6xl lg:text-[82px]">
-              GitHub tracks your code.
-              <br />
-              Twitter tracks your takes.
-              <br />
-              <span className="text-[#E8560A]">
-                DevManiac tracks your journey.
-              </span>
-            </h1>
-
-            <p className="hero-reveal mt-8 max-w-xl text-center text-[17px] leading-8 text-zinc-400">
-              The platform for developers who build in public. Document every
-              session, auto-build your portfolio, and prove your skills with
-              real shipped work.
-            </p>
-
-            <div className="hero-reveal mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#E8560A] px-6 py-3 text-sm font-semibold text-white shadow-[0_0_42px_rgba(232,86,10,0.24)] transition hover:-translate-y-0.5 hover:bg-[#ff6a1a]"
-              >
-                <Play size={16} />
-                Start building free
-              </Link>
-
-              <a
-                href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/[0.07]"
-              >
-                See how it works
-              </a>
-              <a
-                href="https://docs.devmaniac.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#E8560A]/30 bg-[#E8560A]/10 px-6 py-3 text-sm font-semibold text-[#ff8a3d] transition hover:-translate-y-0.5 hover:border-[#E8560A]/50 hover:bg-[#E8560A]/15"
-              >
-                <BookOpen size={16} />
-                Visit docs
-              </a>
-            </div>
-
-            <div className="hero-reveal mt-10 flex flex-wrap items-center justify-center gap-4">
-              <div className="flex">
-                {avatars.map(({ i, bg }, idx) => (
-                  <div
-                    key={i}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#050505] text-xs font-bold text-white"
-                    style={{
-                      backgroundColor: bg,
-                      marginLeft: idx === 0 ? 0 : -10,
-                    }}
-                  >
-                    {i}
-                  </div>
-                ))}
-              </div>
-
-              <p className="text-sm text-zinc-500">
-                Joined by{" "}
-                <span className="font-medium text-zinc-300">
-                  20+ developers
-                </span>{" "}
-                building in public this week
+            <div>
+              <h3 className="dm-h3">GitHub, including private</h3>
+              <p className="dm-body mt-3 max-w-[46ch]">
+                Commits, PRs, reviews and releases arrive on their own. Private
+                repos report a count and nothing else — we request no repository
+                access.
+              </p>
+              <p className="dm-fine mt-4">
+                Your employer&apos;s source never touches our servers.
               </p>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Dashboard screenshot */}
-          <div className="flex justify-center pb-24">
-            <div className="dashboard-window relative w-full max-w-275 overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0b0c] shadow-[0_40px_140px_rgba(0,0,0,0.88)]">
-              <div className="pointer-events-none absolute inset-0 z-0 bg-[#E8560A]/[0.035] blur-[120px]" />
+      {/* THE GRAPH */}
+      <section className="dm-band">
+        <div className="dm-shell pb-20 sm:pb-28">
+          <p className="dm-eyebrow">The graph</p>
+          <h2 className="dm-h2 mt-3">Five classes, no judgment</h2>
+          <p className="dm-lede mt-6 max-w-[60ch]">
+            A day is a composition, not an intensity. A day of research and a
+            design doc renders as a real day — on GitHub it&apos;s blank. What
+            the work was worth is a separate question, and not one this graph
+            answers.
+          </p>
 
-              {/* Mac top bar */}
-              <div className="relative z-20 flex h-12 items-center gap-2.5 border-b border-white/5 bg-[#101014] px-5">
-                <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-                <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
-                <div className="h-3 w-3 rounded-full bg-[#28c840]" />
-
-                <div className="ml-4 flex h-7 items-center rounded-md border border-white/5 bg-black/35 px-4 font-mono text-xs text-zinc-600">
-                  DevManiac.dev/feed
+          <div className="mt-12 flex gap-2 sm:gap-4">
+            {DAYS.map((d) => (
+              <div key={d.day} className="min-w-0 flex-1">
+                <div
+                  className="flex flex-col overflow-hidden rounded-xs"
+                  style={{ height: 82, background: EMPTY }}
+                >
+                  {d.bands.map((b, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        flex: b.n,
+                        background: CLASS_COLOR[b.c],
+                      }}
+                    />
+                  ))}
                 </div>
-
-                <div className="ml-auto hidden items-center gap-2 text-xs text-zinc-600 md:flex">
-                  <GitBranch size={13} />
-                  <span>main</span>
-                </div>
+                <div className="dm-fine mt-2">{d.day}</div>
               </div>
+            ))}
+          </div>
 
-              {/* dashboard */}
-              <div className="relative z-10">
-                <Image
-                  src={dashboardPreview}
-                  alt="DevManiac dashboard"
-                  priority
-                  className="h-auto w-full object-cover brightness-[1.04]"
-                />
-              </div>
+          <hr className="dm-rule mt-12" />
+
+          <ul>
+            {CLASSES.map((c) => (
+              <li
+                key={c.key}
+                className="flex items-center gap-4 border-b border-(--line) py-5"
+              >
+                <Swatch k={c.key} />
+                <span className="w-23 flex-none text-[16px]">{c.key}</span>
+                <span className="dm-body flex-1">{c.what}</span>
+                <span className="dm-mono text-(--ink-3)">cap {c.cap}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="grid gap-x-12 gap-y-10 pt-12 md:grid-cols-2">
+            <div>
+              <h3 className="dm-h3">Forty commits and three fill the same square</h3>
+              <p className="dm-body mt-3 max-w-[46ch]">
+                Each class saturates per day. The graph measures showing up, and
+                showing up doesn&apos;t have a volume dial.
+              </p>
+            </div>
+            <div>
+              <h3 className="dm-h3">No streak to protect</h3>
+              <p className="dm-body mt-3 max-w-[46ch]">
+                Days active over six months, not consecutive days. Missing
+                Tuesday breaks nothing, so there&apos;s nothing you&apos;d pad
+                with filler.
+              </p>
+            </div>
+            <div>
+              <h3 className="dm-h3">Private work looks like work</h3>
+              <p className="dm-body mt-3 max-w-[46ch]">
+                Private contributions render as build with no repo name, on your
+                graph and on your public profile alike.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════
-          FEATURES
-      ═══════════════════════════════════════ */}
+      {/* CORROBORATION */}
+      <section id="corroboration" className="dm-band-wash">
+        <div className="dm-shell py-20 sm:py-28">
+          <p className="dm-eyebrow">Corroboration</p>
+          <h2 className="dm-h2-serif mt-3">
+            A repository can be cloned. A journal cannot be backdated.
+          </h2>
+          <p className="dm-lede mt-6 max-w-[60ch]">
+            Entries are stamped when they reach the server and freeze after 24
+            hours. Every one is checked against the commits you authored around
+            it, so the log can be read against the history it claims to
+            describe.
+          </p>
 
-      <section
-        id="features"
-        className="section-reveal border-b border-white/5 py-24"
-      >
-        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8560A]">
-              Everything you need
-            </p>
+          <hr className="dm-rule mt-12" />
 
-            <h2 className="mt-5 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
-              Built for developers who ship
-            </h2>
-
-            <p className="mt-5 text-lg leading-8 text-zinc-400">
-              Every feature exists to turn your daily building into something
-              visible, valuable, and provable.
-            </p>
-          </div>
-
-          <div className="mt-16 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {features.map(({ title, desc, icon: Icon, color }) => (
-              <div
-                key={title}
-                className="card-reveal group rounded-[28px] border border-white/10 bg-[#0d0d0f] p-8 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-[#121214]"
+          <ul>
+            {CORROBORATION.map((row) => (
+              <li
+                key={row.name}
+                className="grid grid-cols-[24px_1fr] gap-x-4 gap-y-2 border-b border-(--line) py-6 md:grid-cols-[24px_260px_1fr]"
               >
-                <div
-                  className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/4"
-                  style={{ color }}
-                >
-                  <Icon size={22} />
-                </div>
-
-                <h3 className="text-xl font-bold tracking-[-0.02em] text-white">
-                  {title}
-                </h3>
-
-                <p className="mt-3 text-[15px] leading-7 text-zinc-400">
-                  {desc}
-                </p>
-              </div>
+                <span aria-hidden className="pt-1 text-(--ink-2)">
+                  {row.mark === "check" ? (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path
+                        d="M1.5 7.5 5 11l7.5-8.5"
+                        stroke="#0E8A6A"
+                        strokeWidth="1.5"
+                      />
+                    </svg>
+                  ) : row.mark === "half" ? (
+                    <svg width="13" height="13" viewBox="0 0 13 13">
+                      <circle
+                        cx="6.5"
+                        cy="6.5"
+                        r="5.75"
+                        fill="none"
+                        stroke="#5A5D63"
+                      />
+                      <path d="M6.5 0.75a5.75 5.75 0 0 1 0 11.5z" fill="#5A5D63" />
+                    </svg>
+                  ) : (
+                    <svg width="13" height="13" viewBox="0 0 13 13">
+                      <circle
+                        cx="6.5"
+                        cy="6.5"
+                        r="5.75"
+                        fill="none"
+                        stroke="#8E9198"
+                      />
+                    </svg>
+                  )}
+                </span>
+                <span className="text-[17px] font-medium">{row.name}</span>
+                <span className="dm-body col-start-2 md:col-start-3">
+                  {row.body}
+                </span>
+              </li>
             ))}
+          </ul>
+
+          <div className="pt-10">
+            <h3 className="dm-h3">Research days count by what they produced</h3>
+            <p className="dm-body mt-3 max-w-[62ch]">
+              {'You can\'t prove reading directly. Link Monday\'s "read the Postgres locking docs" to Thursday\'s merged migration PR and Monday upgrades itself. Three invisible days, then a visible one — which is how the work actually goes.'}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════
-          HOW IT WORKS
-      ═══════════════════════════════════════ */}
+      {/* WHO IT'S FOR */}
+      <section className="dm-band">
+        <div className="dm-shell py-20 sm:py-28">
+          <p className="dm-eyebrow">Who it&apos;s for</p>
+          <h2 className="dm-h2 mt-3">One log, two outputs</h2>
 
-      <section
-        id="how-it-works"
-        className="section-reveal border-b border-white/5 bg-[#080809] py-24"
-      >
-        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8560A]">
-              How it works
-            </p>
+          <hr className="dm-rule mt-10" />
 
-            <h2 className="mt-5 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
-              From idea to portfolio artifact
-            </h2>
+          <div className="grid gap-x-12 gap-y-12 pt-10 md:grid-cols-2">
+            <div>
+              <h3 className="dm-h3">If you&apos;re still getting hired</h3>
+              <p className="dm-body mt-4">
+                {'Your public record is the artifact — a link that shows six months of composition instead of a résumé line that says "self-taught". GitHub shows the commits; this shows the reading, the debugging and the design work around them.'}
+              </p>
+              <ul className="mt-7">
+                {[
+                  "Public profile and graph",
+                  "Corroborated entry count",
+                  "Deadline tracker",
+                ].map((i) => (
+                  <li
+                    key={i}
+                    className="border-t border-(--line) py-3.5 text-[15px] text-(--ink-2)"
+                  >
+                    {i}
+                  </li>
+                ))}
+                <li className="border-t border-b border-(--line) py-3.5 text-[15px] font-medium">
+                  Free, permanently
+                </li>
+              </ul>
+            </div>
 
-            <p className="mt-5 text-lg leading-8 text-zinc-400">
-              Four steps. No friction. Your journey documents itself.
-            </p>
+            <div>
+              <h3 className="dm-h3">If you&apos;re already employed</h3>
+              <p className="dm-body mt-4">
+                Most of your week is invisible to git: design docs, reviews,
+                incidents, mentoring, private repos. Log it as it happens and
+                stop reconstructing December from memory.
+              </p>
+              <ul className="mt-7">
+                {[
+                  "Private by default",
+                  "Private contribution counts only",
+                  "Your problem and solution, not a commit message",
+                ].map((i) => (
+                  <li
+                    key={i}
+                    className="border-t border-(--line) py-3.5 text-[15px] text-(--ink-2)"
+                  >
+                    {i}
+                  </li>
+                ))}
+                <li className="border-t border-b border-(--line) py-3.5 text-[15px] font-medium">
+                  Review document export — V2.0-b
+                </li>
+              </ul>
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-20 grid gap-10 md:grid-cols-2 xl:grid-cols-4">
-            {steps.map(({ number, title, desc }, i) => (
-              <div key={number} className="card-reveal">
-                <div
-                  className="mb-6 flex h-11 w-11 items-center justify-center rounded-full border text-sm font-bold"
-                  style={{
-                    backgroundColor:
-                      i === 0 ? "#E8560A" : "rgba(255,255,255,0.03)",
-                    borderColor:
-                      i === 0 ? "#E8560A" : "rgba(255,255,255,0.10)",
-                    color: i === 0 ? "#fff" : "#a1a1aa",
-                  }}
-                >
-                  {number}
+      {/* DEADLINES */}
+      <section className="dm-band">
+        <div className="dm-shell pb-20 sm:pb-28">
+          <p className="dm-eyebrow">Also shipping</p>
+          <h2 className="dm-h2 mt-3 max-w-155">
+            Deadlines, because some days aren&apos;t coding days
+          </h2>
+          <p className="dm-lede mt-6 max-w-[56ch]">
+            Hackathons, fellowships and sophomore programmes, scraped and
+            grouped by how soon they close.
+          </p>
+
+          <hr className="dm-rule mt-10" />
+
+          <ul>
+            {DEADLINES.map((d) => (
+              <li
+                key={d.name}
+                className="flex flex-wrap items-start justify-between gap-x-6 gap-y-1 border-b border-(--line) py-5"
+              >
+                <div>
+                  <div className="text-[17px]">{d.name}</div>
+                  <div className="dm-fine mt-1">{d.meta}</div>
                 </div>
-
-                <h3 className="text-lg font-bold text-white">{title}</h3>
-
-                <p className="mt-3 leading-7 text-zinc-400">{desc}</p>
-              </div>
+                <div className="text-[16px] whitespace-nowrap">{d.left}</div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════
-          TESTIMONIALS
-      ═══════════════════════════════════════ */}
-
-      <section
-        id="community"
-        className="section-reveal border-b border-white/5 py-24"
-      >
-        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto mb-16 max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8560A]">
-              From the community
-            </p>
-
-            <h2 className="mt-5 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
-              Builders who ship in public
-            </h2>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-3">
-            {testimonials.map(
-              ({ quote, name, role, stack, initials, bg }) => (
-                <div
-                  key={name}
-                  className="card-reveal flex flex-col rounded-[28px] border border-white/10 bg-[#0d0d0f] p-8 transition duration-300 hover:-translate-y-1 hover:border-white/20"
-                >
-                  <p className="mb-8 flex-1 text-[15px] leading-7 text-zinc-300">
-                    &ldquo;{quote}&rdquo;
-                  </p>
-
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                      style={{ backgroundColor: bg }}
-                    >
-                      {initials}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-white">{name}</p>
-                      <p className="text-xs text-zinc-500">{role}</p>
-                    </div>
-
-                    <span className="shrink-0 text-[11px] font-medium text-[#E8560A]">
-                      {stack}
-                    </span>
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════
-          STATS
-      ═══════════════════════════════════════ */}
-
-      <section className="section-reveal border-b border-white/5 bg-[#080809] py-16">
-        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
-            {stats.map(({ num, label }) => (
-              <div key={label} className="card-reveal">
-                <p className="text-4xl font-black tracking-tight text-[#E8560A]">
-                  {num}
-                </p>
-                <p className="mt-2 text-sm text-zinc-500">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════
-          CTA
-      ═══════════════════════════════════════ */}
-
-      <section className="section-reveal relative overflow-hidden py-28 text-center">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E8560A]/10 blur-[140px]" />
-
-        <div className="relative mx-auto w-full max-w-7xl px-6 lg:px-8">
-          <h2 className="mx-auto max-w-4xl text-5xl font-black leading-[1.05] tracking-[-0.055em] sm:text-6xl lg:text-[78px]">
-            Stop building in the dark.
-            <br />
-            <span className="text-[#E8560A]">
-              Ship where people can see.
-            </span>
+      {/* PRIVACY */}
+      <section className="dm-band">
+        <div className="dm-shell pb-20 sm:pb-28">
+          <p className="dm-eyebrow">Privacy</p>
+          <h2 className="dm-h2 mt-3">
+            What we hold, and what we never ask for
           </h2>
 
-          <p className="mx-auto mt-8 max-w-xl text-lg leading-8 text-zinc-400">
-            Free forever. No credit card. Start your first live project today.
+          <hr className="dm-rule mt-10" />
+
+          <ul>
+            {PRIVACY.map((p) => (
+              <li
+                key={p.name}
+                className="grid gap-x-10 gap-y-2 border-b border-(--line) py-6 md:grid-cols-[300px_1fr]"
+              >
+                <span className="text-[17px] font-medium">{p.name}</span>
+                <span className="dm-body">{p.body}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ROADMAP */}
+      <section id="roadmap" className="dm-band-ink">
+        <div className="dm-shell py-20 sm:py-28">
+          <p className="dm-eyebrow">Roadmap</p>
+          <h2 className="dm-h2 mt-3 text-(--onink)">
+            V2.0-a is what&apos;s live. Here&apos;s the rest of it.
+          </h2>
+          <p className="dm-lede mt-6 max-w-[58ch]">
+            Nothing below is behind a waitlist and nothing below has a date. It
+            ships in this order because each phase needs the one before it to
+            mean anything.
           </p>
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/sign-up"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#E8560A] px-7 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#ff6a1a]"
-            >
-              <Play size={16} />
-              Start building free
-            </Link>
+          <hr className="dm-rule mt-12" />
 
-            <Link
-              href="/explore"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-7 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/[0.07]"
-            >
-              Explore the feed
-              <ArrowRight size={16} />
-            </Link>
+          <ul>
+            {ROADMAP.map((phase) => (
+              <li
+                key={phase.version}
+                className="grid gap-x-10 gap-y-6 border-b border-(--onink-line) py-9 md:grid-cols-[240px_1fr]"
+              >
+                <div>
+                  <div className="dm-mono text-(--onink-3)">
+                    {phase.version}
+                  </div>
+                  <span
+                    className={
+                      "dm-badge mt-3 " + (phase.live ? "dm-badge-live" : "")
+                    }
+                  >
+                    {phase.status}
+                  </span>
+                  <ul className="mt-7 space-y-1.5">
+                    {phase.items.map((i) => (
+                      <li key={i} className="text-[15px] text-(--onink-2)">
+                        {i}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="dm-h3 text-(--onink)" style={{ fontSize: 19 }}>
+                    {phase.title}
+                  </h3>
+                  <p className="dm-body mt-3 max-w-[62ch]">{phase.body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="pt-10">
+            <h3 className="dm-h3 text-(--onink)">
+              Two things that will never ship
+            </h3>
+            <p className="dm-body mt-3 max-w-[62ch]">
+              A follower count that affects your standing, and a public badge
+              accusing anyone of anything. Reach measures who knows you exist.
+              Negative findings go to you first, or they don&apos;t publish.
+            </p>
           </div>
+        </div>
+      </section>
 
-          <p className="mt-6 text-sm text-zinc-600">
-            Already have an account?{" "}
-            <Link
-              href="/sign-in"
-              className="text-[#E8560A] transition-colors hover:text-[#ff6a1a]"
-            >
-              Sign in
+      {/* CTA */}
+      <section className="dm-band">
+        <div className="dm-shell py-20 sm:py-28">
+          <h2 className="dm-h2">Your record starts with the first push.</h2>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link href="/sign-up" className="dm-btn">
+              Start your record
             </Link>
+            <span className="dm-chip">pipx install devmaniac</span>
+          </div>
+          <p className="dm-fine mt-7">
+            Two minutes: connect GitHub, flip on private contributions, push
+            once.
           </p>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════
-          FOOTER
-      ═══════════════════════════════════════ */}
-
-      <footer className="border-t border-white/5 py-10">
-        <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-6 text-sm text-zinc-500 md:flex-row lg:px-8">
-          <Image
-            src={main_logo}
-            alt="DevManiac"
-            width={150}
-            height={40}
-            className="h-8 w-auto object-contain opacity-90"
-          />
-
-          <div className="flex flex-wrap items-center justify-center gap-6">
-            {["Features", "Explore", "Privacy", "Terms"].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="transition-colors hover:text-white"
-              >
-                {item}
-              </a>
+      {/* FOOTER */}
+      <footer className="dm-band border-t border-(--line)">
+        <div className="dm-shell flex flex-wrap items-center justify-between gap-4 py-7">
+          <div className="flex items-center gap-2 text-(--ink)">
+            <Mark size={14} />
+            <span className="text-[15px]">devmaniac</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            {[
+              { label: "Changelog", href: "/changelog" },
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms", href: "/terms" },
+              { label: "Docs", href: "https://docs.devmaniac.com" },
+              { label: "GitHub", href: "https://github.com/devmaniac" },
+            ].map((l) => (
+              <Link key={l.label} href={l.href} className="dm-body text-[15px]">
+                {l.label}
+              </Link>
             ))}
           </div>
-
-          <p>2026 DevManiac. Built in public.</p>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }

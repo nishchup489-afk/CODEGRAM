@@ -343,13 +343,7 @@ export default function useJournalComposer({
             const res =
                 await api.post<GetLiveProjectJournal>(
                     `/live-projects/${slug}/journals`,
-                    payload,
-                    {
-                        params: {
-                            clerk_user_id:
-                                user.id,
-                        },
-                    }
+                    payload
                 )
 
             onPublish?.(res.data)

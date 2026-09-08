@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
+import ApiAuthProvider from "./_components/ApiAuthProvider";
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
@@ -108,8 +109,9 @@ export default function RootLayout({
         `}
     </Script>
         <ClerkProvider>
-          {children}
-
+          <ApiAuthProvider>
+            {children}
+          </ApiAuthProvider>
         </ClerkProvider>
       </body>
     </html>
