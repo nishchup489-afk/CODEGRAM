@@ -9,10 +9,11 @@ const classes = ["build", "ship", "practice", "write", "log"] as const;
 const weeks = Array.from({ length: 16 }, (_, week) =>
   Array.from({ length: 7 }, (_, day) => {
     const seed = week * 7 + day;
+    const activity = (seed * seed * 17 + week * 23 + day * 41) % 97;
     return {
-      kind: classes[(seed * 3 + week) % classes.length],
-      empty: seed % 9 === 0 || (day === 6 && week % 3 === 0),
-      opacity: [0.35, 0.55, 0.75, 1][(seed + week) % 4],
+      kind: classes[activity % classes.length],
+      empty: activity % 7 === 0 || (day === 6 && week % 3 === 0),
+      opacity: [0.35, 0.55, 0.75, 1][activity % 4],
     };
   }),
 );
@@ -86,9 +87,9 @@ export default function AuthShell({ mode, children }: { mode: AuthMode; children
         <section className={styles.story} aria-labelledby="auth-story-title">
           <div className={styles.storyContent}>
             <div className={styles.eyebrow}><span aria-hidden="true" />A record of the work you do</div>
-            <h1 id="auth-story-title" className={styles.headline}>
+            <h2 id="auth-story-title" className={styles.headline}>
               {signingUp ? <>Your work deserves<br />a little more <em>credit.</em></> : <>Good to have<br />you <em>back.</em></>}
-            </h1>
+            </h2>
             <p className={styles.description}>
               {signingUp
                 ? "The builds, the breakthroughs, the afternoons spent figuring it out. Give them a place in your story."

@@ -94,6 +94,7 @@
 .widget :global(.cl-cardBox) { box-shadow: none; border: 0; border-radius: 0; background: transparent; }
 .widget :global(.cl-card) { width: 100%; padding: 0; border: 0; box-shadow: none; background: transparent; gap: 24px; }
 .widget :global(.cl-header) { text-align: left; }
+.widget :global(.cl-logoBox) { display: none; }
 .widget :global(.cl-headerTitle) { font-family: var(--font-sans); font-size: clamp(25px, 2.7vw, 31px); font-weight: 500; line-height: 1.2; letter-spacing: -1px; color: var(--ink); }
 .widget :global(.cl-headerSubtitle) { margin-top: 10px; color: var(--ink-2); font-size: 14px; line-height: 1.65; }
 .widget :global(.cl-socialButtonsBlockButton) { min-height: 46px; box-shadow: none; border: 1px solid var(--line-2); border-radius: 5px; background: var(--card); transition: background 160ms, border-color 160ms; }
@@ -105,6 +106,7 @@
 .widget :global(.cl-formButtonPrimary) { min-height: 46px; background: var(--ink); color: var(--paper); border-radius: 5px; box-shadow: none; font-size: 13px; font-weight: 500; text-transform: none; transition: background 160ms, transform 160ms; }
 .widget :global(.cl-formButtonPrimary):hover { background: #303238; transform: translateY(-1px); }
 .widget :global(.cl-formButtonPrimary):active { transform: translateY(0); }
+.widget :global(.cl-formButtonPrimary)::before, .widget :global(.cl-formButtonPrimary)::after, .widget :global(.cl-socialButtonsBlockButton)::before { background: none; box-shadow: none; }
 .widget :global(.cl-footerAction) { display: none; }
 .widget :global(.cl-footer) { background: transparent; }
 .widget :global(.cl-dividerLine) { background: var(--line); }
@@ -136,6 +138,8 @@
 @keyframes shimmer { from { opacity: 0.4; } to { opacity: 1; } }
 
 @media (max-width: 1023px) {
+  .widget :global(.cl-socialButtonsBlockButton) { flex-direction: column; gap: 7px; padding: 10px 5px; min-height: 64px; }
+  .widget :global(.cl-socialButtonsBlockButtonText) { font-size: 11px; overflow: visible; }
   .main { grid-template-columns: 1fr 1fr; }
   .story { padding: 32px 24px; }
   .formSection { padding: 40px 28px; }

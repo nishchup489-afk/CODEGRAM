@@ -21,7 +21,9 @@ export const authAppearance = {
     fontFamily: '"Instrument Sans", var(--font-geist), system-ui, sans-serif',
     fontSize: "14px",
   },
-  layout: {
+  options: {
+    elevation: "flush",
+    autoFocus: false,
     socialButtonsPlacement: "top",
     socialButtonsVariant: "blockButton",
   },
