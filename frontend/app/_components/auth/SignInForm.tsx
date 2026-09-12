@@ -1,9 +1,15 @@
 "use client";
 
-import { SignIn } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import AuthLoading from "./AuthLoading";
 import { authAppearance } from "./appearance";
 import styles from "./auth.module.css";
+
+// Keep Clerk's browser-only host out of server hydration.
+const SignIn = dynamic(() => import("@clerk/nextjs").then((clerk) => clerk.SignIn), {
+  ssr: false,
+  loading: () => <AuthLoading />,
+});
 
 /**
  * Presentation only.

@@ -1,9 +1,14 @@
 "use client";
 
-import { SignUp } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import AuthLoading from "./AuthLoading";
 import { authAppearance } from "./appearance";
 import styles from "./auth.module.css";
+
+const SignUp = dynamic(() => import("@clerk/nextjs").then((clerk) => clerk.SignUp), {
+  ssr: false,
+  loading: () => <AuthLoading />,
+});
 
 /**
  * Presentation only.
