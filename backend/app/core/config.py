@@ -135,6 +135,23 @@ class Settings(BaseSettings):
             )
         return self
 
+    @model_validator(mode="after")
+    def require_clerk_configuration_in_production(self) -> "Settings":
+        # Without an issuer the API cannot verify a single session token, so
+        # every authenticated request would fail at runtime with a 503. In
+        # production that must be a boot failure, not a per-request surprise.
+        if self.APP_ENV.strip().lower() == "production" and not self.clerk_configured:
+            raise ValueError(
+                "CLERK_ISSUER must be configured in production so session "
+                "tokens can be verified"
+            )
+        return self
+
+    @property
+    def clerk_configured(self) -> bool:
+        """True when the API has everything it needs to verify session tokens."""
+        return bool(self.CLERK_ISSUER and self.clerk_jwks_url)
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [

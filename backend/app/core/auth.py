@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
@@ -18,6 +19,8 @@ from app.models.user import User
 
 from .database import get_db
 
+
+logger = logging.getLogger(__name__)
 
 bearer_scheme = HTTPBearer(auto_error=False)
 LEGACY_IDENTITY_QUERY_PARAMS = frozenset(
@@ -91,9 +94,16 @@ def _verify_token(token: str) -> ClerkPrincipal:
     issuer = settings.CLERK_ISSUER
     jwks_url = settings.clerk_jwks_url
     if not issuer or not jwks_url:
+        logger.error(
+            "Rejected an authenticated request because CLERK_ISSUER is unset; "
+            "set it to the Clerk Frontend API URL for this instance"
+        )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Clerk authentication is not configured",
+            detail=(
+                "Clerk authentication is not configured on the server "
+                "(missing CLERK_ISSUER)"
+            ),
         )
 
     try:
