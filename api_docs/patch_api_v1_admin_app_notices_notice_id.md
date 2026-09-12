@@ -8,8 +8,8 @@ Update Admin App Notice
 
 ## Frontend connections
 
-- [`frontend/app/admin/app-notice/page.tsx:342`](../frontend/app/admin/app-notice/page.tsx#L342): `/admin/app-notices/${editingId}?${adminQuery}`
-- [`frontend/app/admin/app-notice/page.tsx:422`](../frontend/app/admin/app-notice/page.tsx#L422): `/admin/app-notices/${item.id}?${adminQuery}`
+- [`frontend/app/admin/app-notice/page.tsx:341`](../frontend/app/admin/app-notice/page.tsx#L341): `/admin/app-notices/${editingId}`
+- [`frontend/app/admin/app-notice/page.tsx:416`](../frontend/app/admin/app-notice/page.tsx#L416): `/admin/app-notices/${item.id}`
 
 ## Request schema
 

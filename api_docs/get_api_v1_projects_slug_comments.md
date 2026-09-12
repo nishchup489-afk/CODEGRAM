@@ -8,7 +8,7 @@ Fetch Project Comments
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:279`](../frontend/app/project/[slug]/page.tsx#L279): `/projects/${slug}/comments`
+- [`frontend/app/project/[slug]/page.tsx:267`](../frontend/app/project/[slug]/page.tsx#L267): `/projects/${slug}/comments`
 
 ## Return schema — HTTP 200
 

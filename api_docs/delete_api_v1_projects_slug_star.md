@@ -8,7 +8,7 @@ Unstar Project
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:329`](../frontend/app/project/[slug]/page.tsx#L329): `/projects/${projectData.slug}/star`
+- [`frontend/app/project/[slug]/page.tsx:317`](../frontend/app/project/[slug]/page.tsx#L317): `/projects/${projectData.slug}/star`
 - [`frontend/app/u/[username]/projects/page.tsx:413`](../frontend/app/u/[username]/projects/page.tsx#L413): `/projects/${slug}/star`
 
 ## Return schema — HTTP 200

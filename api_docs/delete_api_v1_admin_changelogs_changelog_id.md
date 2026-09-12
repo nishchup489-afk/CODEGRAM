@@ -8,7 +8,7 @@ Delete Admin Changelog
 
 ## Frontend connections
 
-- [`frontend/app/admin/changelog/page.tsx:423`](../frontend/app/admin/changelog/page.tsx#L423): `/admin/changelogs/${item.id}?${adminQuery}`
+- [`frontend/app/admin/changelog/page.tsx:419`](../frontend/app/admin/changelog/page.tsx#L419): `/admin/changelogs/${item.id}`
 
 ## Return schema — HTTP 200
 

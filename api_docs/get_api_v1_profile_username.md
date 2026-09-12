@@ -8,12 +8,12 @@ Get User Profile
 
 ## Frontend connections
 
-- [`frontend/app/_lib/currentUser.ts:41`](../frontend/app/_lib/currentUser.ts#L41): `/profile/me?clerk_user_id=${user.id}`
+- [`frontend/app/_lib/currentUser.ts:41`](../frontend/app/_lib/currentUser.ts#L41): `/profile/me`
 - [`frontend/app/_lib/getAnyUser.tsx:42`](../frontend/app/_lib/getAnyUser.tsx#L42): `/profile/${username}`
 - [`frontend/app/settings/account/page.tsx:96`](../frontend/app/settings/account/page.tsx#L96): `/profile/me`
 - [`frontend/app/settings/github/page.tsx:156`](../frontend/app/settings/github/page.tsx#L156): `/profile/me`
 - [`frontend/app/settings/profile/page.tsx:72`](../frontend/app/settings/profile/page.tsx#L72): `/profile/me`
-- [`frontend/app/u/[username]/layout.tsx:80`](../frontend/app/u/[username]/layout.tsx#L80): `/profile/me?clerk_user_id=${user.id}`
+- [`frontend/app/u/[username]/layout.tsx:80`](../frontend/app/u/[username]/layout.tsx#L80): `/profile/me`
 - [`frontend/app/u/[username]/profile/edit/page.tsx:94`](../frontend/app/u/[username]/profile/edit/page.tsx#L94): `/profile/${username}`
 
 ## Return schema — HTTP 200

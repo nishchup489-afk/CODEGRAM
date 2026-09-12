@@ -9,7 +9,7 @@ Get Project
 ## Frontend connections
 
 - [`frontend/app/project/[slug]/edit/page.tsx:61`](../frontend/app/project/[slug]/edit/page.tsx#L61): `/projects/${slug}`
-- [`frontend/app/project/[slug]/page.tsx:163`](../frontend/app/project/[slug]/page.tsx#L163): `/projects/${slug}`
+- [`frontend/app/project/[slug]/page.tsx:161`](../frontend/app/project/[slug]/page.tsx#L161): `/projects/${slug}`
 
 ## Return schema — HTTP 200
 

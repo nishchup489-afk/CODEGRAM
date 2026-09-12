@@ -8,7 +8,7 @@ Star Project
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:345`](../frontend/app/project/[slug]/page.tsx#L345): `/projects/${projectData.slug}/star`
+- [`frontend/app/project/[slug]/page.tsx:328`](../frontend/app/project/[slug]/page.tsx#L328): `/projects/${projectData.slug}/star`
 - [`frontend/app/u/[username]/projects/page.tsx:442`](../frontend/app/u/[username]/projects/page.tsx#L442): `/projects/${slug}/star`
 
 ## Return schema — HTTP 200
