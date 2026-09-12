@@ -8,7 +8,7 @@ Create Admin Changelog
 
 ## Frontend connections
 
-- [`frontend/app/admin/changelog/page.tsx:380`](../frontend/app/admin/changelog/page.tsx#L380): `/admin/changelogs?${adminQuery}`
+- [`frontend/app/admin/changelog/page.tsx:379`](../frontend/app/admin/changelog/page.tsx#L379): `/admin/changelogs`
 
 ## Request schema
 

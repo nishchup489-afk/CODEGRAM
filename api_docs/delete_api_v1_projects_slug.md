@@ -8,8 +8,8 @@ Delete Project
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/edit/page.tsx:231`](../frontend/app/project/[slug]/edit/page.tsx#L231): `/projects/${slug}`
-- [`frontend/app/project/[slug]/page.tsx:590`](../frontend/app/project/[slug]/page.tsx#L590): `/projects/${projectData.slug}`
+- [`frontend/app/project/[slug]/edit/page.tsx:222`](../frontend/app/project/[slug]/edit/page.tsx#L222): `/projects/${slug}`
+- [`frontend/app/project/[slug]/page.tsx:556`](../frontend/app/project/[slug]/page.tsx#L556): `/projects/${projectData.slug}`
 - [`frontend/app/u/[username]/projects/page.tsx:113`](../frontend/app/u/[username]/projects/page.tsx#L113): `/projects/${project.slug}`
 
 ## Return schema — HTTP 200

@@ -33,6 +33,7 @@ Canonical application routes use `/api/v1`. Unversioned compatibility aliases ar
 | PATCH | `/api/v1/changelog/{changelog_id}` | [Update Changelog Route](patch_api_v1_changelog_changelog_id.md) |
 | GET | `/api/v1/changelog/{slug}` | [Get Single Changelog Route](get_api_v1_changelog_slug.md) |
 | GET | `/api/v1/dashboard` | [Get Dashboard](get_api_v1_dashboard.md) |
+| POST | `/api/v1/early-access` | [Create Early Access Signup](post_api_v1_early_access.md) |
 | GET | `/api/v1/feed-events` | [Get Feed](get_api_v1_feed_events.md) |
 | POST | `/api/v1/feedback` | [Create Feedback](post_api_v1_feedback.md) |
 | GET | `/api/v1/feedback/admin` | [Admin List Feedback](get_api_v1_feedback_admin.md) |
