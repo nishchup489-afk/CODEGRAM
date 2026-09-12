@@ -8,7 +8,7 @@ Create Comment
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:233`](../frontend/app/project/[slug]/page.tsx#L233): `/projects/${slug}/comments`
+- [`frontend/app/project/[slug]/page.tsx:226`](../frontend/app/project/[slug]/page.tsx#L226): `/projects/${slug}/comments`
 
 ## Request schema
 

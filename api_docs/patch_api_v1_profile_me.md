@@ -9,7 +9,7 @@ Update Profile Data
 ## Frontend connections
 
 - [`frontend/app/settings/github/page.tsx:206`](../frontend/app/settings/github/page.tsx#L206): `/profile/me`
-- [`frontend/app/u/[username]/profile/edit/page.tsx:191`](../frontend/app/u/[username]/profile/edit/page.tsx#L191): `/profile/me?clerk_user_id=${user.id}`
+- [`frontend/app/u/[username]/profile/edit/page.tsx:191`](../frontend/app/u/[username]/profile/edit/page.tsx#L191): `/profile/me`
 
 ## Request schema
 

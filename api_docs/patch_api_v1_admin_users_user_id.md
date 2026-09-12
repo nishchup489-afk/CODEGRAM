@@ -8,7 +8,7 @@ Update Admin User
 
 ## Frontend connections
 
-- [`frontend/app/admin/users/page.tsx:193`](../frontend/app/admin/users/page.tsx#L193): `/admin/users/${userId}`
+- [`frontend/app/admin/users/page.tsx:192`](../frontend/app/admin/users/page.tsx#L192): `/admin/users/${userId}`
 
 ## Request schema
 

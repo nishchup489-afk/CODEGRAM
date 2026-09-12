@@ -8,7 +8,7 @@ Get User Data
 
 ## Frontend connections
 
-- [`frontend/app/sign-up/[[...sign-up]]/page.tsx:26`](../frontend/app/sign-up/[[...sign-up]]/page.tsx#L26): `/sync_user/onboarding?clerk_user_id=${user.id}`
+- No direct frontend API call was found.
 
 ## Return schema — HTTP 200
 

@@ -8,7 +8,7 @@ Update Project
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/edit/page.tsx:184`](../frontend/app/project/[slug]/edit/page.tsx#L184): `/projects/${slug}`
+- [`frontend/app/project/[slug]/edit/page.tsx:180`](../frontend/app/project/[slug]/edit/page.tsx#L180): `/projects/${slug}`
 
 ## Request schema
 

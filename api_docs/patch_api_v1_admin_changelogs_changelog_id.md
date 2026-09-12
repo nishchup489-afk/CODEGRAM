@@ -8,7 +8,7 @@ Update Admin Changelog
 
 ## Frontend connections
 
-- [`frontend/app/admin/changelog/page.tsx:373`](../frontend/app/admin/changelog/page.tsx#L373): `/admin/changelogs/${editingId}?${adminQuery}`
+- [`frontend/app/admin/changelog/page.tsx:372`](../frontend/app/admin/changelog/page.tsx#L372): `/admin/changelogs/${editingId}`
 
 ## Request schema
 

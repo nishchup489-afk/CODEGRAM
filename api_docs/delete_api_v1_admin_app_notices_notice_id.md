@@ -8,7 +8,7 @@ Delete Admin App Notice
 
 ## Frontend connections
 
-- [`frontend/app/admin/app-notice/page.tsx:392`](../frontend/app/admin/app-notice/page.tsx#L392): `/admin/app-notices/${item.id}?${adminQuery}`
+- [`frontend/app/admin/app-notice/page.tsx:388`](../frontend/app/admin/app-notice/page.tsx#L388): `/admin/app-notices/${item.id}`
 
 ## Return schema — HTTP 200
 

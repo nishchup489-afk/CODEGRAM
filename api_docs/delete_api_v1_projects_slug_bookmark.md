@@ -8,8 +8,8 @@ Unbookmark Project
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:378`](../frontend/app/project/[slug]/page.tsx#L378): `/projects/${projectData.slug}/bookmark`
-- [`frontend/app/u/[username]/bookmarks/page.tsx:376`](../frontend/app/u/[username]/bookmarks/page.tsx#L376): `/projects/${slug}/bookmark`
+- [`frontend/app/project/[slug]/page.tsx:356`](../frontend/app/project/[slug]/page.tsx#L356): `/projects/${projectData.slug}/bookmark`
+- [`frontend/app/u/[username]/bookmarks/page.tsx:370`](../frontend/app/u/[username]/bookmarks/page.tsx#L370): `/projects/${slug}/bookmark`
 - [`frontend/app/u/[username]/projects/page.tsx:359`](../frontend/app/u/[username]/projects/page.tsx#L359): `/projects/${project.slug}/bookmark`
 
 ## Return schema — HTTP 200

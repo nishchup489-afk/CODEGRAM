@@ -8,7 +8,7 @@ Update Admin Project
 
 ## Frontend connections
 
-- [`frontend/app/admin/projects/page.tsx:213`](../frontend/app/admin/projects/page.tsx#L213): `/admin/projects/${projectId}`
+- [`frontend/app/admin/projects/page.tsx:212`](../frontend/app/admin/projects/page.tsx#L212): `/admin/projects/${projectId}`
 
 ## Request schema
 
