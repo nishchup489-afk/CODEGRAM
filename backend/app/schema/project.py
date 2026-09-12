@@ -36,6 +36,19 @@ class UpdateProject(BaseModel):
     tech_stack: list[str] | None = None
 
 
+class ProjectAuthor(BaseModel):
+
+    username: str
+
+    avatar_url: str | None = None
+
+    location: str | None = None
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
 class GetProject(BaseModel):
 
     id: UUID
@@ -77,19 +90,6 @@ class GetProject(BaseModel):
 class AnalyzeRepoRequest(BaseModel):
 
     github_url: str
-
-
-class ProjectAuthor(BaseModel):
-
-    username: str
-
-    avatar_url: str | None = None
-
-    location: str | None = None
-
-    model_config = {
-        "from_attributes": True
-    }
 
 
 # =========================================================
@@ -135,6 +135,21 @@ class PaginatedProjects(BaseModel):
 # COMMENT — OUTPUT
 # =========================================================
 
+class CommentUser(BaseModel):
+
+    id: UUID
+
+    username: str
+
+    display_name: str
+
+    avatar_url: str | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+
 class CommentOut(BaseModel):
     id: UUID
     user_id: UUID
@@ -176,21 +191,6 @@ class GetVote(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class CommentUser(BaseModel):
-
-    id: UUID
-
-    username: str
-
-    display_name: str
-
-    avatar_url: str | None = None
-
-    model_config = ConfigDict(
-        from_attributes=True
-    )
 
 
 
