@@ -8,7 +8,7 @@ Get Admin Dashboard
 
 ## Frontend connections
 
-- [`frontend/app/admin/page.tsx:157`](../frontend/app/admin/page.tsx#L157): `/admin/dashboard`
+- [`frontend/app/admin/page.tsx:138`](../frontend/app/admin/page.tsx#L138): `/admin/dashboard`
 
 ## Return schema — HTTP 200
 

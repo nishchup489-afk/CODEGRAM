@@ -8,7 +8,7 @@ Create Admin App Notice
 
 ## Frontend connections
 
-- [`frontend/app/admin/app-notice/page.tsx:349`](../frontend/app/admin/app-notice/page.tsx#L349): `/admin/app-notices?${adminQuery}`
+- [`frontend/app/admin/app-notice/page.tsx:348`](../frontend/app/admin/app-notice/page.tsx#L348): `/admin/app-notices`
 
 ## Request schema
 

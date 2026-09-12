@@ -8,7 +8,7 @@ Bookmark Project
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:400`](../frontend/app/project/[slug]/page.tsx#L400): `/projects/${projectData.slug}/bookmark`
+- [`frontend/app/project/[slug]/page.tsx:372`](../frontend/app/project/[slug]/page.tsx#L372): `/projects/${projectData.slug}/bookmark`
 - [`frontend/app/u/[username]/projects/page.tsx:371`](../frontend/app/u/[username]/projects/page.tsx#L371): `/projects/${project.slug}/bookmark`
 
 ## Return schema — HTTP 200

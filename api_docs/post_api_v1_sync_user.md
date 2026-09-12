@@ -8,7 +8,7 @@ Sync User Route
 
 ## Frontend connections
 
-- [`frontend/app/sync/page.tsx:97`](../frontend/app/sync/page.tsx#L97): `/sync_user`
+- No direct frontend API call was found.
 
 ## Request schema
 

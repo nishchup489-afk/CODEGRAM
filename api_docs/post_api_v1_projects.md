@@ -8,7 +8,7 @@ Create Project
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/create/project/page.tsx:282`](../frontend/app/u/[username]/create/project/page.tsx#L282): `/projects/?clerk_user_id=${currentUser?.clerk_user_id}`
+- [`frontend/app/u/[username]/create/project/page.tsx:282`](../frontend/app/u/[username]/create/project/page.tsx#L282): `/projects/`
 
 ## Request schema
 

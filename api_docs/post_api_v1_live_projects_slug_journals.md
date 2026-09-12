@@ -8,7 +8,7 @@ Create Journal Entry
 
 ## Frontend connections
 
-- [`frontend/app/live_project/[slug]/page.tsx:170`](../frontend/app/live_project/[slug]/page.tsx#L170): `/live-projects/${slug}/journals?clerk_user_id=${user.id}`
+- [`frontend/app/live_project/[slug]/page.tsx:167`](../frontend/app/live_project/[slug]/page.tsx#L167): `/live-projects/${slug}/journals`
 
 ## Request schema
 
