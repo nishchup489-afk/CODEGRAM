@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     # fallback is useful for development but does not coordinate replicas.
     REDIS_URL: str | None = None
 
+    REDIS_MAX_CONNECTIONS: int = 20
+    REDIS_SOCKET_TIMEOUT: float = 2.0
+    REDIS_CONNECT_TIMEOUT: float = 2.0
+
     RATE_LIMIT_ENABLED: bool = True
 
     RATE_LIMIT_WRITE_REQUESTS: int = Field(default=60, ge=1)
