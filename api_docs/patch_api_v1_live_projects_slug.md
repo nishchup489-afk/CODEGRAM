@@ -8,7 +8,7 @@ Update Single Live Project
 
 ## Frontend connections
 
-- [`frontend/app/live_project/[slug]/page.tsx:136`](../frontend/app/live_project/[slug]/page.tsx#L136): `/live-projects/${slug}?clerk_user_id=${user.id}`
+- [`frontend/app/live_project/[slug]/page.tsx:136`](../frontend/app/live_project/[slug]/page.tsx#L136): `/live-projects/${slug}`
 
 ## Request schema
 
