@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -82,7 +82,18 @@ async def get_user_data(
     db: AsyncSession = Depends(get_db),
 ):
 
-    return await get_user_by_clerk_id(
+    user = await get_user_by_clerk_id(
         db=db,
         clerk_user_id=principal.user_id,
     )
+
+    # A freshly signed-up Clerk subject has no row until POST /sync_user/ runs.
+    # Returning None here fails response validation and surfaces as a 500, so
+    # callers cannot tell "not synced yet" from "backend is broken".
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Authenticated user has not been synced",
+        )
+
+    return user

@@ -8,8 +8,8 @@ Update Admin Support Ticket
 
 ## Frontend connections
 
-- [`frontend/app/admin/support/page.tsx:293`](../frontend/app/admin/support/page.tsx#L293): `/admin/support-tickets/${ticketId}`
-- [`frontend/app/admin/support/page.tsx:342`](../frontend/app/admin/support/page.tsx#L342): `/admin/support-tickets/${ticket.id}`
+- [`frontend/app/admin/support/page.tsx:292`](../frontend/app/admin/support/page.tsx#L292): `/admin/support-tickets/${ticketId}`
+- [`frontend/app/admin/support/page.tsx:336`](../frontend/app/admin/support/page.tsx#L336): `/admin/support-tickets/${ticket.id}`
 
 ## Request schema
 

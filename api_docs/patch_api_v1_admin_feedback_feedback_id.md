@@ -8,8 +8,8 @@ Update Admin Feedback
 
 ## Frontend connections
 
-- [`frontend/app/admin/feedback/page.tsx:338`](../frontend/app/admin/feedback/page.tsx#L338): `/admin/feedback/${feedbackId}`
-- [`frontend/app/admin/feedback/page.tsx:387`](../frontend/app/admin/feedback/page.tsx#L387): `/admin/feedback/${item.id}`
+- [`frontend/app/admin/feedback/page.tsx:337`](../frontend/app/admin/feedback/page.tsx#L337): `/admin/feedback/${feedbackId}`
+- [`frontend/app/admin/feedback/page.tsx:381`](../frontend/app/admin/feedback/page.tsx#L381): `/admin/feedback/${item.id}`
 
 ## Request schema
 

@@ -8,7 +8,7 @@ Get Dashboard
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/page.tsx:133`](../frontend/app/u/[username]/page.tsx#L133): `/dashboard?clerk_user_id=${currentUser.clerk_user_id}`
+- [`frontend/app/u/[username]/page.tsx:133`](../frontend/app/u/[username]/page.tsx#L133): `/dashboard`
 
 ## Return schema — HTTP 200
 
