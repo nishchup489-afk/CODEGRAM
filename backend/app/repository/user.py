@@ -54,14 +54,19 @@ async def sync_user(
                 detail="Email is already linked to another Clerk account",
             )
 
-        # Keep safe Clerk data fresh
+        # Email is owned by Clerk, so it is always refreshed.
         existing_user.email = email
-        existing_user.display_name = data.display_name
 
         # IMPORTANT:
-        # Do NOT overwrite existing avatar on every login.
-        # Clerk/Gmail avatar should only be used if DB has no avatar yet.
-        if not existing_user.avatar_url:
+        # Profile fields are owned by the user once onboarding has set them.
+        # Clerk values (which are often null for email/password signups) may
+        # only fill a gap, never overwrite what the user chose. Without this,
+        # every sign-in wiped the onboarding display name back to Clerk's
+        # fullName.
+        if not existing_user.display_name and data.display_name:
+            existing_user.display_name = data.display_name
+
+        if not existing_user.avatar_url and data.avatar_url:
             existing_user.avatar_url = data.avatar_url
 
         await db.commit()
