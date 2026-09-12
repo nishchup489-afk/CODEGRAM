@@ -108,7 +108,22 @@ export default function RootLayout({
             gtag('config', 'G-C5EWZN8SPP');
         `}
     </Script>
-        <ClerkProvider>
+        <ClerkProvider
+          localization={{
+            signIn: {
+              start: {
+                title: "Welcome back.",
+                subtitle: "Sign in to continue your record.",
+              },
+            },
+            signUp: {
+              start: {
+                title: "Start your record.",
+                subtitle: "A place for all the work you do.",
+              },
+            },
+          }}
+        >
           <ApiAuthProvider>
             {children}
           </ApiAuthProvider>
