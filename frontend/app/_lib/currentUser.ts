@@ -12,7 +12,7 @@ import type { CurrentUser } from "./type/currentUser"
 
 export default function useCurrentUser() {
 
-    const { user } = useUser()
+    const { user, isLoaded } = useUser()
 
     const [loading, setLoading] = useState(true)
 
@@ -25,10 +25,13 @@ export default function useCurrentUser() {
 
     useEffect(() => {
 
+        if (!isLoaded) return
+
         if (!user?.id) {
-            setLoading(false)
             return
         }
+
+        let cancelled = false
 
         const fetchCurrentUser = async () => {
 
@@ -40,33 +43,44 @@ export default function useCurrentUser() {
 
                 const result = await api.get("/profile/me")
 
-                setCurrentUser(result.data)
+                if (!cancelled) setCurrentUser(result.data)
 
             } catch (err) {
 
                 console.error(err)
 
-                setError(
-                    "There was a problem loading current user"
-                )
+                if (!cancelled) {
+                    setCurrentUser(null)
+                    setError(
+                        "There was a problem loading current user"
+                    )
+                }
 
             } finally {
 
-                setLoading(false)
+                if (!cancelled) setLoading(false)
 
             }
 
         }
 
-        fetchCurrentUser()
+        void fetchCurrentUser()
 
-    }, [user?.id])
+        return () => {
+            cancelled = true
+        }
+
+    }, [isLoaded, user?.id])
 
 
+
+    const activeCurrentUser = user?.id && currentUser?.clerk_user_id === user.id
+        ? currentUser
+        : null
 
     return {
-        currentUser,
-        loading,
-        error,
+        currentUser: activeCurrentUser,
+        loading: !isLoaded || Boolean(user?.id && loading),
+        error: user?.id ? error : "",
     }
 }

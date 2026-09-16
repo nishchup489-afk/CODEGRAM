@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useClerk } from "@clerk/nextjs"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { useEffect, useId, useRef, useState } from "react"
 import { ChevronDown, LogOut, Plus, Settings, User } from "lucide-react"
 
@@ -33,11 +33,11 @@ export default function AppSidebar({
     onNavigate,
 }: AppSidebarProps) {
     const pathname = usePathname()
-    const router = useRouter()
     const { signOut } = useClerk()
     const menuId = useId()
     const menuRef = useRef<HTMLDivElement>(null)
     const [accountOpen, setAccountOpen] = useState(false)
+    const [signingOut, setSigningOut] = useState(false)
 
     const username = currentUser?.username || "loading"
     const navigation = getAppNavigation(username)
@@ -68,6 +68,20 @@ export default function AppSidebar({
     function finishNavigation() {
         setAccountOpen(false)
         onNavigate?.()
+    }
+
+    async function handleSignOut() {
+        if (signingOut) return
+
+        setSigningOut(true)
+        finishNavigation()
+
+        try {
+            await signOut({ redirectUrl: "/" })
+        } catch (error) {
+            console.error("Unable to sign out", error)
+            setSigningOut(false)
+        }
     }
 
     return (
@@ -175,14 +189,11 @@ export default function AppSidebar({
                         <button
                             role="menuitem"
                             type="button"
-                            onClick={async () => {
-                                await signOut()
-                                router.push("/")
-                                finishNavigation()
-                            }}
-                            className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm text-[#B42318] hover:bg-[#FEF3F2] focus-visible:outline-2 focus-visible:outline-[#E8560A]"
+                            disabled={signingOut}
+                            onClick={handleSignOut}
+                            className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm text-[#B42318] hover:bg-[#FEF3F2] focus-visible:outline-2 focus-visible:outline-[#E8560A] disabled:cursor-wait disabled:opacity-60"
                         >
-                            <LogOut size={15} aria-hidden="true" /> Log out
+                            <LogOut size={15} aria-hidden="true" /> {signingOut ? "Signing out…" : "Log out"}
                         </button>
                     </div>
                 ) : null}

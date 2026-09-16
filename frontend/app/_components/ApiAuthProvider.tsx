@@ -11,15 +11,15 @@ export default function ApiAuthProvider({
 }: {
     children: ReactNode
 }) {
-    const { getToken, isLoaded } = useAuth()
+    const { getToken, isLoaded, userId } = useAuth()
 
     useEffect(() => {
-        if (!isLoaded) {
+        if (!isLoaded || !userId) {
             return setAuthTokenProvider(null)
         }
 
         return setAuthTokenProvider(() => getToken())
-    }, [getToken, isLoaded])
+    }, [getToken, isLoaded, userId])
 
     return children
 }
