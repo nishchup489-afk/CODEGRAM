@@ -67,6 +67,12 @@ function displayName(value: string, fallback = "Untitled project") {
     return cleanCopy(value) || fallback
 }
 
+function activityTitle(value: string, verb: "Published" | "Started") {
+    const title = displayName(value)
+    if (title !== "Untitled project") return `${verb} ${title}`
+    return verb === "Published" ? "Published a project" : "Started a build in public"
+}
+
 function timestamp(value: string) {
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return value
@@ -104,8 +110,8 @@ function profileSkills(profile: UserFullProfile) {
 function profileTimeline(profile: UserFullProfile): TimelineEntry[] {
     const projects = profile.projects.map((project) => ({
         id: `project-${project.id}`,
-        title: `Published ${displayName(project.title).toLowerCase() === "untitled project" ? "a project" : displayName(project.title)}`,
-        detail: cleanCopy(project.description) || "Project shared on DevManiac",
+        title: activityTitle(project.title, "Published"),
+        detail: "Project shared on DevManiac",
         date: project.created_at,
         href: `/project/${project.slug}`,
         source: project.github_url ? "GitHub" as const : "DevManiac" as const,
@@ -113,8 +119,8 @@ function profileTimeline(profile: UserFullProfile): TimelineEntry[] {
 
     const liveProjects = profile.live_projects.map((project) => ({
         id: `live-${project.id}`,
-        title: `Started ${displayName(project.title).toLowerCase() === "untitled project" ? "a build in public" : displayName(project.title)}`,
-        detail: cleanCopy(project.goal) || "Build progress shared on DevManiac",
+        title: activityTitle(project.title, "Started"),
+        detail: "Build progress shared on DevManiac",
         date: project.created_at,
         href: `/live_project/${project.slug}`,
         source: "DevManiac" as const,
@@ -245,7 +251,7 @@ function LiveProjectCard({ project }: { project: ProfileLiveProject }) {
                 <span className="rounded-md bg-[#F3F4F6] px-2 py-1 text-xs text-[#4B5563]">{project.status}</span>
             </div>
             <p className="mt-2 line-clamp-2 text-sm leading-5 text-[#6B7280]">
-                {cleanCopy(project.goal) || "No current goal shared yet."}
+                Progress is being shared as this project is built.
             </p>
             {project.tech_stack?.length ? (
                 <div className="mt-3 flex flex-wrap gap-1.5">
