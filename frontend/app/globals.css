@@ -62,6 +62,18 @@
 ========================================================= */
 
 :root {
+  /* Authenticated V2 shell */
+  --app-background: #ffffff;
+  --app-surface: #ffffff;
+  --app-subtle: #f8f9fa;
+  --app-border: #e5e7eb;
+  --app-text: #18181b;
+  --app-text-muted: #6b7280;
+  --app-text-faint: #9ca3af;
+  --app-brand: #e8560a;
+  --app-brand-hover: #cf4b08;
+  --app-brand-soft: #fff4ed;
+
   --paper: #fafaf9;
   --wash: #f2f2f0;
   --card: #ffffff;
@@ -90,6 +102,18 @@
   --gap-3: 20px;
   --gap-4: 32px;
   --gap-5: 52px;
+}
+
+.app-v2 {
+  color-scheme: light;
+  background: var(--app-background);
+  color: var(--app-text);
+  font-family: var(--font-sans);
+}
+
+.app-v2 ::selection {
+  background: rgba(232, 86, 10, 0.16);
+  color: var(--app-text);
 }
 
 /* ---------------------------------------------------------
