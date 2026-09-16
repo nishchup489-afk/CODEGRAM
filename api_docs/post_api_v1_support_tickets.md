@@ -4,11 +4,11 @@ Create Ticket
 
 - Authentication: Bearer token required
 - Operation ID: `create_ticket_api_v1_support_tickets_post`
-- Backend implementation: [`backend/app/router/support.py:59`](../backend/app/router/support.py#L59)
+- Backend implementation: [`backend\app\router\support.py:59`](../backend\app\router\support.py#L59)
 
 ## Frontend connections
 
-- [`frontend/app/settings/support/new/page.tsx:148`](../frontend/app/settings/support/new/page.tsx#L148): `/support/tickets`
+- [`frontend\app\settings\support\new\page.tsx:148`](../frontend\app\settings\support\new\page.tsx#L148): `/support/tickets`
 
 ## Request schema
 
@@ -24,7 +24,7 @@ Model: `SupportTicketCreate`
 }
 ```
 
-## Return schema â€” HTTP 201
+## Return schema — HTTP 201
 
 Model: `SupportTicketResponse`
 

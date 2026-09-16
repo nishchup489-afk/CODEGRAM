@@ -4,13 +4,13 @@ Get Admin Changelogs Route
 
 - Authentication: Admin bearer token required
 - Operation ID: `get_admin_changelogs_route_api_v1_changelog_admin_all_get`
-- Backend implementation: [`backend/app/router/changelog.py:110`](../backend/app/router/changelog.py#L110)
+- Backend implementation: [`backend\app\router\changelog.py:110`](../backend\app\router\changelog.py#L110)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `ChangelogListResponse`
 

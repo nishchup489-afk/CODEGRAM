@@ -4,15 +4,15 @@ Unbookmark Project
 
 - Authentication: Bearer token required
 - Operation ID: `unbookmark_project_api_v1_projects__slug__bookmark_delete`
-- Backend implementation: [`backend/app/router/project.py:411`](../backend/app/router/project.py#L411)
+- Backend implementation: [`backend\app\router\project.py:411`](../backend\app\router\project.py#L411)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:356`](../frontend/app/project/[slug]/page.tsx#L356): `/projects/${projectData.slug}/bookmark`
-- [`frontend/app/u/[username]/bookmarks/page.tsx:370`](../frontend/app/u/[username]/bookmarks/page.tsx#L370): `/projects/${slug}/bookmark`
-- [`frontend/app/u/[username]/projects/page.tsx:359`](../frontend/app/u/[username]/projects/page.tsx#L359): `/projects/${project.slug}/bookmark`
+- [`frontend\app\project\[slug]\page.tsx:356`](../frontend\app\project\[slug]\page.tsx#L356): `/projects/${projectData.slug}/bookmark`
+- [`frontend\app\u\[username]\bookmarks\page.tsx:370`](../frontend\app\u\[username]\bookmarks\page.tsx#L370): `/projects/${slug}/bookmark`
+- [`frontend\app\u\[username]\projects\page.tsx:359`](../frontend\app\u\[username]\projects\page.tsx#L359): `/projects/${project.slug}/bookmark`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `ProjectBookmarkStatus`
 

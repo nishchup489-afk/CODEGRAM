@@ -4,14 +4,14 @@ Star Project
 
 - Authentication: Bearer token required
 - Operation ID: `star_project_api_v1_projects__slug__star_post`
-- Backend implementation: [`backend/app/router/project.py:233`](../backend/app/router/project.py#L233)
+- Backend implementation: [`backend\app\router\project.py:233`](../backend\app\router\project.py#L233)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:328`](../frontend/app/project/[slug]/page.tsx#L328): `/projects/${projectData.slug}/star`
-- [`frontend/app/u/[username]/projects/page.tsx:442`](../frontend/app/u/[username]/projects/page.tsx#L442): `/projects/${slug}/star`
+- [`frontend\app\project\[slug]\page.tsx:328`](../frontend\app\project\[slug]\page.tsx#L328): `/projects/${projectData.slug}/star`
+- [`frontend\app\u\[username]\projects\page.tsx:442`](../frontend\app\u\[username]\projects\page.tsx#L442): `/projects/${slug}/star`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetProject`
 

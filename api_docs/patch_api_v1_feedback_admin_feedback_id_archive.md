@@ -4,13 +4,13 @@ Admin Archive Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `admin_archive_feedback_api_v1_feedback_admin__feedback_id__archive_patch`
-- Backend implementation: [`backend/app/router/feedback.py:225`](../backend/app/router/feedback.py#L225)
+- Backend implementation: [`backend\app\router\feedback.py:225`](../backend\app\router\feedback.py#L225)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `FeedbackAdminResponse`
 

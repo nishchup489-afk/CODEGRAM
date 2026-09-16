@@ -4,7 +4,7 @@ Create Early Access Signup
 
 - Authentication: Public
 - Operation ID: `create_early_access_signup_api_v1_early_access_post`
-- Backend implementation: [`backend/app/router/early_access.py:18`](../backend/app/router/early_access.py#L18)
+- Backend implementation: [`backend\app\router\early_access.py:18`](../backend\app\router\early_access.py#L18)
 
 ## Frontend connections
 
@@ -22,7 +22,7 @@ Model: `EarlyAccessCreate`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `EarlyAccessResponse`
 

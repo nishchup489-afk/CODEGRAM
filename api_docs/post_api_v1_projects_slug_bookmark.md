@@ -4,14 +4,14 @@ Bookmark Project
 
 - Authentication: Bearer token required
 - Operation ID: `bookmark_project_api_v1_projects__slug__bookmark_post`
-- Backend implementation: [`backend/app/router/project.py:390`](../backend/app/router/project.py#L390)
+- Backend implementation: [`backend\app\router\project.py:390`](../backend\app\router\project.py#L390)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:372`](../frontend/app/project/[slug]/page.tsx#L372): `/projects/${projectData.slug}/bookmark`
-- [`frontend/app/u/[username]/projects/page.tsx:371`](../frontend/app/u/[username]/projects/page.tsx#L371): `/projects/${project.slug}/bookmark`
+- [`frontend\app\project\[slug]\page.tsx:372`](../frontend\app\project\[slug]\page.tsx#L372): `/projects/${projectData.slug}/bookmark`
+- [`frontend\app\u\[username]\projects\page.tsx:371`](../frontend\app\u\[username]\projects\page.tsx#L371): `/projects/${project.slug}/bookmark`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `ProjectBookmarkStatus`
 

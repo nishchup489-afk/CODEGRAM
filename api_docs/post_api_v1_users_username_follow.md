@@ -4,13 +4,13 @@ Follow Single User
 
 - Authentication: Bearer token required
 - Operation ID: `follow_single_user_api_v1_users__username__follow_post`
-- Backend implementation: [`backend/app/router/follow.py:31`](../backend/app/router/follow.py#L31)
+- Backend implementation: [`backend\app\router\follow.py:31`](../backend\app\router\follow.py#L31)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/projects/page.tsx:574`](../frontend/app/u/[username]/projects/page.tsx#L574): `/users/${username}/follow`
+- [`frontend\app\u\[username]\projects\page.tsx:574`](../frontend\app\u\[username]\projects\page.tsx#L574): `/users/${username}/follow`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `FollowStatus`
 

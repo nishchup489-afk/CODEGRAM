@@ -4,7 +4,7 @@ Admin Update Ticket
 
 - Authentication: Admin bearer token required
 - Operation ID: `admin_update_ticket_api_v1_support_admin_tickets__ticket_id__patch`
-- Backend implementation: [`backend/app/router/support.py:243`](../backend/app/router/support.py#L243)
+- Backend implementation: [`backend\app\router\support.py:243`](../backend\app\router\support.py#L243)
 
 ## Frontend connections
 
@@ -22,7 +22,7 @@ Model: `SupportTicketAdminUpdate`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `SupportTicketResponse`
 

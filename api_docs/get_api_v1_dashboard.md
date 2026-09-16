@@ -4,13 +4,13 @@ Get Dashboard
 
 - Authentication: Bearer token required
 - Operation ID: `get_dashboard_api_v1_dashboard_get`
-- Backend implementation: [`backend/app/router/dashboard.py:17`](../backend/app/router/dashboard.py#L17)
+- Backend implementation: [`backend\app\router\dashboard.py:17`](../backend\app\router\dashboard.py#L17)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/page.tsx:133`](../frontend/app/u/[username]/page.tsx#L133): `/dashboard`
+- [`frontend\app\u\[username]\page.tsx:122`](../frontend\app\u\[username]\page.tsx#L122): `/dashboard`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `DashboardResponse`
 

@@ -4,11 +4,11 @@ Create Journal Entry
 
 - Authentication: Bearer token required
 - Operation ID: `create_journal_entry_api_v1_live_projects__slug__journals_post`
-- Backend implementation: [`backend/app/router/live_projects.py:168`](../backend/app/router/live_projects.py#L168)
+- Backend implementation: [`backend\app\router\live_projects.py:168`](../backend\app\router\live_projects.py#L168)
 
 ## Frontend connections
 
-- [`frontend/app/live_project/[slug]/page.tsx:167`](../frontend/app/live_project/[slug]/page.tsx#L167): `/live-projects/${slug}/journals`
+- [`frontend\app\live_project\[slug]\page.tsx:167`](../frontend\app\live_project\[slug]\page.tsx#L167): `/live-projects/${slug}/journals`
 
 ## Request schema
 
@@ -35,7 +35,7 @@ Model: `CreateLiveProjectJournal`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProjectJournal`
 

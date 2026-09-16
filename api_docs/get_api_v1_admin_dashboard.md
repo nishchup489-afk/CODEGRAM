@@ -4,13 +4,13 @@ Get Admin Dashboard
 
 - Authentication: Admin bearer token required
 - Operation ID: `get_admin_dashboard_api_v1_admin_dashboard_get`
-- Backend implementation: [`backend/app/router/admin.py:41`](../backend/app/router/admin.py#L41)
+- Backend implementation: [`backend\app\router\admin.py:41`](../backend\app\router\admin.py#L41)
 
 ## Frontend connections
 
-- [`frontend/app/admin/page.tsx:138`](../frontend/app/admin/page.tsx#L138): `/admin/dashboard`
+- [`frontend\app\admin\page.tsx:138`](../frontend\app\admin\page.tsx#L138): `/admin/dashboard`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminDashboardResponse`
 

@@ -4,13 +4,13 @@ List Admin Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_feedback_api_v1_admin_feedback_get`
-- Backend implementation: [`backend/app/router/admin.py:58`](../backend/app/router/admin.py#L58)
+- Backend implementation: [`backend\app\router\admin.py:58`](../backend\app\router\admin.py#L58)
 
 ## Frontend connections
 
-- [`frontend/app/admin/feedback/page.tsx:301`](../frontend/app/admin/feedback/page.tsx#L301): `/admin/feedback`
+- [`frontend\app\admin\feedback\page.tsx:301`](../frontend\app\admin\feedback\page.tsx#L301): `/admin/feedback`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[AdminFeedbackItem]`
 

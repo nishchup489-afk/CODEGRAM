@@ -4,14 +4,14 @@ Get Project
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `get_project_api_v1_projects__slug__get`
-- Backend implementation: [`backend/app/router/project.py:84`](../backend/app/router/project.py#L84)
+- Backend implementation: [`backend\app\router\project.py:84`](../backend\app\router\project.py#L84)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/edit/page.tsx:61`](../frontend/app/project/[slug]/edit/page.tsx#L61): `/projects/${slug}`
-- [`frontend/app/project/[slug]/page.tsx:161`](../frontend/app/project/[slug]/page.tsx#L161): `/projects/${slug}`
+- [`frontend\app\project\[slug]\edit\page.tsx:61`](../frontend\app\project\[slug]\edit\page.tsx#L61): `/projects/${slug}`
+- [`frontend\app\project\[slug]\page.tsx:161`](../frontend\app\project\[slug]\page.tsx#L161): `/projects/${slug}`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetProject`
 

@@ -4,11 +4,11 @@ Create Comment
 
 - Authentication: Bearer token required
 - Operation ID: `create_comment_api_v1_projects__slug__comments_post`
-- Backend implementation: [`backend/app/router/project.py:275`](../backend/app/router/project.py#L275)
+- Backend implementation: [`backend\app\router\project.py:275`](../backend\app\router\project.py#L275)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:226`](../frontend/app/project/[slug]/page.tsx#L226): `/projects/${slug}/comments`
+- [`frontend\app\project\[slug]\page.tsx:226`](../frontend\app\project\[slug]\page.tsx#L226): `/projects/${slug}/comments`
 
 ## Request schema
 
@@ -21,7 +21,7 @@ Model: `AddComment`
 }
 ```
 
-## Return schema â€” HTTP 201
+## Return schema — HTTP 201
 
 Model: `CommentOut`
 

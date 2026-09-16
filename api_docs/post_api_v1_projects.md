@@ -4,11 +4,11 @@ Create Project
 
 - Authentication: Bearer token required
 - Operation ID: `create_project_api_v1_projects__post`
-- Backend implementation: [`backend/app/router/project.py:63`](../backend/app/router/project.py#L63)
+- Backend implementation: [`backend\app\router\project.py:63`](../backend\app\router\project.py#L63)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/create/project/page.tsx:282`](../frontend/app/u/[username]/create/project/page.tsx#L282): `/projects/`
+- [`frontend\app\u\[username]\create\project\page.tsx:282`](../frontend\app\u\[username]\create\project\page.tsx#L282): `/projects/`
 
 ## Request schema
 
@@ -32,7 +32,7 @@ Model: `CreateProject`
 }
 ```
 
-## Return schema â€” HTTP 201
+## Return schema — HTTP 201
 
 Model: `GetProject`
 

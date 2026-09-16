@@ -4,13 +4,13 @@ List Admin Projects
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_projects_api_v1_admin_projects_get`
-- Backend implementation: [`backend/app/router/admin.py:176`](../backend/app/router/admin.py#L176)
+- Backend implementation: [`backend\app\router\admin.py:176`](../backend\app\router\admin.py#L176)
 
 ## Frontend connections
 
-- [`frontend/app/admin/projects/page.tsx:182`](../frontend/app/admin/projects/page.tsx#L182): `/admin/projects`
+- [`frontend\app\admin\projects\page.tsx:182`](../frontend\app\admin\projects\page.tsx#L182): `/admin/projects`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[AdminProjectItem]`
 

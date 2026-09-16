@@ -4,13 +4,13 @@ Get Live Project By Slug
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `get_live_project_by_slug_api_v1_live_projects__slug__get`
-- Backend implementation: [`backend/app/router/live_projects.py:75`](../backend/app/router/live_projects.py#L75)
+- Backend implementation: [`backend\app\router\live_projects.py:75`](../backend\app\router\live_projects.py#L75)
 
 ## Frontend connections
 
-- [`frontend/app/live_project/[slug]/page.tsx:97`](../frontend/app/live_project/[slug]/page.tsx#L97): `/live-projects/${slug}`
+- [`frontend\app\live_project\[slug]\page.tsx:97`](../frontend\app\live_project\[slug]\page.tsx#L97): `/live-projects/${slug}`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProject`
 

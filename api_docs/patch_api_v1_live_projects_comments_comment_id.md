@@ -4,7 +4,7 @@ Update Journal Comment
 
 - Authentication: Bearer token required
 - Operation ID: `update_journal_comment_api_v1_live_projects_comments__comment_id__patch`
-- Backend implementation: [`backend/app/router/live_projects.py:477`](../backend/app/router/live_projects.py#L477)
+- Backend implementation: [`backend\app\router\live_projects.py:477`](../backend\app\router\live_projects.py#L477)
 
 ## Frontend connections
 
@@ -20,7 +20,7 @@ Model: `UpdateLiveProjectJournalComment`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProjectJournalComment`
 

@@ -4,7 +4,7 @@ Vote Comment
 
 - Authentication: Bearer token required
 - Operation ID: `vote_comment_api_v1_projects_comments__comment_id__vote_post`
-- Backend implementation: [`backend/app/router/project.py:367`](../backend/app/router/project.py#L367)
+- Backend implementation: [`backend\app\router\project.py:367`](../backend\app\router\project.py#L367)
 
 ## Frontend connections
 
@@ -20,7 +20,7 @@ Model: `AddVote`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `CommentOut`
 

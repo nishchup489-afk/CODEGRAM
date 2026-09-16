@@ -4,13 +4,13 @@ Get User Data
 
 - Authentication: Public
 - Operation ID: `get_user_data_api_v1_sync_user_onboarding_get`
-- Backend implementation: [`backend/app/router/user.py:76`](../backend/app/router/user.py#L76)
+- Backend implementation: [`backend\app\router\user.py:76`](../backend\app\router\user.py#L76)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `UserResponse`
 

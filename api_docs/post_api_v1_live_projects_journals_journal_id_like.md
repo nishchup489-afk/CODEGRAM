@@ -4,13 +4,13 @@ Like Journal
 
 - Authentication: Bearer token required
 - Operation ID: `like_journal_api_v1_live_projects_journals__journal_id__like_post`
-- Backend implementation: [`backend/app/router/live_projects.py:278`](../backend/app/router/live_projects.py#L278)
+- Backend implementation: [`backend\app\router\live_projects.py:278`](../backend\app\router\live_projects.py#L278)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `unspecified`
 

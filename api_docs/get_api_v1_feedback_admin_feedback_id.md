@@ -4,13 +4,13 @@ Admin Get Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `admin_get_feedback_api_v1_feedback_admin__feedback_id__get`
-- Backend implementation: [`backend/app/router/feedback.py:176`](../backend/app/router/feedback.py#L176)
+- Backend implementation: [`backend\app\router\feedback.py:176`](../backend\app\router\feedback.py#L176)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `FeedbackAdminResponse`
 

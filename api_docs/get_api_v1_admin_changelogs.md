@@ -4,13 +4,13 @@ List Admin Changelogs
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_changelogs_api_v1_admin_changelogs_get`
-- Backend implementation: [`backend/app/router/admin.py:214`](../backend/app/router/admin.py#L214)
+- Backend implementation: [`backend\app\router\admin.py:214`](../backend\app\router\admin.py#L214)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[AdminChangelogItem]`
 

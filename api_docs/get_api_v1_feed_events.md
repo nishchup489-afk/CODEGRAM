@@ -4,13 +4,13 @@ Get Feed
 
 - Authentication: Public
 - Operation ID: `get_feed_api_v1_feed_events_get`
-- Backend implementation: [`backend/app/router/feed_event.py:35`](../backend/app/router/feed_event.py#L35)
+- Backend implementation: [`backend\app\router\feed_event.py:35`](../backend\app\router\feed_event.py#L35)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/live_projects/page.tsx:43`](../frontend/app/u/[username]/live_projects/page.tsx#L43): `/feed-events`
+- [`frontend\app\u\[username]\live_projects\page.tsx:43`](../frontend\app\u\[username]\live_projects\page.tsx#L43): `/feed-events`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[GetFeedEvent]`
 

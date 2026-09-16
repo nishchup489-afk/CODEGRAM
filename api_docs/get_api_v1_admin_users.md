@@ -4,13 +4,13 @@ List Admin Users
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_users_api_v1_admin_users_get`
-- Backend implementation: [`backend/app/router/admin.py:138`](../backend/app/router/admin.py#L138)
+- Backend implementation: [`backend\app\router\admin.py:138`](../backend\app\router\admin.py#L138)
 
 ## Frontend connections
 
-- [`frontend/app/admin/users/page.tsx:157`](../frontend/app/admin/users/page.tsx#L157): `/admin/users`
+- [`frontend\app\admin\users\page.tsx:157`](../frontend\app\admin\users\page.tsx#L157): `/admin/users`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[AdminUserItem]`
 

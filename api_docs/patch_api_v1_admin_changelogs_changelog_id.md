@@ -4,11 +4,11 @@ Update Admin Changelog
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_changelog_api_v1_admin_changelogs__changelog_id__patch`
-- Backend implementation: [`backend/app/router/admin.py:246`](../backend/app/router/admin.py#L246)
+- Backend implementation: [`backend\app\router\admin.py:246`](../backend\app\router\admin.py#L246)
 
 ## Frontend connections
 
-- [`frontend/app/admin/changelog/page.tsx:372`](../frontend/app/admin/changelog/page.tsx#L372): `/admin/changelogs/${editingId}`
+- [`frontend\app\admin\changelog\page.tsx:372`](../frontend\app\admin\changelog\page.tsx#L372): `/admin/changelogs/${editingId}`
 
 ## Request schema
 
@@ -29,7 +29,7 @@ Model: `AdminUpdateChangelog`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminChangelogItem`
 
