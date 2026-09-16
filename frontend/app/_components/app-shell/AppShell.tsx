@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react"
 
 import useCurrentUser from "@/app/_lib/currentUser"
 import AppSidebar from "./AppSidebar"
+import AppTopBar, { MobileTopBarActions } from "./AppTopBar"
 
 type AppShellProps = {
     children: ReactNode
@@ -79,8 +80,8 @@ export default function AppShell({ children, footer, notice }: AppShellProps) {
                     <Menu size={19} aria-hidden="true" />
                 </button>
 
-                <span className="text-[15px] font-semibold tracking-[-0.02em]">DevManiac</span>
-                <span className="h-10 w-10" aria-hidden="true" />
+                <span className="absolute left-1/2 -translate-x-1/2 text-[15px] font-semibold tracking-[-0.02em]">DevManiac</span>
+                <MobileTopBarActions />
             </header>
 
             {drawerOpen ? (
@@ -116,12 +117,13 @@ export default function AppShell({ children, footer, notice }: AppShellProps) {
             ) : null}
 
             <div className="min-w-0 md:pl-60">
+                <AppTopBar />
                 {error ? (
                     <div role="alert" className="border-b border-[#FECACA] bg-[#FEF2F2] px-4 py-3 text-sm text-[#B42318] md:px-8">
                         {error}
                     </div>
                 ) : null}
-                <main className="min-h-[calc(100vh-4rem)] md:min-h-screen">{children}</main>
+                <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                 {footer}
             </div>
 
