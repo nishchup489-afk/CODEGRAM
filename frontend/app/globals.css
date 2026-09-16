@@ -253,7 +253,7 @@
   border-radius: 10px;
 }
 
-.app-v2 :is(.shadow-xl, .shadow-2xl, [class*="shadow-["]) {
+.app-v2 :is(.shadow-xl, .shadow-2xl, [class*="shadow-[0_0"]) {
   box-shadow: none;
 }
 
