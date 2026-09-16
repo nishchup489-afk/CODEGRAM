@@ -28,6 +28,19 @@ function externalUrl(url: string) {
     return /^https?:\/\//i.test(url) ? url : `https://${url}`
 }
 
+function cleanProfileCopy(value?: string | null) {
+    if (!value?.trim()) return null
+
+    return value
+        .replace(/codegram/gi, "DevManiac")
+        .replace(/\bdoesnt\b/gi, "doesn't")
+        .replace(/\bdont\b/gi, "don't")
+        .replace(/\bcant\b/gi, "can't")
+        .replace(/\bwont\b/gi, "won't")
+        .replace(/\s+/g, " ")
+        .trim()
+}
+
 function joinedLabel(value?: string) {
     if (!value) return null
     if (/^joined\s/i.test(value)) return value
@@ -83,7 +96,10 @@ export default function ProfileHeader({
 
     const displayName = profileData.display_name || profileData.username
     const joined = joinedLabel(profileData.joined_date)
-    const projectCount = profileData.projects?.length ?? profileData.project_count ?? 0
+    const projectCount = (profileData.projects?.length ?? profileData.project_count ?? 0)
+        + (profileData.live_projects?.length ?? 0)
+    const currentBuild = cleanProfileCopy(profileData.current_build)
+    const bio = cleanProfileCopy(profileData.bio)
     const links = [
         profileData.github_url
             ? { label: "GitHub", href: externalUrl(profileData.github_url), icon: Github }
@@ -170,15 +186,15 @@ export default function ProfileHeader({
                                 <span className="text-sm text-[#6B7280]">@{profileData.username}</span>
                             </div>
 
-                            {profileData.current_build ? (
+                            {currentBuild ? (
                                 <p className="mt-2 text-sm font-medium text-[#374151]">
-                                    Current focus · {profileData.current_build}
+                                    Current focus · {currentBuild}
                                 </p>
                             ) : null}
 
-                            {profileData.bio ? (
+                            {bio ? (
                                 <p className="mt-3 max-w-2xl text-[15px] leading-6 text-[#4B5563]">
-                                    {profileData.bio}
+                                    {bio}
                                 </p>
                             ) : null}
 

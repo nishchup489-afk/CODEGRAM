@@ -37,14 +37,34 @@ type TimelineEntry = {
 }
 
 const panelClass = "rounded-xl border border-[#E5E7EB] bg-white"
+const keyboardMashPattern = /(asdf|qwer|zxcv|hjkl|kjk|sdfg|dfgh|ghjk|jkl;)/i
 
-function displayName(value: string) {
-    return /^codegram$/i.test(value.trim()) ? "DevManiac" : value
+function externalUrl(url: string) {
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`
 }
 
 function cleanCopy(value?: string | null) {
     if (!value?.trim()) return null
-    return value.replace(/codegram/gi, "DevManiac").replace(/\s+/g, " ").trim()
+
+    const normalized = value
+        .replace(/codegram/gi, "DevManiac")
+        .replace(/\bdoesnt\b/gi, "doesn't")
+        .replace(/\bdont\b/gi, "don't")
+        .replace(/\bcant\b/gi, "can't")
+        .replace(/\bwont\b/gi, "won't")
+        .replace(/\s+/g, " ")
+        .trim()
+    const letters = normalized.replace(/[^a-z]/gi, "")
+    const vowelCount = letters.match(/[aeiouy]/gi)?.length ?? 0
+
+    if (keyboardMashPattern.test(normalized)) return null
+    if (letters.length >= 8 && vowelCount / letters.length < 0.18) return null
+
+    return normalized
+}
+
+function displayName(value: string, fallback = "Untitled project") {
+    return cleanCopy(value) || fallback
 }
 
 function timestamp(value: string) {
@@ -84,7 +104,7 @@ function profileSkills(profile: UserFullProfile) {
 function profileTimeline(profile: UserFullProfile): TimelineEntry[] {
     const projects = profile.projects.map((project) => ({
         id: `project-${project.id}`,
-        title: `Published ${displayName(project.title)}`,
+        title: `Published ${displayName(project.title).toLowerCase() === "untitled project" ? "a project" : displayName(project.title)}`,
         detail: cleanCopy(project.description) || "Project shared on DevManiac",
         date: project.created_at,
         href: `/project/${project.slug}`,
@@ -93,7 +113,7 @@ function profileTimeline(profile: UserFullProfile): TimelineEntry[] {
 
     const liveProjects = profile.live_projects.map((project) => ({
         id: `live-${project.id}`,
-        title: `Started ${displayName(project.title)}`,
+        title: `Started ${displayName(project.title).toLowerCase() === "untitled project" ? "a build in public" : displayName(project.title)}`,
         detail: cleanCopy(project.goal) || "Build progress shared on DevManiac",
         date: project.created_at,
         href: `/live_project/${project.slug}`,
@@ -142,6 +162,7 @@ function EmptyState({ children }: { children: ReactNode }) {
 
 function ProjectCard({ project }: { project: ProfileProject }) {
     const description = cleanCopy(project.description)
+    const title = displayName(project.title)
 
     return (
         <article className="overflow-hidden rounded-lg border border-[#E5E7EB] bg-white transition hover:border-orange-200">
@@ -166,7 +187,7 @@ function ProjectCard({ project }: { project: ProfileProject }) {
                         href={`/project/${project.slug}`}
                         className="inline-flex items-center gap-1.5 font-semibold text-[#18181B] hover:text-[#C2410C]"
                     >
-                        {displayName(project.title)}
+                        {title}
                         <ArrowUpRight size={14} aria-hidden="true" />
                     </Link>
                     <p className="mt-1 line-clamp-2 text-sm leading-5 text-[#6B7280]">
@@ -193,12 +214,12 @@ function ProjectCard({ project }: { project: ProfileProject }) {
                 </div>
                 <div className="flex items-center gap-3">
                     {project.github_url ? (
-                        <a href={project.github_url} target="_blank" rel="noreferrer" className="font-medium hover:text-[#C2410C]">
+                        <a href={externalUrl(project.github_url)} target="_blank" rel="noreferrer" className="font-medium hover:text-[#C2410C]">
                             GitHub
                         </a>
                     ) : null}
                     {project.live_url ? (
-                        <a href={project.live_url} target="_blank" rel="noreferrer" className="font-medium hover:text-[#C2410C]">
+                        <a href={externalUrl(project.live_url)} target="_blank" rel="noreferrer" className="font-medium hover:text-[#C2410C]">
                             Live
                         </a>
                     ) : null}
@@ -209,13 +230,15 @@ function ProjectCard({ project }: { project: ProfileProject }) {
 }
 
 function LiveProjectCard({ project }: { project: ProfileLiveProject }) {
+    const title = displayName(project.title, "Build in progress")
+
     return (
         <article className="rounded-lg border border-[#E5E7EB] bg-white p-4 transition hover:border-orange-200">
             <div className="flex items-start justify-between gap-3">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#E8560A]">In progress</p>
                     <Link href={`/live_project/${project.slug}`} className="mt-1 inline-flex items-center gap-1.5 font-semibold text-[#18181B] hover:text-[#C2410C]">
-                        {displayName(project.title)}
+                        {title}
                         <ArrowUpRight size={14} aria-hidden="true" />
                     </Link>
                 </div>
@@ -378,7 +401,7 @@ function ConnectedSources({ profile, isOwner }: ProfilePanelProps) {
                         </span>
                     </div>
                     {profile.github_url ? (
-                        <a href={profile.github_url} target="_blank" rel="noreferrer" className="mt-1 block truncate text-xs text-[#6B7280] hover:text-[#C2410C]">
+                        <a href={externalUrl(profile.github_url)} target="_blank" rel="noreferrer" className="mt-1 block truncate text-xs text-[#6B7280] hover:text-[#C2410C]">
                             {profile.github_url.replace(/^https?:\/\/(www\.)?github\.com\//i, "@").replace(/\/$/, "")}
                         </a>
                     ) : isOwner ? (
@@ -420,8 +443,8 @@ export function ProfileOverview({ profile, isOwner }: ProfilePanelProps) {
                 <section className={`${panelClass} p-5`}>
                     <h2 className="text-sm font-semibold text-[#18181B]">Profile links</h2>
                     <div className="mt-3 space-y-2 text-sm">
-                        {profile.portfolio_url ? <a href={profile.portfolio_url} target="_blank" rel="noreferrer" className="flex items-center justify-between text-[#4B5563] hover:text-[#C2410C]">Portfolio <ExternalLink size={14} /></a> : null}
-                        {profile.linkedin_url ? <a href={profile.linkedin_url} target="_blank" rel="noreferrer" className="flex items-center justify-between text-[#4B5563] hover:text-[#C2410C]">LinkedIn <ExternalLink size={14} /></a> : null}
+                        {profile.portfolio_url ? <a href={externalUrl(profile.portfolio_url)} target="_blank" rel="noreferrer" className="flex items-center justify-between text-[#4B5563] hover:text-[#C2410C]">Portfolio <ExternalLink size={14} /></a> : null}
+                        {profile.linkedin_url ? <a href={externalUrl(profile.linkedin_url)} target="_blank" rel="noreferrer" className="flex items-center justify-between text-[#4B5563] hover:text-[#C2410C]">LinkedIn <ExternalLink size={14} /></a> : null}
                         {!profile.portfolio_url && !profile.linkedin_url ? <p className="text-sm text-[#6B7280]">No additional links shared.</p> : null}
                     </div>
                 </section>
