@@ -4,7 +4,7 @@ Update Changelog Route
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_changelog_route_api_v1_changelog__changelog_id__patch`
-- Backend implementation: [`backend/app/router/changelog.py:142`](../backend/app/router/changelog.py#L142)
+- Backend implementation: [`backend\app\router\changelog.py:142`](../backend\app\router\changelog.py#L142)
 
 ## Frontend connections
 
@@ -29,7 +29,7 @@ Model: `UpdateChangelog`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetChangelog`
 

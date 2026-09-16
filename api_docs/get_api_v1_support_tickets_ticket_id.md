@@ -4,13 +4,13 @@ Get My Ticket
 
 - Authentication: Bearer token required
 - Operation ID: `get_my_ticket_api_v1_support_tickets__ticket_id__get`
-- Backend implementation: [`backend/app/router/support.py:140`](../backend/app/router/support.py#L140)
+- Backend implementation: [`backend\app\router\support.py:140`](../backend\app\router\support.py#L140)
 
 ## Frontend connections
 
-- [`frontend/app/settings/support/page.tsx:148`](../frontend/app/settings/support/page.tsx#L148): `/support/tickets/open`
+- [`frontend\app\settings\support\page.tsx:148`](../frontend\app\settings\support\page.tsx#L148): `/support/tickets/open`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `SupportTicketResponse`
 

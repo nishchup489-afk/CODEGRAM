@@ -4,7 +4,7 @@ Create Journal Comment
 
 - Authentication: Bearer token required
 - Operation ID: `create_journal_comment_api_v1_live_projects_journals__journal_id__comments_post`
-- Backend implementation: [`backend/app/router/live_projects.py:244`](../backend/app/router/live_projects.py#L244)
+- Backend implementation: [`backend\app\router\live_projects.py:244`](../backend\app\router\live_projects.py#L244)
 
 ## Frontend connections
 
@@ -21,7 +21,7 @@ Model: `CreateLiveProjectJournalComment`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProjectJournalComment`
 

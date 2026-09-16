@@ -4,13 +4,13 @@ Get Journal Comments
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `get_journal_comments_api_v1_live_projects_journals__journal_id__comments_get`
-- Backend implementation: [`backend/app/router/live_projects.py:434`](../backend/app/router/live_projects.py#L434)
+- Backend implementation: [`backend\app\router\live_projects.py:434`](../backend\app\router\live_projects.py#L434)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[GetLiveProjectJournalComment]`
 

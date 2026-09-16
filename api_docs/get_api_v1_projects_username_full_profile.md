@@ -4,13 +4,13 @@ Get Full Profile
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `get_full_profile_api_v1_projects__username__full_profile_get`
-- Backend implementation: [`backend/app/router/project.py:104`](../backend/app/router/project.py#L104)
+- Backend implementation: [`backend\app\router\project.py:104`](../backend\app\router\project.py#L104)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/me/page.tsx:42`](../frontend/app/u/[username]/me/page.tsx#L42): `/projects/${username}/full-profile`
+- [`frontend\app\u\[username]\me\page.tsx:42`](../frontend\app\u\[username]\me\page.tsx#L42): `/projects/${username}/full-profile`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `UserFullProfileResponse`
 

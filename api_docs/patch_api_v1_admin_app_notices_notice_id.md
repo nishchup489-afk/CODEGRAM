@@ -4,12 +4,12 @@ Update Admin App Notice
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_app_notice_api_v1_admin_app_notices__notice_id__patch`
-- Backend implementation: [`backend/app/router/admin.py:314`](../backend/app/router/admin.py#L314)
+- Backend implementation: [`backend\app\router\admin.py:314`](../backend\app\router\admin.py#L314)
 
 ## Frontend connections
 
-- [`frontend/app/admin/app-notice/page.tsx:341`](../frontend/app/admin/app-notice/page.tsx#L341): `/admin/app-notices/${editingId}`
-- [`frontend/app/admin/app-notice/page.tsx:416`](../frontend/app/admin/app-notice/page.tsx#L416): `/admin/app-notices/${item.id}`
+- [`frontend\app\admin\app-notice\page.tsx:341`](../frontend\app\admin\app-notice\page.tsx#L341): `/admin/app-notices/${editingId}`
+- [`frontend\app\admin\app-notice\page.tsx:416`](../frontend\app\admin\app-notice\page.tsx#L416): `/admin/app-notices/${item.id}`
 
 ## Request schema
 
@@ -30,7 +30,7 @@ Model: `AdminUpdateAppNotice`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminAppNoticeItem`
 

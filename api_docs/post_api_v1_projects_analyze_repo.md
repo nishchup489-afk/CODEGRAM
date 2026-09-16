@@ -4,7 +4,7 @@ Analyze Repository
 
 - Authentication: Public
 - Operation ID: `analyze_repository_api_v1_projects_analyze_repo_post`
-- Backend implementation: [`backend/app/router/project.py:124`](../backend/app/router/project.py#L124)
+- Backend implementation: [`backend\app\router\project.py:124`](../backend\app\router\project.py#L124)
 
 ## Frontend connections
 
@@ -20,7 +20,7 @@ Model: `AnalyzeRepoRequest`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `unspecified`
 

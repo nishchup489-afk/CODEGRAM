@@ -4,7 +4,7 @@ Create Changelog Route
 
 - Authentication: Admin bearer token required
 - Operation ID: `create_changelog_route_api_v1_changelog_post`
-- Backend implementation: [`backend/app/router/changelog.py:41`](../backend/app/router/changelog.py#L41)
+- Backend implementation: [`backend\app\router\changelog.py:41`](../backend\app\router\changelog.py#L41)
 
 ## Frontend connections
 
@@ -29,7 +29,7 @@ Model: `CreateChangelog`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetChangelog`
 

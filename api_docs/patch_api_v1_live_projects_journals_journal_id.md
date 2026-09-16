@@ -4,7 +4,7 @@ Update Journal Entry
 
 - Authentication: Bearer token required
 - Operation ID: `update_journal_entry_api_v1_live_projects_journals__journal_id__patch`
-- Backend implementation: [`backend/app/router/live_projects.py:371`](../backend/app/router/live_projects.py#L371)
+- Backend implementation: [`backend\app\router\live_projects.py:371`](../backend\app\router\live_projects.py#L371)
 
 ## Frontend connections
 
@@ -34,7 +34,7 @@ Model: `UpdateLiveProjectJournal`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProjectJournal`
 

@@ -4,11 +4,11 @@ Complete Onboarding Route
 
 - Authentication: Public
 - Operation ID: `complete_onboarding_route_api_v1_sync_user_onboarding_post`
-- Backend implementation: [`backend/app/router/user.py:55`](../backend/app/router/user.py#L55)
+- Backend implementation: [`backend\app\router\user.py:55`](../backend\app\router\user.py#L55)
 
 ## Frontend connections
 
-- [`frontend/app/onboarding/page.tsx:162`](../frontend/app/onboarding/page.tsx#L162): `/sync_user/onboarding`
+- [`frontend\app\onboarding\page.tsx:162`](../frontend\app\onboarding\page.tsx#L162): `/sync_user/onboarding`
 
 ## Request schema
 
@@ -30,7 +30,7 @@ Model: `UserOnboarding`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `UserResponse`
 

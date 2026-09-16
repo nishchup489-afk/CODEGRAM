@@ -4,13 +4,13 @@ Remove Comment
 
 - Authentication: Bearer token required
 - Operation ID: `remove_comment_api_v1_projects_comments__comment_id__delete`
-- Backend implementation: [`backend/app/router/project.py:347`](../backend/app/router/project.py#L347)
+- Backend implementation: [`backend\app\router\project.py:347`](../backend\app\router\project.py#L347)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `unspecified`
 

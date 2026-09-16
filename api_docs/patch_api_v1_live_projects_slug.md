@@ -4,11 +4,11 @@ Update Single Live Project
 
 - Authentication: Bearer token required
 - Operation ID: `update_single_live_project_api_v1_live_projects__slug__patch`
-- Backend implementation: [`backend/app/router/live_projects.py:105`](../backend/app/router/live_projects.py#L105)
+- Backend implementation: [`backend\app\router\live_projects.py:105`](../backend\app\router\live_projects.py#L105)
 
 ## Frontend connections
 
-- [`frontend/app/live_project/[slug]/page.tsx:136`](../frontend/app/live_project/[slug]/page.tsx#L136): `/live-projects/${slug}`
+- [`frontend\app\live_project\[slug]\page.tsx:136`](../frontend\app\live_project\[slug]\page.tsx#L136): `/live-projects/${slug}`
 
 ## Request schema
 
@@ -39,7 +39,7 @@ Model: `UpdateLiveProject`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProject`
 

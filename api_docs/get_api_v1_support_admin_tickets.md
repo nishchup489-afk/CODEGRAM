@@ -4,13 +4,13 @@ Admin List Tickets
 
 - Authentication: Admin bearer token required
 - Operation ID: `admin_list_tickets_api_v1_support_admin_tickets_get`
-- Backend implementation: [`backend/app/router/support.py:210`](../backend/app/router/support.py#L210)
+- Backend implementation: [`backend\app\router\support.py:210`](../backend\app\router\support.py#L210)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[SupportTicketResponse]`
 

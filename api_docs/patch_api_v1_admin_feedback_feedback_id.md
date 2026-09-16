@@ -4,12 +4,12 @@ Update Admin Feedback
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_feedback_api_v1_admin_feedback__feedback_id__patch`
-- Backend implementation: [`backend/app/router/admin.py:76`](../backend/app/router/admin.py#L76)
+- Backend implementation: [`backend\app\router\admin.py:76`](../backend\app\router\admin.py#L76)
 
 ## Frontend connections
 
-- [`frontend/app/admin/feedback/page.tsx:337`](../frontend/app/admin/feedback/page.tsx#L337): `/admin/feedback/${feedbackId}`
-- [`frontend/app/admin/feedback/page.tsx:381`](../frontend/app/admin/feedback/page.tsx#L381): `/admin/feedback/${item.id}`
+- [`frontend\app\admin\feedback\page.tsx:337`](../frontend\app\admin\feedback\page.tsx#L337): `/admin/feedback/${feedbackId}`
+- [`frontend\app\admin\feedback\page.tsx:381`](../frontend\app\admin\feedback\page.tsx#L381): `/admin/feedback/${item.id}`
 
 ## Request schema
 
@@ -23,7 +23,7 @@ Model: `AdminUpdateFeedback`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminFeedbackItem`
 

@@ -4,11 +4,11 @@ Create Admin App Notice
 
 - Authentication: Admin bearer token required
 - Operation ID: `create_admin_app_notice_api_v1_admin_app_notices_post`
-- Backend implementation: [`backend/app/router/admin.py:298`](../backend/app/router/admin.py#L298)
+- Backend implementation: [`backend\app\router\admin.py:298`](../backend\app\router\admin.py#L298)
 
 ## Frontend connections
 
-- [`frontend/app/admin/app-notice/page.tsx:348`](../frontend/app/admin/app-notice/page.tsx#L348): `/admin/app-notices`
+- [`frontend\app\admin\app-notice\page.tsx:348`](../frontend\app\admin\app-notice\page.tsx#L348): `/admin/app-notices`
 
 ## Request schema
 
@@ -29,7 +29,7 @@ Model: `AdminCreateAppNotice`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminAppNoticeItem`
 

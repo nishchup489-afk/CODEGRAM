@@ -4,13 +4,13 @@ Unfollow Single User
 
 - Authentication: Bearer token required
 - Operation ID: `unfollow_single_user_api_v1_users__username__follow_delete`
-- Backend implementation: [`backend/app/router/follow.py:53`](../backend/app/router/follow.py#L53)
+- Backend implementation: [`backend\app\router\follow.py:53`](../backend\app\router\follow.py#L53)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/projects/page.tsx:565`](../frontend/app/u/[username]/projects/page.tsx#L565): `/users/${username}/follow`
+- [`frontend\app\u\[username]\projects\page.tsx:565`](../frontend\app\u\[username]\projects\page.tsx#L565): `/users/${username}/follow`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `FollowStatus`
 

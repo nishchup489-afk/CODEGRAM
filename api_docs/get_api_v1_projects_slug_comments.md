@@ -4,13 +4,13 @@ Fetch Project Comments
 
 - Authentication: Public
 - Operation ID: `fetch_project_comments_api_v1_projects__slug__comments_get`
-- Backend implementation: [`backend/app/router/project.py:299`](../backend/app/router/project.py#L299)
+- Backend implementation: [`backend\app\router\project.py:299`](../backend\app\router\project.py#L299)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:267`](../frontend/app/project/[slug]/page.tsx#L267): `/projects/${slug}/comments`
+- [`frontend\app\project\[slug]\page.tsx:267`](../frontend\app\project\[slug]\page.tsx#L267): `/projects/${slug}/comments`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[GetComment]`
 

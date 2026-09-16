@@ -4,11 +4,11 @@ Update Project
 
 - Authentication: Bearer token required
 - Operation ID: `update_project_api_v1_projects__slug__patch`
-- Backend implementation: [`backend/app/router/project.py:211`](../backend/app/router/project.py#L211)
+- Backend implementation: [`backend\app\router\project.py:211`](../backend\app\router\project.py#L211)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/edit/page.tsx:180`](../frontend/app/project/[slug]/edit/page.tsx#L180): `/projects/${slug}`
+- [`frontend\app\project\[slug]\edit\page.tsx:180`](../frontend\app\project\[slug]\edit\page.tsx#L180): `/projects/${slug}`
 
 ## Request schema
 
@@ -32,7 +32,7 @@ Model: `UpdateProject`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetProject`
 

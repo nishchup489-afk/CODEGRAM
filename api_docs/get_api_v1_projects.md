@@ -4,13 +4,13 @@ Fetch Projects
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `fetch_projects_api_v1_projects__get`
-- Backend implementation: [`backend/app/router/project.py:163`](../backend/app/router/project.py#L163)
+- Backend implementation: [`backend\app\router\project.py:163`](../backend\app\router\project.py#L163)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/projects/page.tsx:138`](../frontend/app/u/[username]/projects/page.tsx#L138): `/projects`
+- [`frontend\app\u\[username]\projects\page.tsx:138`](../frontend\app\u\[username]\projects\page.tsx#L138): `/projects`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `PaginatedProjects`
 

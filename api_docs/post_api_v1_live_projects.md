@@ -4,11 +4,11 @@ Create New Live Project
 
 - Authentication: Bearer token required
 - Operation ID: `create_new_live_project_api_v1_live_projects_post`
-- Backend implementation: [`backend/app/router/live_projects.py:30`](../backend/app/router/live_projects.py#L30)
+- Backend implementation: [`backend\app\router\live_projects.py:30`](../backend\app\router\live_projects.py#L30)
 
 ## Frontend connections
 
-- [`frontend/app/live_project/create/page.tsx:122`](../frontend/app/live_project/create/page.tsx#L122): `/live-projects`
+- [`frontend\app\live_project\create\page.tsx:122`](../frontend\app\live_project\create\page.tsx#L122): `/live-projects`
 
 ## Request schema
 
@@ -39,7 +39,7 @@ Model: `CreateLiveProject`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetLiveProject`
 

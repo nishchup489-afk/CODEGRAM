@@ -4,12 +4,12 @@ Update Profile Data
 
 - Authentication: Bearer token required
 - Operation ID: `update_profile_data_api_v1_profile_me_patch`
-- Backend implementation: [`backend/app/router/profile.py:34`](../backend/app/router/profile.py#L34)
+- Backend implementation: [`backend\app\router\profile.py:34`](../backend\app\router\profile.py#L34)
 
 ## Frontend connections
 
-- [`frontend/app/settings/github/page.tsx:206`](../frontend/app/settings/github/page.tsx#L206): `/profile/me`
-- [`frontend/app/u/[username]/profile/edit/page.tsx:191`](../frontend/app/u/[username]/profile/edit/page.tsx#L191): `/profile/me`
+- [`frontend\app\settings\github\page.tsx:206`](../frontend\app\settings\github\page.tsx#L206): `/profile/me`
+- [`frontend\app\u\[username]\profile\edit\page.tsx:191`](../frontend\app\u\[username]\profile\edit\page.tsx#L191): `/profile/me`
 
 ## Request schema
 
@@ -31,7 +31,7 @@ Model: `update_profile_data`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `update_profile_data`
 

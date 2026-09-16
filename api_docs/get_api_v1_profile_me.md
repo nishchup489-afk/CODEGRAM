@@ -4,17 +4,16 @@ Get My Profile
 
 - Authentication: Bearer token required
 - Operation ID: `get_my_profile_api_v1_profile_me_get`
-- Backend implementation: [`backend/app/router/profile.py:12`](../backend/app/router/profile.py#L12)
+- Backend implementation: [`backend\app\router\profile.py:12`](../backend\app\router\profile.py#L12)
 
 ## Frontend connections
 
-- [`frontend/app/_lib/currentUser.ts:41`](../frontend/app/_lib/currentUser.ts#L41): `/profile/me`
-- [`frontend/app/settings/account/page.tsx:96`](../frontend/app/settings/account/page.tsx#L96): `/profile/me`
-- [`frontend/app/settings/github/page.tsx:156`](../frontend/app/settings/github/page.tsx#L156): `/profile/me`
-- [`frontend/app/settings/profile/page.tsx:72`](../frontend/app/settings/profile/page.tsx#L72): `/profile/me`
-- [`frontend/app/u/[username]/layout.tsx:80`](../frontend/app/u/[username]/layout.tsx#L80): `/profile/me`
+- [`frontend\app\_lib\currentUser.ts:41`](../frontend\app\_lib\currentUser.ts#L41): `/profile/me`
+- [`frontend\app\settings\account\page.tsx:96`](../frontend\app\settings\account\page.tsx#L96): `/profile/me`
+- [`frontend\app\settings\github\page.tsx:156`](../frontend\app\settings\github\page.tsx#L156): `/profile/me`
+- [`frontend\app\settings\profile\page.tsx:72`](../frontend\app\settings\profile\page.tsx#L72): `/profile/me`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `PrivateProfileResponse`
 

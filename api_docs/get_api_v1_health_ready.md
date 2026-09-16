@@ -4,13 +4,13 @@ Operational health probe
 
 - Authentication: Public
 - Operation ID: `api_v1_health_ready`
-- Backend implementation: [`backend/app/router/operations.py:39`](../backend/app/router/operations.py#L39)
+- Backend implementation: [`backend\app\router\operations.py:39`](../backend\app\router\operations.py#L39)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `object`
 

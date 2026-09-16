@@ -4,13 +4,13 @@ Get Bookmarked Projects
 
 - Authentication: Bearer token required
 - Operation ID: `get_bookmarked_projects_api_v1_bookmarks_me_get`
-- Backend implementation: [`backend/app/router/bookmark.py:25`](../backend/app/router/bookmark.py#L25)
+- Backend implementation: [`backend\app\router\bookmark.py:25`](../backend\app\router\bookmark.py#L25)
 
 ## Frontend connections
 
-- [`frontend/app/u/[username]/bookmarks/page.tsx:67`](../frontend/app/u/[username]/bookmarks/page.tsx#L67): `/bookmarks/me`
+- [`frontend\app\u\[username]\bookmarks\page.tsx:67`](../frontend\app\u\[username]\bookmarks\page.tsx#L67): `/bookmarks/me`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[GetProject]`
 

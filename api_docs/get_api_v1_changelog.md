@@ -4,13 +4,13 @@ Get Changelogs Route
 
 - Authentication: Public
 - Operation ID: `get_changelogs_route_api_v1_changelog_get`
-- Backend implementation: [`backend/app/router/changelog.py:60`](../backend/app/router/changelog.py#L60)
+- Backend implementation: [`backend\app\router\changelog.py:60`](../backend\app\router\changelog.py#L60)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `ChangelogListResponse`
 

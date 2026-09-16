@@ -4,13 +4,13 @@ List My Open Tickets
 
 - Authentication: Bearer token required
 - Operation ID: `list_my_open_tickets_api_v1_support_tickets_open_get`
-- Backend implementation: [`backend/app/router/support.py:119`](../backend/app/router/support.py#L119)
+- Backend implementation: [`backend\app\router\support.py:119`](../backend\app\router\support.py#L119)
 
 ## Frontend connections
 
-- [`frontend/app/settings/support/page.tsx:148`](../frontend/app/settings/support/page.tsx#L148): `/support/tickets/open`
+- [`frontend\app\settings\support\page.tsx:148`](../frontend\app\settings\support\page.tsx#L148): `/support/tickets/open`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[SupportTicketResponse]`
 

@@ -4,14 +4,14 @@ Unstar Project
 
 - Authentication: Bearer token required
 - Operation ID: `unstar_project_api_v1_projects__slug__star_delete`
-- Backend implementation: [`backend/app/router/project.py:254`](../backend/app/router/project.py#L254)
+- Backend implementation: [`backend\app\router\project.py:254`](../backend\app\router\project.py#L254)
 
 ## Frontend connections
 
-- [`frontend/app/project/[slug]/page.tsx:317`](../frontend/app/project/[slug]/page.tsx#L317): `/projects/${projectData.slug}/star`
-- [`frontend/app/u/[username]/projects/page.tsx:413`](../frontend/app/u/[username]/projects/page.tsx#L413): `/projects/${slug}/star`
+- [`frontend\app\project\[slug]\page.tsx:317`](../frontend\app\project\[slug]\page.tsx#L317): `/projects/${projectData.slug}/star`
+- [`frontend\app\u\[username]\projects\page.tsx:413`](../frontend\app\u\[username]\projects\page.tsx#L413): `/projects/${slug}/star`
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `GetProject`
 

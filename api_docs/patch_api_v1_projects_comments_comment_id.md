@@ -4,7 +4,7 @@ Edit Comment
 
 - Authentication: Bearer token required
 - Operation ID: `edit_comment_api_v1_projects_comments__comment_id__patch`
-- Backend implementation: [`backend/app/router/project.py:324`](../backend/app/router/project.py#L324)
+- Backend implementation: [`backend\app\router\project.py:324`](../backend\app\router\project.py#L324)
 
 ## Frontend connections
 
@@ -20,7 +20,7 @@ Model: `UpdateComment`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `CommentOut`
 

@@ -4,13 +4,13 @@ Delete Journal Comment
 
 - Authentication: Bearer token required
 - Operation ID: `delete_journal_comment_api_v1_live_projects_comments__comment_id__delete`
-- Backend implementation: [`backend/app/router/live_projects.py:512`](../backend/app/router/live_projects.py#L512)
+- Backend implementation: [`backend\app\router\live_projects.py:512`](../backend\app\router\live_projects.py#L512)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `unspecified`
 

@@ -4,13 +4,13 @@ Root
 
 - Authentication: Public
 - Operation ID: `root__get`
-- Backend implementation: [`backend/app/main.py:32`](../backend/app/main.py#L32)
+- Backend implementation: [`backend\app\main.py:47`](../backend\app\main.py#L47)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `unspecified`
 

@@ -4,11 +4,11 @@ Update Admin Project
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_project_api_v1_admin_projects__project_id__patch`
-- Backend implementation: [`backend/app/router/admin.py:192`](../backend/app/router/admin.py#L192)
+- Backend implementation: [`backend\app\router\admin.py:192`](../backend\app\router\admin.py#L192)
 
 ## Frontend connections
 
-- [`frontend/app/admin/projects/page.tsx:212`](../frontend/app/admin/projects/page.tsx#L212): `/admin/projects/${projectId}`
+- [`frontend\app\admin\projects\page.tsx:212`](../frontend\app\admin\projects\page.tsx#L212): `/admin/projects/${projectId}`
 
 ## Request schema
 
@@ -20,7 +20,7 @@ Model: `AdminUpdateProject`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminProjectItem`
 

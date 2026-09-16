@@ -4,11 +4,11 @@ Create Feedback
 
 - Authentication: Public; bearer token enables viewer-specific fields
 - Operation ID: `create_feedback_api_v1_feedback_post`
-- Backend implementation: [`backend/app/router/feedback.py:60`](../backend/app/router/feedback.py#L60)
+- Backend implementation: [`backend\app\router\feedback.py:60`](../backend\app\router\feedback.py#L60)
 
 ## Frontend connections
 
-- [`frontend/app/settings/feedback/page.tsx:280`](../frontend/app/settings/feedback/page.tsx#L280): `/feedback`
+- [`frontend\app\settings\feedback\page.tsx:280`](../frontend\app\settings\feedback\page.tsx#L280): `/feedback`
 
 ## Request schema
 
@@ -28,7 +28,7 @@ Model: `FeedbackCreate`
 }
 ```
 
-## Return schema â€” HTTP 201
+## Return schema — HTTP 201
 
 Model: `FeedbackResponse`
 

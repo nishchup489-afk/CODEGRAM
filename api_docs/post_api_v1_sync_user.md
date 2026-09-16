@@ -4,7 +4,7 @@ Sync User Route
 
 - Authentication: Public
 - Operation ID: `sync_user_route_api_v1_sync_user__post`
-- Backend implementation: [`backend/app/router/user.py:31`](../backend/app/router/user.py#L31)
+- Backend implementation: [`backend\app\router\user.py:31`](../backend\app\router\user.py#L31)
 
 ## Frontend connections
 
@@ -21,7 +21,7 @@ Model: `UserSync`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `UserResponse`
 

@@ -4,13 +4,13 @@ Get My Feedback
 
 - Authentication: Bearer token required
 - Operation ID: `get_my_feedback_api_v1_feedback_me__feedback_id__get`
-- Backend implementation: [`backend/app/router/feedback.py:117`](../backend/app/router/feedback.py#L117)
+- Backend implementation: [`backend\app\router\feedback.py:117`](../backend\app\router\feedback.py#L117)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `FeedbackResponse`
 

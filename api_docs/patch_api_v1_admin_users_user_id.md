@@ -4,11 +4,11 @@ Update Admin User
 
 - Authentication: Admin bearer token required
 - Operation ID: `update_admin_user_api_v1_admin_users__user_id__patch`
-- Backend implementation: [`backend/app/router/admin.py:154`](../backend/app/router/admin.py#L154)
+- Backend implementation: [`backend\app\router\admin.py:154`](../backend\app\router\admin.py#L154)
 
 ## Frontend connections
 
-- [`frontend/app/admin/users/page.tsx:192`](../frontend/app/admin/users/page.tsx#L192): `/admin/users/${userId}`
+- [`frontend\app\admin\users\page.tsx:192`](../frontend\app\admin\users\page.tsx#L192): `/admin/users/${userId}`
 
 ## Request schema
 
@@ -22,7 +22,7 @@ Model: `AdminUpdateUser`
 }
 ```
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `AdminUserItem`
 

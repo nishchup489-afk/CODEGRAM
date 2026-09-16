@@ -4,13 +4,13 @@ Get Live Projects
 
 - Authentication: Public
 - Operation ID: `get_live_projects_api_v1_live_projects_get`
-- Backend implementation: [`backend/app/router/live_projects.py:336`](../backend/app/router/live_projects.py#L336)
+- Backend implementation: [`backend\app\router\live_projects.py:336`](../backend\app\router\live_projects.py#L336)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[GetLiveProject]`
 

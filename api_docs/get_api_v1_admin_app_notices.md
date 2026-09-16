@@ -4,13 +4,13 @@ List Admin App Notices
 
 - Authentication: Admin bearer token required
 - Operation ID: `list_admin_app_notices_api_v1_admin_app_notices_get`
-- Backend implementation: [`backend/app/router/admin.py:282`](../backend/app/router/admin.py#L282)
+- Backend implementation: [`backend\app\router\admin.py:282`](../backend\app\router\admin.py#L282)
 
 ## Frontend connections
 
 - No direct frontend API call was found.
 
-## Return schema â€” HTTP 200
+## Return schema — HTTP 200
 
 Model: `array[AdminAppNoticeItem]`
 
