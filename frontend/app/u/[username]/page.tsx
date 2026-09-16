@@ -191,7 +191,7 @@ export default function Dashboard() {
                         </div>
                         <div className="min-w-0">
                             <p className="text-sm font-medium text-[#E8560A]">Your workspace</p>
-                            <h1 className="mt-1 truncate text-2xl font-semibold tracking-[-0.025em] text-[#18181B] sm:text-3xl">
+                            <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight text-[#18181B] sm:text-3xl">
                                 Welcome back, {firstName}
                             </h1>
                             <p className="mt-2 text-sm text-[#6B7280]">

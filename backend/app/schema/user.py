@@ -12,6 +12,10 @@ class UserSync(BaseModel):
     display_name: str | None = None
     avatar_url: str | None = None
 
+    github_url: str | None = None
+    github_username: str | None = None
+    github_user_id: str | None = None
+
 
 class UserOnboarding(BaseModel):
     model_config = ConfigDict(extra="forbid")

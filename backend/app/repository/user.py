@@ -63,6 +63,15 @@ async def sync_user(
         # only fill a gap, never overwrite what the user chose. Without this,
         # every sign-in wiped the onboarding display name back to Clerk's
         # fullName.
+        if data.github_url:
+            existing_user.github_url = data.github_url
+
+        if data.github_username:
+            existing_user.github_username = data.github_username
+
+        if data.github_user_id:
+            existing_user.github_user_id = data.github_user_id
+
         if not existing_user.display_name and data.display_name:
             existing_user.display_name = data.display_name
 
@@ -97,7 +106,12 @@ async def sync_user(
         clerk_user_id=clerk_user_id,
         email=email,
         display_name=data.display_name,
-        avatar_url=data.avatar_url,  # initial default avatar only
+        avatar_url=data.avatar_url,
+
+        github_url=data.github_url,
+        github_username=data.github_username,
+        github_user_id=data.github_user_id,
+
         username=generated_username,
         username_lower=generated_username.lower(),
     )

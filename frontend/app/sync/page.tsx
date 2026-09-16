@@ -36,9 +36,18 @@ export default async function SyncUserPage() {
     const user = await currentUser()
 
     if (!user) {
-        // Belt and braces; the middleware already gates this route.
         redirect("/sign-in")
     }
+
+    const githubAccount = user.externalAccounts.find(
+        (account) => account.provider === "github"
+    )
+
+    const githubUsername = githubAccount?.username ?? null
+
+    const githubUrl = githubUsername
+        ? `https://github.com/${githubUsername}`
+        : null
 
     let synced: SyncedUser
 
@@ -48,6 +57,9 @@ export default async function SyncUserPage() {
             body: {
                 display_name: user.fullName,
                 avatar_url: user.imageUrl,
+                github_url: githubUrl,
+                github_username: githubUsername,
+                github_user_id: githubAccount?.providerUserId ?? null,
             },
         })
     } catch (error) {
