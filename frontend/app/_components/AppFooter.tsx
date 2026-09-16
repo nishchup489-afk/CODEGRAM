@@ -25,7 +25,7 @@ const footerLinks = [
     },
     {
         label: "Changelog",
-        href: "/settings/changelog",
+        href: "/changelog",
         icon: Newspaper,
     },
     {
@@ -47,10 +47,10 @@ export default function AppFooter() {
             className="
                 mt-10
                 border-t
-                border-white/10
+                border-[#E5E7EB]
                 px-4
                 py-6
-                text-zinc-500
+                text-[#6B7280]
             "
         >
             <div
@@ -67,11 +67,11 @@ export default function AppFooter() {
                 "
             >
                 <div>
-                    <p className="text-sm font-semibold text-zinc-300">
+                    <p className="text-sm font-semibold text-[#18181B]">
                         DevManiac
                     </p>
 
-                    <p className="mt-1 flex items-center gap-1 text-xs text-zinc-600">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-[#9CA3AF]">
                         Built for people who actually ship
                         <Heart
                             size={12}
@@ -99,27 +99,27 @@ export default function AppFooter() {
                                     inline-flex
                                     items-center
                                     gap-2
-                                    rounded-full
+                                    rounded-md
                                     border
-                                    border-white/10
-                                    bg-white/3
+                                    border-[#E5E7EB]
+                                    bg-white
                                     px-3
                                     py-2
                                     text-xs
                                     font-medium
-                                    text-zinc-500
+                                    text-[#6B7280]
                                     transition
-                                    hover:border-orange-500/30
-                                    hover:bg-orange-500/10
-                                    hover:text-orange-300
+                                    hover:border-[#FED7AA]
+                                    hover:bg-[#FFF4ED]
+                                    hover:text-[#D94F0B]
                                 "
                             >
                                 <Icon
                                     size={13}
                                     className="
-                                        text-zinc-600
+                                        text-[#9CA3AF]
                                         transition
-                                        group-hover:text-orange-300
+                                        group-hover:text-[#D94F0B]
                                     "
                                 />
 

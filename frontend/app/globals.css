@@ -3,9 +3,8 @@
    V2.0-a design system · Tailwind v4
    ---------------------------------------------------------
    Primary system is the light editorial palette used by the
-   V2.0-a landing page and screens. The legacy dark tokens are
-   kept below as aliases so pages not yet migrated keep
-   rendering the way they do today.
+   V2.0-a landing page and authenticated product screens.
+   Legacy tokens remain only for routes outside that shell.
 ========================================================= */
 
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap");
@@ -62,6 +61,18 @@
 ========================================================= */
 
 :root {
+  /* Authenticated V2 shell */
+  --app-background: #ffffff;
+  --app-surface: #ffffff;
+  --app-subtle: #f8f9fa;
+  --app-border: #e5e7eb;
+  --app-text: #18181b;
+  --app-text-muted: #6b7280;
+  --app-text-faint: #9ca3af;
+  --app-brand: #e8560a;
+  --app-brand-hover: #cf4b08;
+  --app-brand-soft: #fff4ed;
+
   --paper: #fafaf9;
   --wash: #f2f2f0;
   --card: #ffffff;
@@ -92,11 +103,212 @@
   --gap-5: 52px;
 }
 
+.app-v2 {
+  color-scheme: light;
+  background: var(--app-background);
+  color: var(--app-text);
+  font-family: var(--font-sans);
+}
+
+.app-v2 ::selection {
+  background: rgba(232, 86, 10, 0.16);
+  color: var(--app-text);
+}
+
+/* ---------------------------------------------------------
+   AUTHENTICATED V2 LIGHT THEME
+   Normalize feature-level utilities inside the shared shell so
+   every authenticated screen uses one pearl-white system.
+--------------------------------------------------------- */
+
+.app-v2 :is(
+  .bg-black,
+  .bg-zinc-950,
+  [class~="bg-zinc-950/80"],
+  [class~="bg-zinc-950/40"],
+  [class~="bg-zinc-950/50"],
+  [class~="bg-zinc-950/60"],
+  [class~="bg-zinc-950/70"],
+  [class~="bg-black/40"],
+  [class~="bg-black/60"],
+  [class~="bg-black/70"],
+  [class~="bg-black/80"],
+  [class~="bg-black/90"],
+  [class~="bg-black/95"],
+  [class~="bg-[#050505]"],
+  [class~="bg-[#080808]/95"],
+  [class~="bg-[#0A0A0A]"],
+  [class~="bg-[#0a0a0a]"],
+  [class~="bg-[#0A0A0A]/70"],
+  [class~="bg-[#0A0A0A]/80"],
+  [class~="bg-[#0F0F0F]"],
+  [class~="bg-[#0f0f0f]"],
+  [class~="bg-[#0F0F0F]/40"],
+  [class~="bg-[#0f0f0f]/95"],
+  [class~="bg-[#0d0d0f]"],
+  [class~="bg-[#101010]"],
+  [class~="bg-[#0f0a07]"],
+  [class~="bg-[#090909]"],
+  [class~="bg-[#090604]"],
+  [class~="bg-[#111111]"]
+) {
+  background-color: var(--app-background);
+}
+
+.app-v2 :is(
+  .bg-zinc-800,
+  .bg-zinc-900,
+  .bg-zinc-700,
+  [class~="bg-zinc-900/40"],
+  [class~="bg-zinc-900/50"],
+  [class~="bg-zinc-900/60"],
+  [class~="bg-white/3"],
+  [class~="bg-white/4"],
+  [class~="bg-white/5"],
+  [class~="bg-white/6"],
+  [class~="bg-white/10"],
+  [class~="bg-white/20"],
+  [class~="bg-[#111113]"],
+  [class~="bg-[#1C1C1E]"],
+  [class~="bg-[#27272A]"]
+) {
+  background-color: var(--app-subtle);
+}
+
+.app-v2 :is(
+  [class~="border-white/10"],
+  [class~="border-white/8"],
+  [class~="border-white/15"],
+  [class~="border-white/20"],
+  [class~="border-white/30"],
+  .border-zinc-700,
+  .border-zinc-800,
+  .border-zinc-900,
+  .border-black,
+  [class~="border-[#1F1F1F]"],
+  [class~="border-[#2D2D2D]"],
+  [class~="border-[#27272A]"]
+) {
+  border-color: var(--app-border);
+}
+
+.app-v2 :is(
+  .text-white,
+  .text-zinc-100,
+  .text-zinc-200,
+  .text-zinc-300,
+  [class~="text-[#F9FAFB]"],
+  [class~="text-[#D4D4D8]"],
+  [class~="text-[#D1D5DB]"]
+) {
+  color: var(--app-text);
+}
+
+.app-v2 :is(
+  .text-zinc-400,
+  .text-zinc-500,
+  .text-zinc-600,
+  .text-zinc-700,
+  [class~="text-[#A1A1AA]"],
+  [class~="text-[#9CA3AF]"],
+  [class~="text-[#8B8B92]"],
+  [class~="text-[#71717A]"],
+  [class~="text-[#6B7280]"],
+  [class~="text-[#52525B]"],
+  [class~="text-[#3F3F46]"]
+) {
+  color: var(--app-text-muted);
+}
+
+.app-v2 :is(.text-orange-300, .text-orange-400, .text-orange-500) {
+  color: var(--app-brand);
+}
+
+.app-v2 :is(.bg-linear-to-r, .bg-linear-to-br, .bg-linear-to-b):is(
+  [class~="from-red-500"],
+  [class~="from-orange-500"],
+  [class~="from-orange-600"],
+  [class~="from-orange-700"]
+) {
+  background-image: none;
+  background-color: var(--app-brand);
+  color: #ffffff;
+}
+
+.app-v2 :is(.bg-linear-to-r, .bg-linear-to-br, .bg-linear-to-b):is(
+  [class~="from-red-500"],
+  [class~="from-orange-500"],
+  [class~="from-orange-600"],
+  [class~="from-orange-700"]
+) :is(.text-white, [class~="text-[#F9FAFB]"]) {
+  color: #ffffff;
+}
+
+.app-v2 :is(.bg-clip-text.text-transparent, .text-transparent.bg-clip-text) {
+  color: var(--app-brand);
+  -webkit-text-fill-color: currentColor;
+}
+
+.app-v2 :is(.rounded-4xl, .rounded-3xl, .rounded-2xl) {
+  border-radius: 10px;
+}
+
+.app-v2 :is(.shadow-xl, .shadow-2xl, [class*="shadow-[0_0"]) {
+  box-shadow: none;
+}
+
+.app-v2 [class*="blur-["] {
+  display: none;
+}
+
+.app-v2 :is(input, textarea, select) {
+  border-color: var(--app-border);
+  background-color: #ffffff;
+  color: var(--app-text);
+  box-shadow: none;
+}
+
+.app-v2 :is(input, textarea)::placeholder {
+  color: var(--app-text-faint);
+}
+
+.app-v2 :is(a, button)[class~="bg-orange-500"],
+.app-v2 :is(a, button)[class~="bg-orange-400"],
+.app-v2 :is(a, button)[class~="bg-red-500"],
+.app-v2 :is(a, button)[class~="bg-red-600"],
+.app-v2 :is(a, button)[class~="bg-green-400"],
+.app-v2 :is(a, button)[class~="bg-green-500"],
+.app-v2 :is(a, button)[class~="bg-green-600"],
+.app-v2 :is(a, button)[class~="bg-[#E8560A]"],
+.app-v2 :is(a, button)[class~="bg-[#ff6a1a]"],
+.app-v2 :is(a, button)[class~="bg-[#CF4B08]"] {
+  color: #ffffff;
+}
+
+.app-v2 :is(a, button)[class~="bg-orange-500"] :is(.text-white, [class~="text-[#F9FAFB]"]),
+.app-v2 :is(a, button)[class~="bg-[#E8560A]"] :is(.text-white, [class~="text-[#F9FAFB]"]) {
+  color: #ffffff;
+}
+
+.app-v2 :is(a, button, [role="button"]):not(:disabled):hover {
+  border-color: #fed7aa;
+}
+
+.app-v2 .fixed.inset-0:is(
+  [class~="bg-black/60"],
+  [class~="bg-black/70"],
+  [class~="bg-black/80"],
+  [class~="bg-black/90"],
+  [class~="bg-black/95"]
+) {
+  background-color: rgba(17, 24, 39, 0.48);
+}
+
 /* ---------------------------------------------------------
    LEGACY DARK TOKENS — not part of V2.0-a.
-   Retained so pages that have not been migrated yet (app,
-   settings, profile, admin) render unchanged. Remove a block
-   here once the last consumer is ported.
+   Retained only for public and admin routes that still consume
+   these variables. Authenticated product screens are normalized
+   by the scoped light theme above.
 --------------------------------------------------------- */
 
 :root {

@@ -32,8 +32,8 @@ function getNoticeMeta(type: string) {
         return {
             icon: AlertTriangle,
             label: "Important notice",
-            color: "text-yellow-300",
-            box: "border-yellow-500/20 bg-yellow-500/10",
+            color: "text-yellow-700",
+            box: "border-yellow-500/30 bg-yellow-50",
         };
     }
 
@@ -41,8 +41,8 @@ function getNoticeMeta(type: string) {
         return {
             icon: ShieldAlert,
             label: "Critical notice",
-            color: "text-red-300",
-            box: "border-red-500/20 bg-red-500/10",
+            color: "text-red-600",
+            box: "border-red-500/30 bg-red-50",
         };
     }
 
@@ -50,8 +50,8 @@ function getNoticeMeta(type: string) {
         return {
             icon: Wrench,
             label: "Maintenance",
-            color: "text-orange-300",
-            box: "border-orange-500/20 bg-orange-500/10",
+            color: "text-orange-600",
+            box: "border-orange-500/30 bg-orange-50",
         };
     }
 
@@ -59,8 +59,8 @@ function getNoticeMeta(type: string) {
         return {
             icon: CheckCircle2,
             label: "Resolved",
-            color: "text-emerald-300",
-            box: "border-emerald-500/20 bg-emerald-500/10",
+            color: "text-emerald-600",
+            box: "border-emerald-500/30 bg-emerald-50",
         };
     }
 
@@ -68,16 +68,16 @@ function getNoticeMeta(type: string) {
         return {
             icon: Megaphone,
             label: "Product update",
-            color: "text-orange-300",
-            box: "border-orange-500/20 bg-orange-500/10",
+            color: "text-orange-600",
+            box: "border-orange-500/30 bg-orange-50",
         };
     }
 
     return {
         icon: Info,
         label: "Notice",
-        color: "text-sky-300",
-        box: "border-sky-500/20 bg-sky-500/10",
+        color: "text-sky-600",
+        box: "border-sky-500/30 bg-sky-50",
     };
 }
 
@@ -90,16 +90,15 @@ export default function AppNoticePopup({
     const Icon = meta.icon;
 
     return (
-        <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/80 px-4 backdrop-blur-xl">
-            <div className="relative w-full max-w-lg overflow-hidden rounded-4xl border border-white/10 bg-[#080808] p-6 shadow-2xl shadow-black">
-                <div className="absolute inset-0 bg-linear-to-br from-orange-500/15 via-transparent to-red-500/10" />
-
+        <div className="fixed inset-0 z-999 flex items-center justify-center bg-[#18181B]/45 px-4 backdrop-blur-sm">
+            <div className="relative w-full max-w-lg overflow-hidden rounded-xl border border-[#E5E7EB] bg-white p-6 shadow-[0_24px_80px_rgba(17,24,39,0.16)] sm:p-8">
                 <button
                     type="button"
+                    aria-label="Close notice"
                     onClick={onClose}
-                    className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-zinc-400 transition hover:bg-white/10 hover:text-white"
+                    className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white text-[#6B7280] transition hover:border-orange-200 hover:bg-[#FFF7ED] hover:text-[#E8560A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E8560A]"
                 >
-                    <X size={18} />
+                    <X size={18} aria-hidden="true" />
                 </button>
 
                 <div className="relative">
@@ -115,11 +114,11 @@ export default function AppNoticePopup({
                         {meta.label}
                     </p>
 
-                    <h2 className="mt-3 text-3xl font-black tracking-[-0.06em] text-white">
+                    <h2 className="mt-3 pr-10 text-3xl font-semibold tracking-[-0.04em] text-[#18181B]">
                         {notice.title}
                     </h2>
 
-                    <p className="mt-4 whitespace-pre-line text-sm leading-7 text-zinc-400">
+                    <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[#6B7280]">
                         {notice.message}
                     </p>
 
@@ -128,7 +127,7 @@ export default function AppNoticePopup({
                             <Link
                                 href={notice.cta_href}
                                 onClick={onClose}
-                                className="flex h-12 flex-1 items-center justify-center rounded-2xl bg-orange-500 text-sm font-black text-black transition hover:bg-orange-400"
+                                className="flex h-12 flex-1 items-center justify-center rounded-lg bg-[#E8560A] text-sm font-semibold text-white transition hover:bg-[#CF4B08] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E8560A]"
                             >
                                 {notice.cta_label}
                             </Link>
@@ -137,7 +136,7 @@ export default function AppNoticePopup({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex h-12 flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/4 text-sm font-bold text-zinc-300 transition hover:bg-white/10"
+                            className="flex h-12 flex-1 items-center justify-center rounded-lg border border-[#E5E7EB] bg-[#F8F9FA] text-sm font-semibold text-[#374151] transition hover:border-orange-200 hover:bg-[#FFF7ED] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E8560A]"
                         >
                             Got it
                         </button>
