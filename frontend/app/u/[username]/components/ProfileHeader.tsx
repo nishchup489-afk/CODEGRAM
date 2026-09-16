@@ -1,20 +1,21 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { useMemo, useState } from "react"
-
+import Link from "next/link"
+import { useEffect, useState } from "react"
 import {
-    User,
+    CalendarDays,
+    Github,
+    Globe2,
+    Linkedin,
+    Mail,
     MapPin,
-    Hammer,
     Pencil,
-    Archive,
+    User,
     X,
-    ShieldCheck,
 } from "lucide-react"
 
-import { UserFullProfile } from "@/app/_lib/type/profileAnalytics"
+import type { UserFullProfile } from "@/app/_lib/type/profileAnalytics"
 
 type ProfileHeaderProps = {
     profileData: UserFullProfile
@@ -23,29 +24,21 @@ type ProfileHeaderProps = {
     isOwner?: boolean
 }
 
-function FounderBadge() {
-    return (
-        <span
-            className="
-                inline-flex
-                items-center
-                gap-1
-                rounded-full
-                border
-                border-orange-500/30
-                bg-orange-500/10
-                px-2.5
-                py-1
-                text-xs
-                font-semibold
-                text-orange-300
-                shadow-[0_0_18px_rgba(249,115,22,0.18)]
-            "
-        >
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Founder
-        </span>
-    )
+function externalUrl(url: string) {
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`
+}
+
+function joinedLabel(value?: string) {
+    if (!value) return null
+    if (/^joined\s/i.test(value)) return value
+
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+
+    return `Joined ${new Intl.DateTimeFormat("en", {
+        month: "short",
+        year: "numeric",
+    }).format(date)}`
 }
 
 export default function ProfileHeader({
@@ -54,47 +47,27 @@ export default function ProfileHeader({
     error = "",
     isOwner = false,
 }: ProfileHeaderProps) {
-    const router = useRouter()
+    const [viewer, setViewer] = useState<"avatar" | "banner" | null>(null)
 
-    const [showAvatarViewer, setShowAvatarViewer] = useState(false)
-    const [showBannerViewer, setShowBannerViewer] = useState(false)
+    useEffect(() => {
+        if (!viewer) return
 
-    const adminClerkIds = useMemo(() => {
-        return (
-            process.env.NEXT_PUBLIC_ADMIN_CLERK_USER_IDS
-                ?.split(",")
-                .map((id) => id.trim())
-                .filter(Boolean) ?? []
-        )
-    }, [])
-
-    const isFounder = adminClerkIds.includes(profileData.clerk_user_id)
-
-    const openExternal = (url: string) => {
-        if (!url) return "#"
-
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-            return url
+        function closeOnEscape(event: KeyboardEvent) {
+            if (event.key === "Escape") setViewer(null)
         }
 
-        return `https://${url}`
-    }
+        document.addEventListener("keydown", closeOnEscape)
+        return () => document.removeEventListener("keydown", closeOnEscape)
+    }, [viewer])
 
     if (loading) {
         return (
-            <div className="mx-auto w-full max-w-5xl">
-                <div className="animate-pulse overflow-hidden rounded-4xl border border-white/10 bg-black">
-                    <div className="h-40 bg-white/5" />
-
-                    <div className="px-5 pb-8">
-                        <div className="-mt-14 h-24 w-24 rounded-full border-4 border-black bg-white/10" />
-
-                        <div className="mt-6 space-y-3">
-                            <div className="h-8 w-64 rounded bg-white/10" />
-                            <div className="h-4 w-40 rounded bg-white/5" />
-                            <div className="h-4 w-full max-w-md rounded bg-white/5" />
-                        </div>
-                    </div>
+            <div className="animate-pulse overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+                <div className="h-36 bg-[#F3F4F6] sm:h-44" />
+                <div className="px-5 pb-6 sm:px-7">
+                    <div className="-mt-12 h-24 w-24 rounded-full border-4 border-white bg-[#E5E7EB]" />
+                    <div className="mt-4 h-7 w-52 rounded bg-[#E5E7EB]" />
+                    <div className="mt-3 h-4 w-full max-w-md rounded bg-[#F3F4F6]" />
                 </div>
             </div>
         )
@@ -102,572 +75,194 @@ export default function ProfileHeader({
 
     if (error) {
         return (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-400">
+            <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
                 {error}
             </div>
         )
     }
 
+    const displayName = profileData.display_name || profileData.username
+    const joined = joinedLabel(profileData.joined_date)
+    const projectCount = profileData.projects?.length ?? profileData.project_count ?? 0
+    const links = [
+        profileData.github_url
+            ? { label: "GitHub", href: externalUrl(profileData.github_url), icon: Github }
+            : null,
+        profileData.linkedin_url
+            ? { label: "LinkedIn", href: externalUrl(profileData.linkedin_url), icon: Linkedin }
+            : null,
+        profileData.portfolio_url
+            ? { label: "Portfolio", href: externalUrl(profileData.portfolio_url), icon: Globe2 }
+            : null,
+        profileData.email
+            ? { label: "Email", href: `mailto:${profileData.email}`, icon: Mail }
+            : null,
+    ].filter((link): link is NonNullable<typeof link> => Boolean(link))
+
     return (
         <>
-            <div className="mx-auto w-full max-w-5xl">
-                <section className="overflow-hidden rounded-4xl border border-white/10 bg-black">
-                    {/* BANNER */}
+            <section className="overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+                {profileData.banner_url ? (
                     <button
                         type="button"
-                        onClick={() => setShowBannerViewer(true)}
-                        className="
-                            relative
-                            block
-                            h-40
-                            w-full
-                            overflow-hidden
-                            bg-linear-to-r
-                            from-red-950/90
-                            via-red-950/40
-                            to-black
-                        "
+                        onClick={() => setViewer("banner")}
+                        className="relative block h-36 w-full overflow-hidden bg-[#FFF7ED] text-left sm:h-44"
+                        aria-label={`View ${displayName}'s banner`}
                     >
-                        {profileData.banner_url && (
-                            <Image
-                                src={profileData.banner_url}
-                                alt="Banner"
-                                fill
-                                priority
-                                className="object-cover opacity-70"
-                            />
-                        )}
-
-                        <div className="absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black" />
-                    </button>
-
-                    <div className="px-5 pb-6 md:px-8 md:pb-8">
-                        {/* MOBILE */}
-                        <div className="md:hidden">
-                            <div className="mt-4 flex items-end justify-between gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowAvatarViewer(true)}
-                                    className="
-                                        relative
-                                        -mt-14
-                                        block
-                                        h-24
-                                        w-24
-                                        shrink-0
-                                        overflow-hidden
-                                        rounded-full
-                                        border-4
-                                        border-black
-                                        bg-zinc-950
-                                        ring-2
-                                        ring-orange-500/70
-                                        shadow-[0_0_30px_rgba(249,115,22,0.18)]
-                                    "
-                                >
-                                    {profileData.avatar_url ? (
-                                        <Image
-                                            src={profileData.avatar_url}
-                                            alt="Profile"
-                                            fill
-                                            sizes="96px"
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full w-full items-center justify-center">
-                                            <User
-                                                size={28}
-                                                className="text-zinc-600"
-                                            />
-                                        </div>
-                                    )}
-                                </button>
-
-                                <div className="flex flex-1 items-center justify-around pb-2 text-center">
-                                    <div>
-                                        <p className="text-[22px] font-bold text-zinc-100">
-                                            {profileData.posts_count}
-                                        </p>
-                                        <p className="text-[11px] text-zinc-600">
-                                            posts
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[22px] font-bold text-zinc-100">
-                                            {profileData.followers_count}
-                                        </p>
-                                        <p className="text-[11px] text-zinc-600">
-                                            followers
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[22px] font-bold text-zinc-100">
-                                            {profileData.following_count}
-                                        </p>
-                                        <p className="text-[11px] text-zinc-600">
-                                            following
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-4 border-t border-white/8" />
-
-                            <div className="mt-5">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h1 className="text-[22px] font-bold leading-tight tracking-tight text-zinc-100">
-                                        {profileData.display_name ||
-                                            "Unnamed Builder"}
-                                    </h1>
-
-                                    {isFounder && <FounderBadge />}
-                                </div>
-
-                                <p className="mt-1 text-[15px] text-zinc-500">
-                                    @{profileData.username}
-                                </p>
-                            </div>
-
-                            <p className="mt-4 text-[14px] leading-6 text-zinc-300">
-                                {profileData.bio || "No bio added yet."}
-                            </p>
-
-                            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-zinc-500">
-                                <div className="flex items-center gap-1.5">
-                                    <MapPin size={12} />
-                                    <span>
-                                        {profileData.location ||
-                                            "Brooklyn, NY"}
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center gap-1.5">
-                                    <Hammer size={12} />
-                                    <span>
-                                        {profileData.current_build ||
-                                            "Building Devmaniac"}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <p className="mt-2 text-[12px] text-zinc-600">
-                                {profileData.joined_date ||
-                                    "Joined recently"}
-                            </p>
-
-                            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
-                                {profileData.github_url && (
-                                    <a
-                                        href={openExternal(
-                                            profileData.github_url
-                                        )}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center gap-2 text-[13px] text-orange-300"
-                                    >
-                                        <Image
-                                            src="/github-svg.svg"
-                                            alt="GitHub"
-                                            width={14}
-                                            height={14}
-                                        />
-                                        GitHub
-                                    </a>
-                                )}
-
-                                {profileData.linkedin_url && (
-                                    <a
-                                        href={openExternal(
-                                            profileData.linkedin_url
-                                        )}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center gap-2 text-[13px] text-orange-300"
-                                    >
-                                        <Image
-                                            src="/linkedin-svg.svg"
-                                            alt="LinkedIn"
-                                            width={14}
-                                            height={14}
-                                        />
-                                        LinkedIn
-                                    </a>
-                                )}
-
-                                {profileData.portfolio_url && (
-                                    <a
-                                        href={openExternal(
-                                            profileData.portfolio_url
-                                        )}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center gap-2 text-[13px] text-orange-300"
-                                    >
-                                        <Image
-                                            src="/portfolio-svg.svg"
-                                            alt="Portfolio"
-                                            width={14}
-                                            height={14}
-                                        />
-                                        Portfolio
-                                    </a>
-                                )}
-                            </div>
-
-                            {isOwner && (
-                                <div className="mt-5">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            router.push(
-                                                `/u/${profileData.username}/profile/edit`
-                                            )
-                                        }
-                                        className="
-                                            flex
-                                            w-full
-                                            items-center
-                                            justify-center
-                                            gap-2
-                                            rounded-xl
-                                            border
-                                            border-white/15
-                                            px-4
-                                            py-2
-                                            text-[15px]
-                                            font-medium
-                                            text-zinc-100
-                                            transition-all
-                                            hover:border-orange-500/60
-                                            hover:bg-orange-500/10
-                                            hover:text-orange-300
-                                        "
-                                    >
-                                        <Pencil size={14} />
-                                        Edit profile
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* DESKTOP */}
-                        <div className="hidden md:flex md:justify-between md:gap-10">
-                            <div className="max-w-2xl">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowAvatarViewer(true)}
-                                    className="
-                                        relative
-                                        -mt-16
-                                        block
-                                        h-32
-                                        w-32
-                                        overflow-hidden
-                                        rounded-full
-                                        border-4
-                                        border-black
-                                        bg-zinc-950
-                                        ring-2
-                                        ring-orange-500/60
-                                        shadow-[0_0_40px_rgba(249,115,22,0.16)]
-                                    "
-                                >
-                                    {profileData.avatar_url ? (
-                                        <Image
-                                            src={profileData.avatar_url}
-                                            alt="Profile"
-                                            fill
-                                            sizes="128px"
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full w-full items-center justify-center">
-                                            <User
-                                                size={34}
-                                                className="text-zinc-600"
-                                            />
-                                        </div>
-                                    )}
-                                </button>
-
-                                <div className="mt-5">
-                                    <div className="flex flex-wrap items-center gap-3">
-                                        <h1 className="text-[42px] font-bold tracking-tight text-zinc-100">
-                                            {profileData.display_name ||
-                                                "Unnamed Builder"}
-                                        </h1>
-
-                                        {isFounder && <FounderBadge />}
-                                    </div>
-
-                                    <p className="mt-1 text-[17px] text-zinc-500">
-                                        @{profileData.username}
-                                    </p>
-                                </div>
-
-                                <p className="mt-6 max-w-xl text-[15px] leading-7 text-zinc-300">
-                                    {profileData.bio || "No bio added yet."}
-                                </p>
-
-                                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-zinc-500">
-                                    <div className="flex items-center gap-2">
-                                        <MapPin size={14} />
-                                        <span>
-                                            {profileData.location ||
-                                                "Brooklyn, NY"}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <Hammer size={14} />
-                                        <span>
-                                            {profileData.current_build ||
-                                                "Building Devmaniac"}
-                                        </span>
-                                    </div>
-
-                                    <div>
-                                        {profileData.joined_date ||
-                                            "Joined recently"}
-                                    </div>
-                                </div>
-
-                                {isOwner && (
-                                    <div className="mt-6 flex items-center gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                router.push(
-                                                    `/u/${profileData.username}/profile/edit`
-                                                )
-                                            }
-                                            className="
-                                                flex
-                                                items-center
-                                                justify-center
-                                                gap-2
-                                                rounded-xl
-                                                border
-                                                border-white/15
-                                                px-5
-                                                py-2
-                                                text-[14px]
-                                                font-medium
-                                                text-zinc-100
-                                                transition-all
-                                                hover:border-orange-500/60
-                                                hover:bg-orange-500/10
-                                                hover:text-orange-300
-                                            "
-                                        >
-                                            <Pencil size={14} />
-                                            Edit profile
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                router.push(
-                                                    "/profile/archive"
-                                                )
-                                            }
-                                            className="
-                                                flex
-                                                items-center
-                                                justify-center
-                                                gap-2
-                                                rounded-xl
-                                                border
-                                                border-white/10
-                                                px-5
-                                                py-2
-                                                text-[14px]
-                                                font-medium
-                                                text-zinc-500
-                                                transition-all
-                                                hover:border-white/20
-                                                hover:bg-white/5
-                                                hover:text-white
-                                            "
-                                        >
-                                            <Archive size={14} />
-                                            View archive
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="min-w-60 border-l border-white/8 pl-8 pt-22">
-                                <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-700">
-                                    Stats
-                                </p>
-
-                                <div className="grid grid-cols-2 gap-x-10 gap-y-6">
-                                    <div>
-                                        <p className="text-[30px] font-bold text-zinc-100">
-                                            {profileData.posts_count}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-600">
-                                            posts
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[30px] font-bold text-zinc-100">
-                                            {profileData.project_count}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-600">
-                                            projects
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[30px] font-bold text-zinc-100">
-                                            {profileData.followers_count}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-600">
-                                            followers
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[30px] font-bold text-zinc-100">
-                                            {profileData.following_count}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-600">
-                                            following
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-10">
-                                    <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-700">
-                                        Links
-                                    </p>
-
-                                    <div className="space-y-4">
-                                        {profileData.github_url && (
-                                            <a
-                                                href={openExternal(
-                                                    profileData.github_url
-                                                )}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center gap-3 text-sm text-zinc-300 transition-all hover:text-orange-300"
-                                            >
-                                                <Image
-                                                    src="/github-svg.svg"
-                                                    alt="GitHub"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                                GitHub
-                                            </a>
-                                        )}
-
-                                        {profileData.linkedin_url && (
-                                            <a
-                                                href={openExternal(
-                                                    profileData.linkedin_url
-                                                )}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center gap-3 text-sm text-zinc-300 transition-all hover:text-orange-300"
-                                            >
-                                                <Image
-                                                    src="/linkedin-svg.svg"
-                                                    alt="LinkedIn"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                                LinkedIn
-                                            </a>
-                                        )}
-
-                                        {profileData.portfolio_url && (
-                                            <a
-                                                href={openExternal(
-                                                    profileData.portfolio_url
-                                                )}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center gap-3 text-sm text-zinc-300 transition-all hover:text-orange-300"
-                                            >
-                                                <Image
-                                                    src="/portfolio-svg.svg"
-                                                    alt="Portfolio"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                                Portfolio
-                                            </a>
-                                        )}
-
-                                        {profileData.email && (
-                                            <a
-                                                href={`mailto:${profileData.email}`}
-                                                className="flex items-center gap-3 text-sm text-zinc-300 transition-all hover:text-orange-300"
-                                            >
-                                                <Image
-                                                    src="/email-svg.svg"
-                                                    alt="Email"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                                {profileData.email}
-                                            </a>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            {showAvatarViewer && profileData.avatar_url && (
-                <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/95 p-6">
-                    <button
-                        type="button"
-                        onClick={() => setShowAvatarViewer(false)}
-                        className="absolute right-6 top-6 rounded-full border border-white/10 bg-white/10 p-3"
-                    >
-                        <X size={24} />
-                    </button>
-
-                    <div className="relative aspect-square h-[80vh] max-w-full overflow-hidden rounded-3xl">
-                        <Image
-                            src={profileData.avatar_url}
-                            alt="Fullscreen avatar"
-                            fill
-                            className="object-contain"
-                        />
-                    </div>
-                </div>
-            )}
-
-            {showBannerViewer && profileData.banner_url && (
-                <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/95 p-6">
-                    <button
-                        type="button"
-                        onClick={() => setShowBannerViewer(false)}
-                        className="absolute right-6 top-6 rounded-full border border-white/10 bg-white/10 p-3"
-                    >
-                        <X size={24} />
-                    </button>
-
-                    <div className="relative h-[80vh] w-full max-w-7xl overflow-hidden rounded-3xl">
                         <Image
                             src={profileData.banner_url}
-                            alt="Fullscreen banner"
+                            alt={`${displayName}'s profile banner`}
                             fill
+                            priority
+                            sizes="(max-width: 768px) 100vw, 960px"
+                            className="object-cover"
+                        />
+                        <span className="absolute inset-0 bg-linear-to-t from-black/15 to-transparent" />
+                    </button>
+                ) : (
+                    <div className="relative h-36 overflow-hidden bg-[#FFF7ED] sm:h-44" aria-hidden="true">
+                        <div className="absolute -right-12 -top-24 h-64 w-64 rounded-full bg-orange-200/55 blur-3xl" />
+                        <div className="absolute -bottom-20 left-1/4 h-48 w-96 rounded-full bg-amber-100/70 blur-3xl" />
+                    </div>
+                )}
+
+                <div className="px-5 pb-6 sm:px-7 sm:pb-7">
+                    <div className="flex items-end justify-between gap-4">
+                        <button
+                            type="button"
+                            onClick={() => profileData.avatar_url && setViewer("avatar")}
+                            className="relative -mt-12 h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-[#F3F4F6] shadow-[0_8px_24px_rgba(17,24,39,0.12)] sm:-mt-14 sm:h-28 sm:w-28"
+                            aria-label={profileData.avatar_url ? `View ${displayName}'s avatar` : undefined}
+                            disabled={!profileData.avatar_url}
+                        >
+                            {profileData.avatar_url ? (
+                                <Image
+                                    src={profileData.avatar_url}
+                                    alt={`${displayName}'s avatar`}
+                                    fill
+                                    sizes="112px"
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <span className="flex h-full w-full items-center justify-center text-[#9CA3AF]">
+                                    <User size={30} aria-hidden="true" />
+                                </span>
+                            )}
+                        </button>
+
+                        {isOwner ? (
+                            <Link
+                                href={`/u/${profileData.username}/profile/edit`}
+                                className="mb-1 inline-flex h-10 items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 text-sm font-semibold text-[#374151] transition hover:border-orange-200 hover:bg-[#FFF7ED] hover:text-[#C2410C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E8560A]"
+                            >
+                                <Pencil size={15} aria-hidden="true" />
+                                Edit profile
+                            </Link>
+                        ) : null}
+                    </div>
+
+                    <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                        <div className="min-w-0">
+                            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                                <h1 className="text-2xl font-semibold tracking-[-0.035em] text-[#18181B] sm:text-3xl">
+                                    {displayName}
+                                </h1>
+                                <span className="text-sm text-[#6B7280]">@{profileData.username}</span>
+                            </div>
+
+                            {profileData.current_build ? (
+                                <p className="mt-2 text-sm font-medium text-[#374151]">
+                                    Current focus · {profileData.current_build}
+                                </p>
+                            ) : null}
+
+                            {profileData.bio ? (
+                                <p className="mt-3 max-w-2xl text-[15px] leading-6 text-[#4B5563]">
+                                    {profileData.bio}
+                                </p>
+                            ) : null}
+
+                            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#6B7280]">
+                                {profileData.location ? (
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <MapPin size={14} aria-hidden="true" />
+                                        {profileData.location}
+                                    </span>
+                                ) : null}
+                                {joined ? (
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <CalendarDays size={14} aria-hidden="true" />
+                                        {joined}
+                                    </span>
+                                ) : null}
+                            </div>
+
+                            {links.length ? (
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                    {links.map(({ label, href, icon: Icon }) => (
+                                        <a
+                                            key={label}
+                                            href={href}
+                                            target={href.startsWith("mailto:") ? undefined : "_blank"}
+                                            rel={href.startsWith("mailto:") ? undefined : "noreferrer"}
+                                            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#4B5563] transition hover:border-orange-200 hover:bg-[#FFF7ED] hover:text-[#C2410C]"
+                                        >
+                                            <Icon size={15} aria-hidden="true" />
+                                            {label}
+                                        </a>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
+
+                        <dl className="grid grid-cols-3 gap-5 border-t border-[#E5E7EB] pt-4 text-center lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                            <div>
+                                <dt className="text-xs text-[#6B7280]">Projects</dt>
+                                <dd className="mt-1 text-lg font-semibold text-[#18181B]">{projectCount}</dd>
+                            </div>
+                            <div>
+                                <dt className="text-xs text-[#6B7280]">Followers</dt>
+                                <dd className="mt-1 text-lg font-semibold text-[#18181B]">{profileData.followers_count}</dd>
+                            </div>
+                            <div>
+                                <dt className="text-xs text-[#6B7280]">Following</dt>
+                                <dd className="mt-1 text-lg font-semibold text-[#18181B]">{profileData.following_count}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </section>
+
+            {viewer ? (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={viewer === "avatar" ? "Profile avatar" : "Profile banner"}
+                    className="fixed inset-0 z-999 flex items-center justify-center bg-[#18181B]/75 p-5 backdrop-blur-sm"
+                    onClick={() => setViewer(null)}
+                >
+                    <button
+                        type="button"
+                        aria-label="Close image viewer"
+                        onClick={() => setViewer(null)}
+                        className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-lg border border-white/20 bg-black/30 text-white"
+                    >
+                        <X size={20} aria-hidden="true" />
+                    </button>
+                    <div
+                        className={viewer === "avatar" ? "relative aspect-square w-[min(82vw,560px)]" : "relative h-[min(72vh,720px)] w-[min(92vw,1200px)]"}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <Image
+                            src={viewer === "avatar" ? profileData.avatar_url! : profileData.banner_url!}
+                            alt={viewer === "avatar" ? `${displayName}'s avatar` : `${displayName}'s profile banner`}
+                            fill
+                            sizes="92vw"
                             className="object-contain"
                         />
                     </div>
                 </div>
-            )}
+            ) : null}
         </>
     )
 }
