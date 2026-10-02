@@ -19,6 +19,7 @@ from app.router import (
     search,
     support,
     user,
+    github,
 )
 
 
@@ -41,6 +42,7 @@ for child_router in (
     app_notice.router,
     early_access.router,
     operations.router,
+    github.router,
 ):
     router.include_router(child_router)
 
@@ -65,4 +67,5 @@ __all__ = [
     "search",
     "support",
     "user",
+    "github",
 ]
